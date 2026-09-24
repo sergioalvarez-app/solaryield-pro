@@ -1,22 +1,26 @@
 # ☀️ SolarYield Pro
 
-Herramienta web gratuita (PWA) de **diagnóstico rápido para plantas fotovoltaicas**, presencial y remoto.
+Herramienta web gratuita y de código abierto (PWA) para el **diagnóstico rápido de plantas fotovoltaicas**, en campo y en remoto. Pensada para técnicos de mantenimiento, instaladores e ingenieros FV.
 
-- Irradiancia en tiempo real en el plano del módulo (Open-Meteo) y cielo despejado teórico (PVGIS · Comisión Europea).
-- Potencia esperada con corrección por temperatura de célula y pérdidas de sistema.
-- Comparador con la lectura del inversor: rendimiento vs. esperado, PR (IEC), desviación y semáforo de estado.
-- GPS, inclinómetro con el acelerómetro del móvil y plantas guardadas en el propio dispositivo.
-- Comparador de strings/MPPT (corriente o potencia, normalizado por nº de módulos) para localizar strings abiertos o con pérdidas.
-- Voc/Isc esperados según la ficha del módulo, con diagnóstico automático de la medida del multímetro (string abierto, polaridad, diodos de bypass, módulos de menos).
-- Balance energético diario (hoy/ayer) con la irradiancia real, días sin lluvia y estimación de suciedad.
-- Historial por planta con gráfico de tendencia y exportación a CSV.
-- Detección de clipping / límite de inyección del inversor para evitar falsas alarmas.
-- Modo degradado offline (modelo astronómico local) y alertas opcionales por Telegram.
+**👉 App:** https://sergioalvarez-app.github.io/solaryield-pro/
 
-Sin registro, sin servidor, sin cookies: los datos se guardan solo en tu navegador.
+## Herramientas
 
-**Datos:** [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0) · [PVGIS © Unión Europea](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en).
-Valores orientativos; no sustituyen una medición con piranómetro calibrado.
+Se eligen desde el menú desplegable superior:
+
+- **⚡ Diagnóstico rápido** – irradiancia real en el plano del módulo (Open-Meteo) y de cielo despejado (modelo Ineichen-Perez), potencia esperada corregida por temperatura, pérdidas y límite del inversor (clipping). Se compara con la lectura del inversor → rendimiento, PR y semáforo 🟢🟡🔴. GPS e inclinómetro del móvil.
+- **🔌 Strings / MPPT** – compara hasta 100 strings por corriente o potencia (normalizando por nº de módulos) y localiza strings abiertos o con pérdidas. Admite pegar columnas de Excel.
+- **🔋 Multímetro Voc / Isc** – valores esperados según la ficha del módulo y diagnóstico automático de la medida (string abierto, polaridad invertida, módulos de menos, diodos de bypass).
+- **📅 Energía diaria y lluvia** – energía esperada de hoy o de ayer con la irradiancia real, días sin lluvia y previsión.
+- **✅ Checklist de mantenimiento** – 38 puntos inspirados en IEC 62446-1 y buenas prácticas de O&M, con notas y fotos de cada defecto.
+- **📷 Informe con fotos (PDF)** – fotos con fecha, hora y coordenadas estampadas; informe PDF profesional para descargar o compartir por WhatsApp o email.
+- **📈 Historial** – evolución del rendimiento por planta, detección de limpiezas y exportación a CSV.
+
+Además: plantas guardadas para consulta remota, **modo alto contraste** para leer a pleno sol, **copia de seguridad completa**, funcionamiento sin conexión y modo degradado si la API meteorológica falla.
+
+Sin registro, sin servidor y sin cookies: todos los datos se guardan solo en tu dispositivo.
+
+**Datos:** [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0). Valores orientativos: no sustituyen una medición con piranómetro calibrado.
 
 ## Licencia
 

@@ -1,11 +1,11 @@
 /* SolarYield Pro — Service Worker
  * - App shell: cache-first (funciona offline).
- * - Tailwind CDN y Google Fonts: stale-while-revalidate.
- * - APIs (Open-Meteo, PVGIS, Telegram): SIEMPRE red, nunca se cachean aquí
+ * - Tailwind CDN, Google Fonts y jsPDF (cdnjs): stale-while-revalidate.
+ * - API Open-Meteo: SIEMPRE red, nunca se cachea aquí
  *   (la app ya tiene su propio fallback astronómico si fallan).
  * Sube CACHE_VERSION cada vez que publiques cambios.
  */
-const CACHE_VERSION = 'syp-v1.5.0';
+const CACHE_VERSION = 'syp-v2.0.0';
 const SHELL = [
   './',
   './index.html',
@@ -14,8 +14,8 @@ const SHELL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
 ];
-const API_HOSTS = ['api.open-meteo.com', 're.jrc.ec.europa.eu', 'api.telegram.org'];
-const CDN_HOSTS = ['cdn.tailwindcss.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+const API_HOSTS = ['api.open-meteo.com'];
+const CDN_HOSTS = ['cdn.tailwindcss.com', 'fonts.googleapis.com', 'fonts.gstatic.com', 'cdnjs.cloudflare.com'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

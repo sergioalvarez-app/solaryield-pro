@@ -187,6 +187,62 @@
     .perm-btn.busy { opacity: .6; }
     .perm-item.ok .perm-btn { background: transparent; color: #6ee7b7; box-shadow: none; border: 1px solid rgba(52,211,153,.5); }
     .perm-item.err .perm-btn { background: transparent; color: #fecaca; box-shadow: none; border: 1px solid rgba(248,113,113,.5); }
+    .nav-arrow { flex-shrink: 0; width: 2.6rem; height: 2.9rem; border-radius: 0.7rem; font-size: 1.5rem; line-height: 1; color: #67e8f9; border: 1px solid rgba(34,211,238,.3); background: rgba(8,47,73,.25); }
+    .nav-arrow:active { transform: scale(.95); }
+    .sec-select { border-color: rgba(34,211,238,.45) !important; font-family: 'Space Grotesk', system-ui, sans-serif !important; }
+    .sec.enter { animation: secIn .35s ease; }
+    @keyframes secIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ============ MODO ALTO CONTRASTE (lectura a pleno sol) ============ */
+    html.hc, html.hc body { background: #f1f5f9 !important; color: #0f172a; }
+    html.hc body::before { display: none; }
+    html.hc .glass { background: #ffffff; border: 1.5px solid #334155; box-shadow: 0 1px 3px rgba(0,0,0,.15); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    html.hc .glass::after, html.hc .corner { display: none; }
+    html.hc [class*="text-slate-1"], html.hc [class*="text-slate-2"], html.hc [class*="text-slate-3"], html.hc .text-white { color: #0f172a !important; }
+    html.hc [class*="text-slate-4"], html.hc [class*="text-slate-5"], html.hc .label { color: #334155 !important; }
+    html.hc [class*="text-cyan-"], html.hc .hud-title { color: #0e7490 !important; }
+    html.hc [class*="text-emerald-"] { color: #047857 !important; }
+    html.hc [class*="text-amber-"] { color: #92400e !important; }
+    html.hc [class*="text-red-"] { color: #b91c1c !important; }
+    html.hc .metric-value { color: #020617 !important; text-shadow: none; }
+    html.hc .field { background: #ffffff; color: #020617; border: 1.5px solid #475569; }
+    html.hc .field::placeholder { color: #64748b; }
+    html.hc [class*="bg-slate-9"], html.hc [class*="bg-slate-8"] { background-color: #f8fafc !important; }
+    html.hc [class*="border-slate-"] { border-color: #94a3b8 !important; }
+    html.hc .chip, html.hc .eDay, html.hc .strUnit { background: #fff; color: #0f172a; border-color: #475569; }
+    html.hc .chip.active, html.hc .eDay.active, html.hc .strUnit.active { background: #0e7490; color: #fff !important; }
+    html.hc .chip.active span { color: #fff !important; }
+    html.hc .btn-ghost, html.hc .nav-arrow { background: #fff; color: #0e7490; border: 1.5px solid #0e7490; }
+    html.hc .btn-danger { background: #fff; color: #b91c1c; border: 1.5px solid #b91c1c; }
+    html.hc .btn-primary { background: #0e7490; color: #fff; box-shadow: none; }
+    html.hc .tab { color: #334155; }
+    html.hc .tab.active { background: #0e7490; color: #fff; box-shadow: none; }
+    html.hc h1.bg-clip-text { background: none; color: #0e7490; -webkit-text-fill-color: #0e7490; }
+    html.hc .led { box-shadow: 0 0 0 1px rgba(0,0,0,.35); }
+    html.hc .ring-track { stroke: #cbd5e1; }
+    html.hc .ring-bar { filter: none; }
+    html.hc .tl-lamp { background: #e2e8f0; border-color: #94a3b8; }
+    html.hc .perm-item, html.hc .ck-item { background: #fff; border-color: #94a3b8; }
+    html.hc #chart svg text, html.hc #histChart svg text { fill: #1e293b; }
+    html.hc [class*="bg-emerald-500"], html.hc [class*="bg-amber-500"], html.hc [class*="bg-red-500"], html.hc [class*="bg-cyan-500"] { background-color: #fff !important; }
+    html.hc .toast { background: #0f172a; color: #fff !important; }
+    .ck-sec { border: 1px solid rgba(51,65,85,.7); border-radius: .9rem; background: rgba(2,6,23,.35); overflow: hidden; }
+    .ck-sec > summary { list-style: none; cursor: pointer; padding: .8rem 1rem; display: flex; align-items: center; gap: .6rem; font-weight: 600; }
+    .ck-sec > summary::-webkit-details-marker { display: none; }
+    .ck-sec[open] > summary { border-bottom: 1px solid rgba(51,65,85,.6); }
+    .ck-item { padding: .7rem 1rem; border-bottom: 1px solid rgba(51,65,85,.35); }
+    .ck-item:last-child { border-bottom: 0; }
+    .ck-btns { display: flex; border: 1px solid rgba(71,85,105,.9); border-radius: .6rem; overflow: hidden; flex-shrink: 0; }
+    .ck-btns button { padding: .45rem .65rem; font-size: .72rem; font-weight: 700; color: #94a3b8; min-width: 2.6rem; }
+    .ck-btns button + button { border-left: 1px solid rgba(71,85,105,.9); }
+    .ck-btns button.on-ok { background: rgba(16,185,129,.25); color: #6ee7b7; }
+    .ck-btns button.on-def { background: rgba(239,68,68,.25); color: #fecaca; }
+    .ck-btns button.on-na { background: rgba(100,116,139,.3); color: #e2e8f0; }
+    html.hc .ck-btns button.on-ok { background: #047857; color: #fff !important; }
+    html.hc .ck-btns button.on-def { background: #b91c1c; color: #fff !important; }
+    html.hc .ck-btns button.on-na { background: #475569; color: #fff !important; }
+    .ph-card { position: relative; border-radius: .8rem; overflow: hidden; border: 1px solid rgba(51,65,85,.8); background: #020617; }
+    .ph-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
     .eDay { color: #94a3b8; transition: all .2s; }
     .eDay.active { background: rgba(8, 145, 178, 0.35); color: #ecfeff; box-shadow: 0 0 12px -4px var(--cyan) inset; }
     input[type=number] { -moz-appearance: textfield; appearance: textfield; }
@@ -225,12 +281,14 @@
           <span class="flex items-center gap-1.5" title="Conexión a Internet"><i id="ledNet" class="led"></i>NET</span>
           <span class="flex items-center gap-1.5" title="Posición GPS"><i id="ledGps" class="led"></i>GPS</span>
           <span class="flex items-center gap-1.5" title="Open-Meteo (tiempo real)"><i id="ledMeteo" class="led"></i>METEO</span>
-          <span class="flex items-center gap-1.5" title="PVGIS (Comisión Europea)"><i id="ledPvgis" class="led"></i>PVGIS</span>
           <span class="hidden md:inline text-cyan-300/80" id="clock">--:--:--</span>
         </div>
         <button id="btnInstall" class="hidden shrink-0 btn-primary !py-2 !px-3 text-[0.7rem] items-center gap-1.5" title="Instalar SolarYield Pro">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
           <span class="hidden sm:inline">Instalar</span>
+        </button>
+        <button id="btnContrast" class="glass w-10 h-10 shrink-0 flex items-center justify-center hover:border-cyan-400" title="Alto contraste (pleno sol)" aria-label="Alto contraste" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 7.5v9" /><path d="M12 7.5a4.5 4.5 0 0 1 0 9z" fill="#fbbf24"/><path d="M12 1.5v2M12 20.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1.5 12h2M20.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
         </button>
         <button id="btnSettings" class="glass w-10 h-10 shrink-0 flex items-center justify-center hover:border-cyan-400" title="Ajustes" aria-label="Ajustes">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -244,239 +302,263 @@
       <div><strong class="font-semibold">Modo degradado activo.</strong> <span id="degradedText"></span></div>
     </div>
 
-    <!-- ============ SELECTOR DE MODO ============ -->
-    <nav class="glass p-1.5 flex gap-1 mb-5 w-full sm:w-fit" role="tablist">
-      <button class="tab active flex-1 sm:flex-none" data-mode="field" role="tab">📍 Inspección en campo</button>
-      <button class="tab flex-1 sm:flex-none" data-mode="remote" role="tab">🛰️ Plantas remotas</button>
-    </nav>
+    <!-- ============ NAVEGACIÓN POR HERRAMIENTAS (desplegable) ============ -->
+    <div id="navBar" class="sticky z-30 mb-5" style="top: max(0.5rem, env(safe-area-inset-top));">
+      <div class="glass !rounded-2xl p-2 flex items-center gap-2">
+        <button id="secPrev" class="nav-arrow" aria-label="Herramienta anterior">‹</button>
+        <div class="relative flex-1 min-w-0">
+          <label for="secSelect" class="sr-only">Herramienta</label>
+          <select id="secSelect" class="field sec-select !py-3 !text-[1rem] font-semibold">
+            <option value="diag">⚡  Diagnóstico rápido</option>
+            <option value="strings">🔌  Strings / MPPT</option>
+            <option value="voc">🔋  Multímetro Voc/Isc</option>
+            <option value="energy">📅  Energía y lluvia</option>
+            <option value="check">✅  Checklist</option>
+            <option value="report">📷  Informe PDF</option>
+            <option value="history">📈  Historial</option>
+          </select>
+        </div>
+        <button id="secNext" class="nav-arrow" aria-label="Herramienta siguiente">›</button>
+      </div>
+      <button id="ctxBar" class="hidden mt-2 w-full glass !rounded-xl px-3 py-2 items-center gap-2.5 text-left text-xs">
+        <i id="ctxLed" class="led shrink-0"></i>
+        <span id="ctxText" class="flex-1 min-w-0 truncate font-mono text-slate-300">Sin planta</span>
+        <span class="text-cyan-300 shrink-0">Editar ›</span>
+      </button>
+    </div>
 
-    <main class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <main>
+      <!-- ======================= 1. DIAGNÓSTICO RÁPIDO ======================= -->
+      <section class="sec" data-sec="diag">
+      <!-- ============ SELECTOR DE MODO ============ -->
+      <nav class="glass p-1.5 flex gap-1 mb-5 w-full sm:w-fit" role="tablist">
+        <button class="tab active flex-1 sm:flex-none" data-mode="field" role="tab">📍 Inspección en campo</button>
+        <button class="tab flex-1 sm:flex-none" data-mode="remote" role="tab">🛰️ Plantas remotas</button>
+      </nav>
 
-      <!-- ============ COLUMNA IZQUIERDA: CONFIGURACIÓN ============ -->
-      <section class="lg:col-span-4 space-y-5">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-4 space-y-5">
 
-        <!-- Panel remoto: plantas guardadas -->
-        <div id="remotePanel" class="glass p-5 hidden">
-          <span class="corner tl"></span><span class="corner br"></span>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="hud-title">Plantas guardadas</h2>
-            <span id="plantCount" class="font-mono text-xs text-slate-400">0</span>
+          <!-- Panel remoto: plantas guardadas -->
+          <div id="remotePanel" class="glass p-5 hidden">
+            <span class="corner tl"></span><span class="corner br"></span>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="hud-title">Plantas guardadas</h2>
+              <span id="plantCount" class="font-mono text-xs text-slate-400">0</span>
+            </div>
+            <label class="label" for="plantSelect">Seleccionar planta</label>
+            <select id="plantSelect" class="field mb-3"></select>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btnNewPlant" class="btn-ghost">＋ Nueva planta</button>
+              <button id="btnDeletePlant" class="btn-danger">Borrar planta</button>
+            </div>
+            <p id="plantEmpty" class="text-xs text-slate-400 mt-3 hidden">
+              Aún no tienes plantas. Rellena los datos de abajo y pulsa <em>Guardar planta</em>, o
+              <button id="btnDemoPlant" class="text-cyan-300 underline underline-offset-2">carga una planta demo</button>.
+            </p>
           </div>
-          <label class="label" for="plantSelect">Seleccionar planta</label>
-          <select id="plantSelect" class="field mb-3"></select>
-          <div class="grid grid-cols-2 gap-2">
-            <button id="btnNewPlant" class="btn-ghost">＋ Nueva planta</button>
-            <button id="btnDeletePlant" class="btn-danger">Borrar planta</button>
+
+          <!-- Configuración de la planta / punto de inspección -->
+          <div class="glass p-5" id="configCard">
+            <span class="corner tl"></span><span class="corner br"></span>
+            <h2 class="hud-title mb-4" id="configTitle">Punto de inspección</h2>
+
+            <!-- Nombre (visible en remoto o al guardar) -->
+            <div class="mb-4">
+              <label class="label" for="plantName">Nombre de la planta</label>
+              <input id="plantName" class="field" type="text" maxlength="60" placeholder="Ej. Nave Industrial Badalona" />
+            </div>
+
+            <!-- GPS -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between">
+                <span class="label">Coordenadas</span>
+                <span id="gpsAcc" class="text-[0.65rem] font-mono text-slate-500"></span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <input id="lat" class="field" type="number" step="0.00001" min="-90" max="90" placeholder="Latitud" inputmode="decimal" />
+                <input id="lon" class="field" type="number" step="0.00001" min="-180" max="180" placeholder="Longitud" inputmode="decimal" />
+              </div>
+              <button id="btnGps" class="btn-ghost w-full mt-2 flex items-center justify-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
+                Obtener mi posición GPS
+              </button>
+              <p class="text-[0.65rem] text-slate-500 mt-1">Consejo: puedes pegar «41.45, 2.24» de Google Maps en el campo de latitud.</p>
+            </div>
+
+            <!-- kWp -->
+            <div class="mb-4">
+              <label class="label" for="kwp">Potencia instalada (kWp)</label>
+              <input id="kwp" class="field text-lg" type="number" step="0.01" min="0.1" placeholder="10.00" inputmode="decimal" />
+            </div>
+
+            <!-- Límite AC del inversor (clipping) -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between">
+                <label class="label" for="pac">Potencia AC inversor (kW) <span class="normal-case text-slate-500">· opcional</span></label>
+                <span id="dcacRatio" class="text-[0.65rem] font-mono text-slate-500"></span>
+              </div>
+              <input id="pac" class="field" type="number" step="0.1" min="0.1" placeholder="Nominal o límite de inyección" inputmode="decimal" />
+              <p class="text-[0.65rem] text-slate-500 mt-1">Evita falsas alarmas cuando el inversor limita (clipping por sobredimensionado DC/AC o inyección cero).</p>
+            </div>
+
+            <!-- Orientación -->
+            <div class="mb-4">
+              <label class="label" for="orientSelect">Orientación</label>
+              <div class="grid grid-cols-[1fr_6.5rem] gap-2">
+                <select id="orientSelect" class="field">
+                  <option value="0">Sur</option>
+                  <option value="-45">Sureste</option>
+                  <option value="45">Suroeste</option>
+                  <option value="-90">Este</option>
+                  <option value="90">Oeste</option>
+                  <option value="custom">Personalizada</option>
+                </select>
+                <div class="relative">
+                  <input id="azimuth" class="field pr-6" type="number" step="1" min="-180" max="180" value="0" inputmode="numeric" title="Azimut: 0° = Sur, −90° = Este, +90° = Oeste" />
+                  <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm">°</span>
+                </div>
+              </div>
+              <p class="text-[0.65rem] text-slate-500 mt-1">Azimut fino: 0° Sur · −90° Este · +90° Oeste (convenio PVGIS/Open-Meteo).</p>
+
+            </div>
+
+            <!-- Inclinación -->
+            <div class="mb-5">
+              <label class="label">Inclinación</label>
+              <div class="grid grid-cols-3 gap-2 mb-2" id="tiltChips">
+                <button class="chip" data-tilt="10">Plana<br><span class="font-mono text-cyan-300">10°</span></button>
+                <button class="chip active" data-tilt="15">Coplanar<br><span class="font-mono text-cyan-300">15°</span></button>
+                <button class="chip" data-tilt="30">Triángulo<br><span class="font-mono text-cyan-300">30°</span></button>
+              </div>
+              <div class="grid grid-cols-[6.5rem_1fr] gap-2">
+                <div class="relative">
+                  <input id="tilt" class="field pr-6" type="number" step="1" min="0" max="90" value="15" inputmode="numeric" />
+                  <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm">°</span>
+                </div>
+                <button id="btnLevel" class="btn-ghost flex items-center justify-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="20" height="6" rx="2"/><circle cx="12" cy="12" r="1.5"/></svg>
+                  Usar nivel del móvil
+                </button>
+              </div>
+              <!-- Lectura en vivo del inclinómetro -->
+              <div id="levelPanel" class="hidden mt-3 rounded-xl border border-cyan-400/40 bg-cyan-500/5 p-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-[0.65rem] uppercase tracking-widest text-cyan-300">Inclinómetro en vivo</p>
+                    <p class="text-xs text-slate-400">Apoya el móvil plano sobre el panel</p>
+                  </div>
+                  <p class="metric-value text-3xl" id="levelValue">--°</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-3">
+                  <button id="btnLevelFix" class="btn-primary !py-2 text-xs">Fijar valor</button>
+                  <button id="btnLevelCancel" class="btn-ghost text-xs">Cancelar</button>
+                </div>
+              </div>
+            </div>
+
+            <button id="btnAnalyze" class="btn-primary w-full flex items-center justify-center gap-2 text-sm">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span id="btnAnalyzeText">Analizar irradiancia</span>
+            </button>
+            <button id="btnSavePlant" class="btn-ghost w-full mt-2">💾 Guardar planta</button>
           </div>
-          <p id="plantEmpty" class="text-xs text-slate-400 mt-3 hidden">
-            Aún no tienes plantas. Rellena los datos de abajo y pulsa <em>Guardar planta</em>, o
-            <button id="btnDemoPlant" class="text-cyan-300 underline underline-offset-2">carga una planta demo</button>.
-          </p>
         </div>
 
-        <!-- Configuración de la planta / punto de inspección -->
-        <div class="glass p-5" id="configCard">
-          <span class="corner tl"></span><span class="corner br"></span>
-          <h2 class="hud-title mb-4" id="configTitle">Punto de inspección</h2>
-
-          <!-- Nombre (visible en remoto o al guardar) -->
-          <div class="mb-4">
-            <label class="label" for="plantName">Nombre de la planta</label>
-            <input id="plantName" class="field" type="text" maxlength="60" placeholder="Ej. Nave Industrial Badalona" />
-          </div>
-
-          <!-- GPS -->
-          <div class="mb-4">
-            <div class="flex items-center justify-between">
-              <span class="label">Coordenadas</span>
-              <span id="gpsAcc" class="text-[0.65rem] font-mono text-slate-500"></span>
+          <div class="lg:col-span-8 space-y-5" id="dashboard">
+          <!-- Resumen PR + comparador -->
+          <div class="glass p-5 sm:p-6 overflow-hidden" id="prCard">
+            <span class="corner tl"></span><span class="corner br"></span>
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="hud-title">Diagnóstico de rendimiento</h2>
+              <span id="siteLabel" class="text-xs font-mono text-slate-400 truncate max-w-[55%] text-right">Sin datos</span>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <input id="lat" class="field" type="number" step="0.00001" min="-90" max="90" placeholder="Latitud" inputmode="decimal" />
-              <input id="lon" class="field" type="number" step="0.00001" min="-180" max="180" placeholder="Longitud" inputmode="decimal" />
-            </div>
-            <button id="btnGps" class="btn-ghost w-full mt-2 flex items-center justify-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
-              Obtener mi posición GPS
-            </button>
-            <p class="text-[0.65rem] text-slate-500 mt-1">Consejo: puedes pegar «41.45, 2.24» de Google Maps en el campo de latitud.</p>
-          </div>
 
-          <!-- kWp -->
-          <div class="mb-4">
-            <label class="label" for="kwp">Potencia instalada (kWp)</label>
-            <input id="kwp" class="field text-lg" type="number" step="0.01" min="0.1" placeholder="10.00" inputmode="decimal" />
-          </div>
-
-          <!-- Límite AC del inversor (clipping) -->
-          <div class="mb-4">
-            <div class="flex items-center justify-between">
-              <label class="label" for="pac">Potencia AC inversor (kW) <span class="normal-case text-slate-500">· opcional</span></label>
-              <span id="dcacRatio" class="text-[0.65rem] font-mono text-slate-500"></span>
-            </div>
-            <input id="pac" class="field" type="number" step="0.1" min="0.1" placeholder="Nominal o límite de inyección" inputmode="decimal" />
-            <p class="text-[0.65rem] text-slate-500 mt-1">Evita falsas alarmas cuando el inversor limita (clipping por sobredimensionado DC/AC o inyección cero).</p>
-          </div>
-
-          <!-- Orientación -->
-          <div class="mb-4">
-            <label class="label" for="orientSelect">Orientación</label>
-            <div class="grid grid-cols-[1fr_6.5rem] gap-2">
-              <select id="orientSelect" class="field">
-                <option value="0">Sur</option>
-                <option value="-45">Sureste</option>
-                <option value="45">Suroeste</option>
-                <option value="-90">Este</option>
-                <option value="90">Oeste</option>
-                <option value="custom">Personalizada</option>
-              </select>
-              <div class="relative">
-                <input id="azimuth" class="field pr-6" type="number" step="1" min="-180" max="180" value="0" inputmode="numeric" title="Azimut: 0° = Sur, −90° = Este, +90° = Oeste" />
-                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm">°</span>
-              </div>
-            </div>
-            <p class="text-[0.65rem] text-slate-500 mt-1">Azimut fino: 0° Sur · −90° Este · +90° Oeste (convenio PVGIS).</p>
-
-          </div>
-
-          <!-- Inclinación -->
-          <div class="mb-5">
-            <label class="label">Inclinación</label>
-            <div class="grid grid-cols-3 gap-2 mb-2" id="tiltChips">
-              <button class="chip" data-tilt="10">Plana<br><span class="font-mono text-cyan-300">10°</span></button>
-              <button class="chip active" data-tilt="15">Coplanar<br><span class="font-mono text-cyan-300">15°</span></button>
-              <button class="chip" data-tilt="30">Triángulo<br><span class="font-mono text-cyan-300">30°</span></button>
-            </div>
-            <div class="grid grid-cols-[6.5rem_1fr] gap-2">
-              <div class="relative">
-                <input id="tilt" class="field pr-6" type="number" step="1" min="0" max="90" value="15" inputmode="numeric" />
-                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm">°</span>
-              </div>
-              <button id="btnLevel" class="btn-ghost flex items-center justify-center gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="20" height="6" rx="2"/><circle cx="12" cy="12" r="1.5"/></svg>
-                Usar nivel del móvil
-              </button>
-            </div>
-            <!-- Lectura en vivo del inclinómetro -->
-            <div id="levelPanel" class="hidden mt-3 rounded-xl border border-cyan-400/40 bg-cyan-500/5 p-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-[0.65rem] uppercase tracking-widest text-cyan-300">Inclinómetro en vivo</p>
-                  <p class="text-xs text-slate-400">Apoya el móvil plano sobre el panel</p>
+            <div class="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 items-center">
+              <!-- Anillo -->
+              <div class="flex items-center justify-center gap-5">
+                <div class="relative w-[190px] h-[190px]">
+                  <svg viewBox="0 0 200 200" class="w-full h-full -rotate-90" overflow="visible">
+                    <circle cx="100" cy="100" r="84" fill="none" class="ring-track" stroke-width="12"/>
+                    <circle cx="100" cy="100" r="96" fill="none" stroke-width="2" stroke="rgba(34,211,238,.18)" stroke-dasharray="2 6"/>
+                    <circle id="ringBar" cx="100" cy="100" r="84" fill="none" class="ring-bar" stroke-width="12" stroke-linecap="round" stroke="#22d3ee" style="color:#22d3ee" stroke-dasharray="527.79" stroke-dashoffset="527.79"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span class="text-[0.6rem] tracking-[0.2em] text-slate-400 uppercase">Rendimiento</span>
+                    <span id="ringValue" class="metric-value text-4xl">--</span>
+                    <span class="text-[0.6rem] tracking-widest text-slate-500 uppercase">vs. esperado</span>
+                    <span class="text-[0.6rem] font-mono text-slate-500 mt-1" title="Performance Ratio IEC 61724 (sin corregir por temperatura ni pérdidas)">PR <span id="mPR">--</span></span>
+                  </div>
                 </div>
-                <p class="metric-value text-3xl" id="levelValue">--°</p>
+                <!-- Semáforo -->
+                <div class="flex flex-col gap-2.5 p-2.5 rounded-2xl bg-slate-950/70 border border-slate-700/70">
+                  <i id="lampRed" class="tl-lamp"></i>
+                  <i id="lampAmber" class="tl-lamp"></i>
+                  <i id="lampGreen" class="tl-lamp"></i>
+                </div>
               </div>
-              <div class="grid grid-cols-2 gap-2 mt-3">
-                <button id="btnLevelFix" class="btn-primary !py-2 text-xs">Fijar valor</button>
-                <button id="btnLevelCancel" class="btn-ghost text-xs">Cancelar</button>
+
+              <!-- Comparador -->
+              <div>
+                <div id="statusBadge" class="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60 mb-3">
+                  <i class="led"></i><span id="statusText">Esperando análisis</span>
+                </div>
+                <p id="statusHint" class="text-sm text-slate-400 mb-4">Pulsa <em>Analizar irradiancia</em> e introduce la potencia que marca el inversor.</p>
+
+                <label class="label" for="realKw">Producción real leída en inversor / portal</label>
+                <div class="flex gap-2">
+                  <div class="relative flex-1">
+                    <input id="realKw" class="field text-2xl !py-3 pr-12" type="number" step="0.01" min="0" placeholder="0.00" inputmode="decimal" />
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-mono">kW</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                  <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
+                    <p class="text-[0.6rem] uppercase tracking-widest text-slate-400">Desviación</p>
+                    <p class="metric-value text-xl" id="mDev">--</p>
+                  </div>
+                  <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
+                    <p class="text-[0.6rem] uppercase tracking-widest text-slate-400">Pérdida</p>
+                    <p class="metric-value text-xl" id="mLoss">--</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <button id="btnAnalyze" class="btn-primary w-full flex items-center justify-center gap-2 text-sm">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            <span id="btnAnalyzeText">Analizar irradiancia</span>
-          </button>
-          <button id="btnSavePlant" class="btn-ghost w-full mt-2">💾 Guardar planta</button>
+          <!-- Métricas -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4" id="metricsGrid">
+            <!-- generadas por JS -->
+          </div>
+
+          <!-- Gráfico curva diaria -->
+          <div class="glass p-5">
+            <span class="corner tl"></span><span class="corner br"></span>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <h2 class="hud-title">Curva de potencia de hoy</h2>
+              <div class="flex flex-wrap gap-3 text-[0.65rem] font-mono text-slate-300">
+                <span class="flex items-center gap-1.5"><i class="inline-block w-4 border-t-2 border-dashed border-cyan-300"></i>Cielo despejado</span>
+                <span class="flex items-center gap-1.5"><i class="inline-block w-4 h-2 rounded-sm bg-emerald-400/60"></i>Previsión real</span>
+                <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full bg-amber-300"></i>Lectura inversor</span>
+              </div>
+            </div>
+            <div id="chart" class="w-full h-[240px] sm:h-[280px] text-slate-500 text-sm flex items-center justify-center">Ejecuta un análisis para ver la curva.</div>
+          </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <button class="btn-ghost !py-3 text-sm" data-goto="strings">🔌 Strings</button>
+              <button class="btn-ghost !py-3 text-sm" data-goto="voc">🔋 Multímetro</button>
+              <button class="btn-ghost !py-3 text-sm" data-goto="energy">📅 Energía del día</button>
+              <button class="btn-ghost !py-3 text-sm" data-goto="check">✅ Checklist</button>
+            </div>
+            <button class="btn-primary w-full !py-3 text-sm" data-goto="report">📷 Crear informe con fotos →</button>
+          </div>
         </div>
       </section>
 
-      <!-- ============ COLUMNA DERECHA: DASHBOARD ============ -->
-      <section class="lg:col-span-8 space-y-5" id="dashboard">
-
-        <!-- Resumen PR + comparador -->
-        <div class="glass p-5 sm:p-6 overflow-hidden" id="prCard">
-          <span class="corner tl"></span><span class="corner br"></span>
-          <div class="flex items-center justify-between mb-2">
-            <h2 class="hud-title">Diagnóstico de rendimiento</h2>
-            <span id="siteLabel" class="text-xs font-mono text-slate-400 truncate max-w-[55%] text-right">Sin datos</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 items-center">
-            <!-- Anillo -->
-            <div class="flex items-center justify-center gap-5">
-              <div class="relative w-[190px] h-[190px]">
-                <svg viewBox="0 0 200 200" class="w-full h-full -rotate-90" overflow="visible">
-                  <circle cx="100" cy="100" r="84" fill="none" class="ring-track" stroke-width="12"/>
-                  <circle cx="100" cy="100" r="96" fill="none" stroke-width="2" stroke="rgba(34,211,238,.18)" stroke-dasharray="2 6"/>
-                  <circle id="ringBar" cx="100" cy="100" r="84" fill="none" class="ring-bar" stroke-width="12" stroke-linecap="round" stroke="#22d3ee" style="color:#22d3ee" stroke-dasharray="527.79" stroke-dashoffset="527.79"/>
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span class="text-[0.6rem] tracking-[0.2em] text-slate-400 uppercase">Rendimiento</span>
-                  <span id="ringValue" class="metric-value text-4xl">--</span>
-                  <span class="text-[0.6rem] tracking-widest text-slate-500 uppercase">vs. esperado</span>
-                </div>
-              </div>
-              <!-- Semáforo -->
-              <div class="flex flex-col gap-2.5 p-2.5 rounded-2xl bg-slate-950/70 border border-slate-700/70">
-                <i id="lampRed" class="tl-lamp"></i>
-                <i id="lampAmber" class="tl-lamp"></i>
-                <i id="lampGreen" class="tl-lamp"></i>
-              </div>
-            </div>
-
-            <!-- Comparador -->
-            <div>
-              <div id="statusBadge" class="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60 mb-3">
-                <i class="led"></i><span id="statusText">Esperando análisis</span>
-              </div>
-              <p id="statusHint" class="text-sm text-slate-400 mb-4">Pulsa <em>Analizar irradiancia</em> e introduce la potencia que marca el inversor.</p>
-
-              <label class="label" for="realKw">Producción real leída en inversor / portal</label>
-              <div class="flex gap-2">
-                <div class="relative flex-1">
-                  <input id="realKw" class="field text-2xl !py-3 pr-12" type="number" step="0.01" min="0" placeholder="0.00" inputmode="decimal" />
-                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-mono">kW</span>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-3 gap-2 mt-4">
-                <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
-                  <p class="text-[0.6rem] uppercase tracking-widest text-slate-400">PR (IEC)</p>
-                  <p class="metric-value text-xl" id="mPR">--</p>
-                </div>
-                <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
-                  <p class="text-[0.6rem] uppercase tracking-widest text-slate-400">Desviación</p>
-                  <p class="metric-value text-xl" id="mDev">--</p>
-                </div>
-                <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
-                  <p class="text-[0.6rem] uppercase tracking-widest text-slate-400">Pérdida</p>
-                  <p class="metric-value text-xl" id="mLoss">--</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Métricas -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4" id="metricsGrid">
-          <!-- generadas por JS -->
-        </div>
-
-        <!-- Balance energético diario + lluvia -->
-        <div class="glass p-5" id="energyCard">
-          <span class="corner tl"></span><span class="corner br"></span>
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
-            <h2 class="hud-title">Balance energético diario</h2>
-            <span id="eSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Sin datos</span></span>
-          </div>
-          <p class="text-xs text-slate-400 mb-4">La energía del día compensa nubes pasajeras y lecturas puntuales: es el indicador más fiable para confirmar un problema.</p>
-          <div class="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-3 items-end mb-4">
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs font-mono" role="group" aria-label="Día">
-              <button class="eDay px-3 py-2.5" data-day="today">Hoy (hasta ahora)</button>
-              <button class="eDay px-3 py-2.5" data-day="yesterday">Ayer (completo)</button>
-            </div>
-            <div class="relative">
-              <label class="label" for="eReal">Energía leída en inversor / portal</label>
-              <input id="eReal" class="field pr-14" type="number" step="0.1" min="0" inputmode="decimal" placeholder="0.0" />
-              <span class="absolute right-3 bottom-3 text-slate-400 font-mono text-sm">kWh</span>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="eTiles"></div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3" id="rainTiles"></div>
-          <div id="eDiag" class="mt-3 space-y-2"></div>
-        </div>
-
+      <!-- ======================= 2. STRINGS ======================= -->
+      <section class="sec hidden max-w-4xl mx-auto space-y-5" data-sec="strings">
         <!-- Comparador de strings / MPPT -->
         <div class="glass p-5" id="stringsCard">
           <span class="corner tl"></span><span class="corner br"></span>
@@ -506,6 +588,10 @@
           <div id="strDiag" class="mt-3 space-y-2"></div>
         </div>
 
+      </section>
+
+      <!-- ======================= 3. MULTÍMETRO ======================= -->
+      <section class="sec hidden max-w-4xl mx-auto space-y-5" data-sec="voc">
         <!-- Comprobación con multímetro: Voc / Isc esperados -->
         <div class="glass p-5" id="vocCard">
           <span class="corner tl"></span><span class="corner br"></span>
@@ -553,20 +639,111 @@
           <div id="vocDiag" class="mt-3 space-y-2"></div>
         </div>
 
-        <!-- Gráfico curva diaria -->
-        <div class="glass p-5">
+      </section>
+
+      <!-- ======================= 4. ENERGÍA ======================= -->
+      <section class="sec hidden max-w-4xl mx-auto space-y-5" data-sec="energy">
+        <!-- Balance energético diario + lluvia -->
+        <div class="glass p-5" id="energyCard">
           <span class="corner tl"></span><span class="corner br"></span>
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <h2 class="hud-title">Curva de potencia de hoy</h2>
-            <div class="flex flex-wrap gap-3 text-[0.65rem] font-mono text-slate-300">
-              <span class="flex items-center gap-1.5"><i class="inline-block w-4 border-t-2 border-dashed border-cyan-300"></i>Cielo despejado</span>
-              <span class="flex items-center gap-1.5"><i class="inline-block w-4 h-2 rounded-sm bg-emerald-400/60"></i>Previsión real</span>
-              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full bg-amber-300"></i>Lectura inversor</span>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 class="hud-title">Balance energético diario</h2>
+            <span id="eSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Sin datos</span></span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">La energía del día compensa nubes pasajeras y lecturas puntuales: es el indicador más fiable para confirmar un problema.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-3 items-end mb-4">
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs font-mono" role="group" aria-label="Día">
+              <button class="eDay px-3 py-2.5" data-day="today">Hoy (hasta ahora)</button>
+              <button class="eDay px-3 py-2.5" data-day="yesterday">Ayer (completo)</button>
+            </div>
+            <div class="relative">
+              <label class="label" for="eReal">Energía leída en inversor / portal</label>
+              <input id="eReal" class="field pr-14" type="number" step="0.1" min="0" inputmode="decimal" placeholder="0.0" />
+              <span class="absolute right-3 bottom-3 text-slate-400 font-mono text-sm">kWh</span>
             </div>
           </div>
-          <div id="chart" class="w-full h-[240px] sm:h-[280px] text-slate-500 text-sm flex items-center justify-center">Ejecuta un análisis para ver la curva.</div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="eTiles"></div>
+          <div class="grid grid-cols-2 gap-3 mt-3" id="rainTiles"></div>
+          <div id="eDiag" class="mt-3 space-y-2"></div>
         </div>
 
+      </section>
+
+      <!-- ======================= 5. CHECKLIST ======================= -->
+      <section class="sec hidden max-w-4xl mx-auto space-y-5" data-sec="check">
+        <div class="glass p-5" id="checkCard">
+          <span class="corner tl"></span><span class="corner br"></span>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 class="hud-title">Checklist de mantenimiento preventivo</h2>
+            <span id="ckSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>0 / 0</span></span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Inspirado en IEC 62446-1 y buenas prácticas de O&amp;M. Marca cada punto; en los defectos añade una nota y una foto: todo pasa al informe PDF.</p>
+          <div class="h-2 rounded-full bg-slate-800 overflow-hidden mb-4"><div id="ckBar" class="h-full rounded-full transition-all duration-500" style="width:0;background:linear-gradient(90deg,#06b6d4,#10b981)"></div></div>
+          <div id="ckList" class="space-y-3"></div>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <button id="btnCkAllOk" class="btn-ghost !py-2 text-xs">✓ Marcar pendientes como OK</button>
+            <button id="btnCkReset" class="btn-danger !py-2 text-xs ml-auto">Reiniciar checklist</button>
+          </div>
+        </div>
+        <input id="ckPhotoInput" type="file" accept="image/*" capture="environment" class="hidden" />
+      </section>
+
+      <!-- ======================= 6. INFORME ======================= -->
+      <section class="sec hidden max-w-4xl mx-auto space-y-5" data-sec="report">
+        <div class="glass p-5" id="reportCard">
+          <span class="corner tl"></span><span class="corner br"></span>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 class="hud-title">Informe de inspección</h2>
+            <span id="repSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Borrador</span></span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">Genera un PDF profesional con todo lo medido en la visita: diagnóstico, strings, multímetro, energía, checklist y fotos con fecha y coordenadas.</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+            <div><label class="label" for="repTech">Técnico</label><input id="repTech" class="field" maxlength="60" placeholder="Nombre y apellidos" /></div>
+            <div><label class="label" for="repClient">Cliente / titular</label><input id="repClient" class="field" maxlength="80" placeholder="Empresa o propietario" /></div>
+            <div><label class="label" for="repCompany">Empresa mantenedora <span class="normal-case text-slate-500">· opcional</span></label><input id="repCompany" class="field" maxlength="80" placeholder="Tu empresa" /></div>
+            <div><label class="label" for="repNext">Próxima revisión</label>
+              <select id="repNext" class="field"><option value="">Sin indicar</option><option value="3">En 3 meses</option><option value="6">En 6 meses</option><option value="12">En 12 meses</option></select></div>
+          </div>
+          <label class="label" for="repNotes">Observaciones y trabajos realizados</label>
+          <textarea id="repNotes" class="field min-h-[110px] !font-sans !text-sm" maxlength="3000" placeholder="Ej.: Limpieza de módulos, reapriete de bornas del cuadro AC, sustitución del fusible del string 3…"></textarea>
+
+          <div id="repIncludes" class="flex flex-wrap gap-1.5 mt-4"></div>
+
+          <!-- Fotos -->
+          <div class="flex flex-wrap items-center justify-between gap-2 mt-5 mb-2">
+            <p class="text-[0.65rem] uppercase tracking-widest text-emerald-300">Fotos de la visita <span id="phCount" class="text-slate-400"></span></p>
+            <div class="flex gap-2">
+              <label class="btn-primary !py-2 !px-3 text-xs cursor-pointer">📷 Hacer foto<input id="phCamera" type="file" accept="image/*" capture="environment" class="hidden" /></label>
+              <label class="btn-ghost !py-2 !px-3 text-xs cursor-pointer">🖼 Galería<input id="phGallery" type="file" accept="image/*" multiple class="hidden" /></label>
+            </div>
+          </div>
+          <p class="text-[0.65rem] text-slate-500 mb-3">Se estampa fecha, hora, coordenadas y planta en cada foto (como las cámaras de obra) y se reduce su tamaño para no llenar el móvil.</p>
+          <div id="phGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+            <button id="btnPdf" class="btn-primary !py-3.5 text-sm flex items-center justify-center gap-2">📄 Descargar informe PDF</button>
+            <button id="btnPdfShare" class="btn-ghost !py-3.5 text-sm flex items-center justify-center gap-2">📤 Compartir PDF</button>
+          </div>
+          <button id="btnNewVisit" class="btn-danger w-full !py-2 text-xs mt-3">🗑 Nueva inspección (vacía checklist, fotos y observaciones de esta planta)</button>
+        </div>
+        <p class="text-[0.65rem] uppercase tracking-widest text-slate-500 mt-2">Resumen rápido en texto</p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button id="btnShare" class="btn-primary flex-1 flex items-center justify-center gap-2 text-sm">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Compartir informe rápido
+          </button>
+          <button id="btnWhatsapp" class="btn-ghost sm:w-auto flex items-center justify-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.8 11.8 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.6 4.1 1.6 5.9L0 24l6.3-1.7a11.9 11.9 0 0 0 5.7 1.5c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.2-3.4-8.4zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4a9.9 9.9 0 1 1 8.3 4.6zm5.4-7.4c-.3-.1-1.8-.9-2-1s-.5-.1-.7.1-.8 1-1 1.2-.4.2-.7.1a8.1 8.1 0 0 1-4-3.5c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6a1.1 1.1 0 0 0-.8.4 3.4 3.4 0 0 0-1 2.5c0 1.5 1.1 2.9 1.2 3.1s2.1 3.2 5.1 4.5c1.9.8 2.6.9 3.6.7.6-.1 1.8-.7 2-1.4s.3-1.3.2-1.4-.3-.2-.6-.3z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+
+        <button id="btnHistSave" class="btn-ghost w-full !py-3 flex items-center justify-center gap-2">💾 Guardar diagnóstico en el historial</button>
+      </section>
+
+      <!-- ======================= 7. HISTORIAL ======================= -->
+      <section class="sec hidden max-w-4xl mx-auto space-y-5" data-sec="history">
         <!-- Historial por planta -->
         <div class="glass p-5" id="historyCard">
           <span class="corner tl"></span><span class="corner br"></span>
@@ -583,25 +760,14 @@
           </div>
         </div>
 
-        <!-- Acciones -->
-        <button id="btnHistSave" class="btn-ghost w-full !py-3 flex items-center justify-center gap-2">💾 Guardar diagnóstico en el historial</button>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <button id="btnShare" class="btn-primary flex-1 flex items-center justify-center gap-2 text-sm">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Compartir informe rápido
-          </button>
-          <button id="btnWhatsapp" class="btn-ghost sm:w-auto flex items-center justify-center gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.8 11.8 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.6 4.1 1.6 5.9L0 24l6.3-1.7a11.9 11.9 0 0 0 5.7 1.5c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.2-3.4-8.4zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4a9.9 9.9 0 1 1 8.3 4.6zm5.4-7.4c-.3-.1-1.8-.9-2-1s-.5-.1-.7.1-.8 1-1 1.2-.4.2-.7.1a8.1 8.1 0 0 1-4-3.5c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6a1.1 1.1 0 0 0-.8.4 3.4 3.4 0 0 0-1 2.5c0 1.5 1.1 2.9 1.2 3.1s2.1 3.2 5.1 4.5c1.9.8 2.6.9 3.6.7.6-.1 1.8-.7 2-1.4s.3-1.3.2-1.4-.3-.2-.6-.3z"/></svg>
-            WhatsApp
-          </button>
-        </div>
+      </section>
 
+      <div class="max-w-4xl mx-auto mt-6">
         <p class="text-[0.65rem] text-slate-500 leading-relaxed" id="sourcesNote">
           Datos: <a class="underline hover:text-cyan-300" href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0) ·
-          <a class="underline hover:text-cyan-300" href="https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en" target="_blank" rel="noopener">PVGIS © Unión Europea</a> ·
-          Modelo astronómico local de cielo despejado. Valores orientativos para diagnóstico rápido; no sustituyen una medición con piranómetro calibrado.
+          modelo de cielo despejado Ineichen-Perez calculado en el propio móvil. Valores orientativos para diagnóstico rápido; no sustituyen una medición con piranómetro calibrado.
         </p>
-      </section>
+      </div>
     </main>
 
     <footer class="mt-10 text-center text-[0.7rem] text-slate-500 font-mono tracking-wider">
@@ -624,31 +790,21 @@
         <div><label class="label" for="setGamma">Coef. Pmax (%/°C)</label><input id="setGamma" class="field" type="number" step="0.01" max="0" min="-1" /></div>
         <div><label class="label" for="setNoct">NOCT (°C)</label><input id="setNoct" class="field" type="number" step="1" min="30" max="60" /></div>
         <div><label class="label" for="setAlbedo">Albedo suelo</label><input id="setAlbedo" class="field" type="number" step="0.05" min="0" max="1" /></div>
-        <div class="col-span-2">
-          <label class="label" for="setPvgis">Versión API PVGIS</label>
-          <select id="setPvgis" class="field">
-            <option value="v5_2">PVGIS v5.2</option>
-            <option value="v5_3">PVGIS v5.3</option>
-          </select>
-        </div>
       </div>
 
-      <h3 class="text-xs uppercase tracking-widest text-emerald-300 mb-1">Alertas por Telegram</h3>
-      <p class="text-xs text-slate-400 mb-3">Aviso silencioso a tu móvil si las APIs públicas fallan o devuelven 429. El token se guarda <strong>solo en este navegador</strong>, nunca en el código publicado.</p>
-      <label class="flex items-center gap-3 mb-3 cursor-pointer select-none">
-        <input id="setTgEnabled" type="checkbox" class="w-5 h-5 accent-cyan-400" />
-        <span class="text-sm">Activar alertas</span>
+
+      <h3 class="text-xs uppercase tracking-widest text-emerald-300 mb-3">Pantalla</h3>
+      <label class="flex items-center gap-3 mb-6 cursor-pointer select-none">
+        <input id="setContrast" type="checkbox" class="w-5 h-5 accent-cyan-400" />
+        <span class="text-sm">Alto contraste <span class="text-slate-400">(recomendado a pleno sol)</span></span>
       </label>
-      <div class="space-y-3 mb-3">
-        <div><label class="label" for="setTgToken">BOT_TOKEN</label><input id="setTgToken" class="field text-sm" type="password" autocomplete="off" placeholder="123456789:AA..." /></div>
-        <div><label class="label" for="setTgChat">CHAT_ID</label><input id="setTgChat" class="field text-sm" type="text" autocomplete="off" placeholder="123456789" /></div>
-      </div>
-      <button id="btnTgTest" class="btn-ghost w-full mb-6">Enviar mensaje de prueba</button>
 
-      <h3 class="text-xs uppercase tracking-widest text-emerald-300 mb-3">Datos locales</h3>
+      <h3 class="text-xs uppercase tracking-widest text-emerald-300 mb-1">Copia de seguridad</h3>
+      <p class="text-xs text-slate-400 mb-3">Todo se guarda solo en este navegador. Haz una copia de vez en cuando: incluye plantas, módulos, strings, historial, checklists y fotos.</p>
       <div class="grid grid-cols-2 gap-2 mb-6">
-        <button id="btnExport" class="btn-ghost">Exportar plantas</button>
-        <label class="btn-ghost text-center cursor-pointer">Importar plantas<input id="fileImport" type="file" accept="application/json" class="hidden" /></label>
+        <button id="btnExport" class="btn-ghost">⬇ Crear copia</button>
+        <label class="btn-ghost text-center cursor-pointer">⬆ Restaurar<input id="fileImport" type="file" accept="application/json,.json" class="hidden" /></label>
+        <p id="backupInfo" class="col-span-2 text-[0.65rem] font-mono text-slate-500"></p>
         <button id="btnPerms" class="btn-ghost col-span-2">🔐 Revisar permisos del móvil</button>
         <button id="btnClearCache" class="btn-danger col-span-2">Vaciar caché de APIs</button>
       </div>
@@ -731,26 +887,12 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '1.5.0';
+const APP_VERSION = '2.0.0';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
-/**
- * Alertas por Telegram (opcional, "lanzar y olvidar").
- * ⚠️ En GitHub Pages el código es PÚBLICO: NO escribas aquí tu token real.
- * Configúralo desde ⚙️ Ajustes; se guarda solo en el localStorage de tu navegador.
- * (Si aun así lo pones aquí, tiene prioridad lo guardado en Ajustes.)
- */
-const TELEGRAM_CONFIG = {
-  enabled: false,
-  BOT_TOKEN: '',
-  CHAT_ID: '',
-  throttleMinutes: 10, // no repetir la misma alerta más de una vez cada N minutos
-};
 
 const API = {
   openMeteo: 'https://api.open-meteo.com/v1/forecast',
-  pvgis: (ver) => `https://re.jrc.ec.europa.eu/api/${ver}`,
-  telegram: (token) => `https://api.telegram.org/bot${token}/sendMessage`,
 };
 
 const DEFAULT_SETTINGS = {
@@ -758,15 +900,12 @@ const DEFAULT_SETTINGS = {
   gamma: -0.35,      // %/°C coeficiente de temperatura de Pmax
   noct: 45,          // °C
   albedo: 0.2,
-  pvgisVersion: 'v5_2',
-  tgEnabled: TELEGRAM_CONFIG.enabled,
-  tgToken: TELEGRAM_CONFIG.BOT_TOKEN,
-  tgChat: TELEGRAM_CONFIG.CHAT_ID,
+  contrast: false,   // modo alto contraste (para leer a pleno sol)
 };
 
 const THRESHOLDS = { green: 0.85, amber: 0.70 };
 const METEO_CACHE_MIN = 5;
-const LS = { settings: 'syp_settings', plants: 'syp_plants', last: 'syp_last', pvgis: 'syp_pvgis_', tg: 'syp_tg_last' };
+const LS = { settings: 'syp_settings', plants: 'syp_plants', last: 'syp_last' };
 
 /* ------------------------------------------------------------------
  * 2. UTILIDADES
@@ -787,6 +926,7 @@ const store = {
 };
 
 let settings = { ...DEFAULT_SETTINGS, ...store.get(LS.settings, {}) };
+['pvgisVersion', 'tgEnabled', 'tgToken', 'tgChat'].forEach((k) => delete settings[k]); // restos de v1.x
 
 function toast(msg, type = 'info', ms = 3500) {
   const colors = { info: 'border-cyan-400/50 text-cyan-100', ok: 'border-emerald-400/50 text-emerald-100', warn: 'border-amber-400/50 text-amber-100', err: 'border-red-400/50 text-red-100' };
@@ -923,38 +1063,11 @@ async function fetchJSON(url, { api, timeout = 9000, retries = 1 } = {}) {
   }
 }
 
-/* ------------------------------------------------------------------
- * 5. TELEGRAM (lanzar y olvidar)
- * ------------------------------------------------------------------ */
-function notifyTelegram(kind, detail, { force = false } = {}) {
-  try {
-    const token = settings.tgToken || TELEGRAM_CONFIG.BOT_TOKEN;
-    const chat = settings.tgChat || TELEGRAM_CONFIG.CHAT_ID;
-    if (!(settings.tgEnabled || force) || !token || !chat) return;
-    const last = store.get(LS.tg, {});
-    const now = Date.now();
-    if (!force && last[kind] && now - last[kind] < TELEGRAM_CONFIG.throttleMinutes * 60000) return;
-    last[kind] = now; store.set(LS.tg, last);
-    const text = `⚠️ SolarYield Pro · Alerta API\n• Tipo: ${kind}\n• Detalle: ${detail}\n• Hora: ${new Date().toLocaleString('es-ES')}\n• Origen: ${location.host || 'local'}`;
-    // Petición "simple" con no-cors: no requiere preflight y no bloquea la app
-    fetch(API.telegram(token), {
-      method: 'POST', mode: 'no-cors', keepalive: true,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ chat_id: chat, text, disable_notification: 'false' }),
-    }).catch(() => {});
-  } catch { /* nunca romper la app por una alerta */ }
-}
-
-function reportApiError(err) {
-  const kind = err.status === 429 ? `${err.api} 429 RATE LIMIT` : `${err.api} FALLO`;
-  notifyTelegram(kind, `${err.message}${err.status ? ' · HTTP ' + err.status : ''}`);
-}
 
 /* ------------------------------------------------------------------
- * 6. APIS PÚBLICAS
+ * 5. API PÚBLICA (Open-Meteo)
  * ------------------------------------------------------------------ */
 const meteoCache = new Map();
-let pvgisBlocked = false; // PVGIS no envía cabeceras CORS: si el navegador lo bloquea, no insistimos
 
 async function getMeteo(cfg) {
   const key = [cfg.lat.toFixed(3), cfg.lon.toFixed(3), cfg.tilt, cfg.azimuth].join('|');
@@ -970,43 +1083,6 @@ async function getMeteo(cfg) {
   return data;
 }
 
-/** PVGIS DRcalc: perfil diario medio del mes con irradiancia de cielo despejado en el plano. Se cachea (no cambia). */
-async function getPvgis(cfg, date) {
-  const month = date.getUTCMonth() + 1;
-  const key = LS.pvgis + [settings.pvgisVersion, cfg.lat.toFixed(2), cfg.lon.toFixed(2), cfg.tilt, cfg.azimuth, month].join('_');
-  const cached = store.get(key, null);
-  if (cached) return cached;
-  if (pvgisBlocked) { const e = new ApiError('PVGIS', 0, 'No accesible desde el navegador (CORS)'); e.cors = true; throw e; }
-  const url = `${API.pvgis(settings.pvgisVersion)}/DRcalc?lat=${cfg.lat}&lon=${cfg.lon}&month=${month}` +
-    `&angle=${cfg.tilt}&aspect=${cfg.azimuth}&global=1&clearsky=1&showtemperatures=1&outputformat=json`;
-  let data;
-  try { data = await fetchJSON(url, { api: 'PVGIS', timeout: 12000, retries: 0 }); }
-  catch (e) { if (e.cors) pvgisBlocked = true; throw e; } // no reintentar en esta sesión
-  const rows = data?.outputs?.daily_profile;
-  if (!Array.isArray(rows) || !rows.length) throw new ApiError('PVGIS', 0, 'Respuesta inesperada');
-  const csKey = Object.keys(rows[0]).find((k) => /cs/i.test(k) && /G/.test(k));
-  if (!csKey) throw new ApiError('PVGIS', 0, 'Sin datos de cielo despejado');
-  const profile = rows.map((r) => {
-    const [hh, mm] = String(r.time).split(':').map(Number);
-    return { h: hh + (mm || 0) / 60, cs: Number(r[csKey]) || 0, t2m: r.T2m != null ? Number(r.T2m) : null };
-  }).sort((a, b) => a.h - b.h);
-  store.set(key, profile);
-  return profile;
-}
-
-/** Interpolación lineal circular en el perfil horario (horas UTC). */
-function interpProfile(profile, hUtc, field = 'cs') {
-  const pts = profile.filter((p) => p[field] != null);
-  if (!pts.length) return null;
-  const x = ((hUtc % 24) + 24) % 24;
-  for (let i = 0; i < pts.length; i++) {
-    const a = pts[i], b = pts[(i + 1) % pts.length];
-    const bh = i + 1 < pts.length ? b.h : b.h + 24;
-    const xx = x < a.h && i === pts.length - 1 ? x + 24 : x;
-    if (xx >= a.h && xx <= bh) { const k = (xx - a.h) / (bh - a.h || 1); return a[field] + (b[field] - a[field]) * k; }
-  }
-  return pts[0][field];
-}
 
 /* ------------------------------------------------------------------
  * 7. ESTADO + LECTURA DEL FORMULARIO
@@ -1144,11 +1220,11 @@ async function analyze() {
   const btn = $('btnAnalyze');
   btn.disabled = true; $('btnAnalyzeText').textContent = 'Analizando…';
   $('prCard').classList.add('scanning');
-  setLed('ledMeteo', 'busy'); setLed('ledPvgis', 'busy');
+  setLed('ledMeteo', 'busy');
 
   const now = new Date();
   const local = clearSkyPOA(now, cfg);
-  const [meteoR, pvgisR] = await Promise.allSettled([getMeteo(cfg), getPvgis(cfg, now)]);
+  const [meteoR] = await Promise.allSettled([getMeteo(cfg)]);
   const degraded = [];
 
   // --- Open-Meteo: irradiancia real ---
@@ -1165,40 +1241,23 @@ async function analyze() {
     setLed('ledMeteo', 'ok');
   } else {
     setLed('ledMeteo', 'err');
-    reportApiError(meteoR.reason);
     degraded.push(`Open-Meteo no responde (${meteoR.reason.message}): se usa el modelo de cielo despejado como referencia.`);
   }
 
-  // --- PVGIS: cielo despejado teórico ---
-  let poaCs = local.poa, csSource = 'Modelo Ineichen', pvgisProfile = null;
-  if (pvgisR.status === 'fulfilled') {
-    pvgisProfile = pvgisR.value;
-    const hUtc = now.getUTCHours() + now.getUTCMinutes() / 60;
-    const v = local.sp.elevation > 0 ? interpProfile(pvgisProfile, hUtc) : 0;
-    if (v != null) { poaCs = v; csSource = 'PVGIS'; }
-    if (tAmb == null) tAmb = interpProfile(pvgisProfile, hUtc, 't2m');
-    setLed('ledPvgis', 'ok');
-  } else {
-    setLed('ledPvgis', 'warn');
-    $('ledPvgis').title = 'PVGIS: ' + pvgisR.reason.message + ' → modelo local Ineichen';
-    // Bloqueo CORS = limitación permanente de PVGIS, no una caída: sin banner ni alerta.
-    if (!pvgisR.reason.cors) {
-      reportApiError(pvgisR.reason);
-      degraded.push(`PVGIS no disponible (${pvgisR.reason.message}): cielo despejado calculado con el modelo astronómico local.`);
-    }
-  }
+  // --- Cielo despejado teórico: modelo Ineichen-Perez local ---
+  const poaCs = local.poa;
   if (tAmb == null) tAmb = 20;
 
   const poaRef = poaReal ?? poaCs;
   const res = {
     cfg, time: now, utcOffset, sp: local.sp, aoi: local.aoi,
-    poaReal, poaCs, poaRef, csSource,
+    poaReal, poaCs, poaRef,
     tAmb, tCell: cellTemp(tAmb, poaRef), clouds, wind,
     pExpectedDc: pvPower(cfg.kwp, poaRef, tAmb),
     pExpected: pvAC(cfg, poaRef, tAmb),
     pClear: pvAC(cfg, poaCs, tAmb),
     clipping: !!cfg.pac && pvPower(cfg.kwp, poaRef, tAmb) > cfg.pac,
-    meteo, pvgisProfile, degraded,
+    meteo, degraded,
   };
   state.result = res;
 
@@ -1209,6 +1268,8 @@ async function analyze() {
   calcVoc();
   renderEnergy();
   renderHistory();
+  updateCtx();
+  if (currentSec === 'report') renderReport();
 
   $('prCard').classList.remove('scanning');
   btn.disabled = false; $('btnAnalyzeText').textContent = 'Actualizar análisis';
@@ -1256,7 +1317,7 @@ function compare() {
   ring.style.stroke = color; ring.style.color = color;
   ring.style.strokeDashoffset = C * (1 - clamp(pi, 0, 1));
   animateValue($('ringValue'), pi * 100, 0, '%');
-  animateValue($('mPR'), pr * 100, 1, '%');
+  animateValue($('mPR'), pr * 100, 0, '%');
   animateValue($('mDev'), dev * 100, 1, '%');
   animateValue($('mLoss'), Math.max(0, r.pExpected - real), 2, ' kW');
   lamps[status].classList.add('on-' + status);
@@ -1294,14 +1355,10 @@ function setStatus(text, led, hint) {
  * 10. RENDER DE MÉTRICAS
  * ------------------------------------------------------------------ */
 const METRICS = [
-  { id: 'poaReal', label: 'Irradiancia plano', unit: 'W/m²', d: 0, icon: '☀️', src: (r) => (r.poaReal != null ? 'Open-Meteo' : 'Sin dato real') },
-  { id: 'poaCs', label: 'Cielo despejado', unit: 'W/m²', d: 0, icon: '🌐', src: (r) => (r.csSource === 'PVGIS' ? 'PVGIS (CE)' : 'Modelo Ineichen') },
-  { id: 'pExpected', label: 'P. esperada ahora', unit: 'kW', d: 2, icon: '⚡', src: (r) => (r.clipping ? `✂️ Limitada (DC ${fmt(r.pExpectedDc, 1)} kW)` : `${fmt((r.pExpected / r.cfg.kwp) * 100, 0)} % de kWp`) },
-  { id: 'pClear', label: 'P. cielo despejado', unit: 'kW', d: 2, icon: '🔆', src: () => 'Máx. teórico' },
-  { id: 'clouds', label: 'Nubosidad', unit: '%', d: 0, icon: '☁️', src: (r) => (r.wind != null ? `Viento ${fmt(r.wind, 0)} km/h` : '—') },
-  { id: 'tAmb', label: 'T. ambiente', unit: '°C', d: 1, icon: '🌡️', src: (r) => (r.meteo ? 'Open-Meteo' : r.pvgisProfile ? 'PVGIS (media)' : 'Estimada') },
-  { id: 'tCell', label: 'T. célula', unit: '°C', d: 1, icon: '🔥', src: () => `NOCT ${settings.noct} °C` },
-  { id: 'elev', label: 'Elevación solar', unit: '°', d: 1, icon: '🧭', src: (r) => `Azimut ${fmt(r.sp.azimuth, 0)}° · AOI ${fmt(r.aoi, 0)}°` },
+  { id: 'poaReal', label: 'Irradiancia plano', unit: 'W/m²', d: 0, icon: '☀️', val: (r) => r.poaRef, src: (r) => `${r.poaReal != null ? 'Open-Meteo' : 'Sin dato real'} · despejado ${fmt(r.poaCs, 0)}` },
+  { id: 'pExpected', label: 'P. esperada ahora', unit: 'kW', d: 2, icon: '⚡', val: (r) => r.pExpected, src: (r) => (r.clipping ? `✂️ Limitada (DC ${fmt(r.pExpectedDc, 1)} kW)` : `Máx. despejado ${fmt(r.pClear, 1)} kW`) },
+  { id: 'clouds', label: 'Nubosidad', unit: '%', d: 0, icon: '☁️', val: (r) => r.clouds, src: (r) => (r.wind != null ? `Viento ${fmt(r.wind, 0)} km/h` : 'Sin dato') },
+  { id: 'tCell', label: 'T. célula', unit: '°C', d: 1, icon: '🔥', val: (r) => r.tCell, src: (r) => `Ambiente ${fmt(r.tAmb, 1)} °C` },
 ];
 
 function buildMetricTiles() {
@@ -1321,10 +1378,9 @@ function buildMetricTiles() {
 }
 
 function renderMetrics(r) {
-  const vals = { ...r, elev: r.sp.elevation };
   document.querySelectorAll('#metricsGrid .reveal').forEach((el) => { el.classList.remove('in'); void el.offsetWidth; el.classList.add('in'); });
   METRICS.forEach((m) => {
-    animateValue($('m_' + m.id), vals[m.id], m.d);
+    animateValue($('m_' + m.id), m.val(r), m.d);
     $('s_' + m.id).textContent = m.src(r);
   });
 }
@@ -1336,21 +1392,15 @@ function renderChart(r) {
   const box = $('chart');
   const W = box.clientWidth || 700, H = box.clientHeight || 260;
   const pad = { l: 42, r: 14, t: 14, b: 28 };
-  const offH = r.utcOffset / 3600;
   const siteNow = new Date(r.time.getTime() + r.utcOffset * 1000);
   const midnightUtc = Date.UTC(siteNow.getUTCFullYear(), siteNow.getUTCMonth(), siteNow.getUTCDate()) - r.utcOffset * 1000;
   const nowH = (r.time.getTime() - midnightUtc) / 3600000;
 
-  // Curva de cielo despejado (PVGIS si hay, si no, modelo local), cada 15 min
+  // Curva de cielo despejado (modelo Ineichen), cada 15 min
   const clear = [];
   for (let h = 0; h <= 24; h += 0.25) {
     const d = new Date(midnightUtc + h * 3600000);
-    let poa;
-    if (r.pvgisProfile) poa = interpProfile(r.pvgisProfile, h - offH);
-    const sp = solarPosition(d, r.cfg.lat, r.cfg.lon);
-    if (poa == null) poa = clearSkyPOA(d, r.cfg).poa;
-    if (sp.elevation <= 0) poa = 0;
-    clear.push([h, pvPower(r.cfg.kwp, poa, r.tAmb)]);
+    clear.push([h, pvPower(r.cfg.kwp, clearSkyPOA(d, r.cfg).poa, r.tAmb)]);
   }
 
   // Previsión horaria Open-Meteo (valores = media de la hora anterior → se dibujan a mitad de intervalo)
@@ -1436,6 +1486,7 @@ function loadSelectedPlant(run = true) {
   applyStringsTemplate(p.strings);
   if (p.module) writeModule(p.module);
   renderHistory();
+  renderChecklist(); renderReport(); updateCtx();
   $('realKw').value = '';
   if (run) analyze();
 }
@@ -1848,12 +1899,10 @@ function renderEnergy() {
   if (rainInfo) {
     const ds = rainInfo.daysSince;
     const dsTxt = ds == null ? `>${rainInfo.over}` : String(ds);
-    const soilMin = ds == null ? rainInfo.over * 0.1 : ds * 0.1, soilMax = ds == null ? rainInfo.over * 0.2 : ds * 0.2;
     const dayName = (ymd) => new Date(ymd + 'T12:00:00Z').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', timeZone: 'UTC' });
     rainT.innerHTML =
       tile('Días sin lluvia', dsTxt, 'días', ds === 0 ? 'Ha llovido hoy' : rainInfo.lastMm != null ? `Última: ${fmt(rainInfo.lastMm, 1)} mm` : 'en los últimos 30 días', ds != null && ds < 7 ? 'text-emerald-300' : ds != null && ds < 21 ? '' : 'text-amber-300') +
-      tile('Próxima lluvia', rainInfo.next ? (rainInfo.next.inDays === 0 ? 'Hoy' : rainInfo.next.inDays === 1 ? 'Mañana' : `${rainInfo.next.inDays} d`) : 'No prevista', '', rainInfo.next ? `${dayName(rainInfo.next.date)} · ${fmt(rainInfo.next.mm, 1)} mm` : 'en los próximos 3 días') +
-      tile('Suciedad estimada', `${fmt(Math.min(soilMin, 10), 1)}–${fmt(Math.min(soilMax, 15), 1)}`, '%', 'orientativo: 0,1–0,2 %/día seco');
+      tile('Próxima lluvia', rainInfo.next ? (rainInfo.next.inDays === 0 ? 'Hoy' : rainInfo.next.inDays === 1 ? 'Mañana' : `${rainInfo.next.inDays} d`) : 'No prevista', '', rainInfo.next ? `${dayName(rainInfo.next.date)} · ${fmt(rainInfo.next.mm, 1)} mm` : 'en los próximos 3 días');
   } else rainT.innerHTML = '';
 
   const msgs = [];
@@ -2050,7 +2099,7 @@ function buildReport() {
     const e = energyResult, em = { ok: '🟢', warn: '🟡', err: '🔴' }[e.st] || '•';
     lines.push('', `📅 *Energía ${e.which === 'today' ? 'hoy (hasta ahora)' : 'ayer'}:* ${fmt(e.eReal, 1)} kWh real / ${fmt(e.eExp, 1)} kWh esperada → ${e.pi != null ? fmt(e.pi * 100, 1) + ' %' : '--'} ${em}`);
   }
-  if (rainInfo) lines.push(`🌧️ Días sin lluvia: ${rainInfo.daysSince ?? '+30'}${rainInfo.next ? ` · próxima lluvia en ${rainInfo.next.inDays} d (${fmt(rainInfo.next.mm, 1)} mm)` : ''}`);
+  if (rainInfo) lines.push(`🌧️ Días sin lluvia: ${rainInfo.daysSince ?? '+30'}${rainInfo.next ? ` · próxima lluvia ${rainInfo.next.inDays === 0 ? 'hoy' : rainInfo.next.inDays === 1 ? 'mañana' : `en ${rainInfo.next.inDays} días`} (${fmt(rainInfo.next.mm, 1)} mm)` : ''}`);
   if (vocResult && (vocResult.mv != null || vocResult.mi != null)) {
     const v = vocResult, em = { ok: '🟢', warn: '🟡', err: '🔴' }[v.worst] || '•';
     lines.push('', `🔋 *Multímetro* (${fmt(v.G, 0)} W/m², ${fmt(v.Tc, 1)} °C célula):`);
@@ -2058,7 +2107,7 @@ function buildReport() {
     if (v.mi != null) lines.push(`Isc: ${fmt(v.mi, 2)} A (esperado ${fmt(v.e.isc, 2)} A, ${v.devI >= 0 ? '+' : ''}${fmt(v.devI * 100, 1)} %) ${em}`);
   }
   if (r.degraded.length) lines.push('', '⚠️ Calculado en modo degradado (API no disponible).');
-  lines.push('', `Fuentes: ${r.poaReal != null ? 'Open-Meteo, ' : ''}${r.csSource}`,
+  lines.push('', `Fuentes: ${r.poaReal != null ? 'Open-Meteo + ' : ''}modelo Ineichen`,
     `— Generado con SolarYield Pro${location.protocol.startsWith('http') ? ' · ' + location.origin + location.pathname : ''}`);
   return lines.join('\n');
 }
@@ -2089,10 +2138,9 @@ function shareWhatsapp() {
  * ------------------------------------------------------------------ */
 function openSettings() {
   $('setLosses').value = settings.losses; $('setGamma').value = settings.gamma;
+  $('setContrast').checked = !!settings.contrast;
+  backupInfo();
   $('setNoct').value = settings.noct; $('setAlbedo').value = settings.albedo;
-  $('setPvgis').value = settings.pvgisVersion;
-  $('setTgEnabled').checked = !!settings.tgEnabled;
-  $('setTgToken').value = settings.tgToken || ''; $('setTgChat').value = settings.tgChat || '';
   const m = $('settingsModal'); m.classList.remove('hidden'); m.classList.add('flex');
 }
 function closeSettings() { const m = $('settingsModal'); m.classList.add('hidden'); m.classList.remove('flex'); }
@@ -2102,50 +2150,126 @@ function readSettingsForm() {
     gamma: clamp(num($('setGamma').value) ?? DEFAULT_SETTINGS.gamma, -1, 0),
     noct: clamp(num($('setNoct').value) ?? DEFAULT_SETTINGS.noct, 30, 60),
     albedo: clamp(num($('setAlbedo').value) ?? DEFAULT_SETTINGS.albedo, 0, 1),
-    pvgisVersion: $('setPvgis').value,
-    tgEnabled: $('setTgEnabled').checked,
-    tgToken: $('setTgToken').value.trim(),
-    tgChat: $('setTgChat').value.trim(),
+    contrast: $('setContrast').checked,
   };
 }
 function saveSettings() {
   settings = { ...settings, ...readSettingsForm() };
   store.set(LS.settings, settings);
+  applyContrast();
   closeSettings();
   toast('Ajustes guardados.', 'ok');
   if (state.result) analyze();
 }
-function testTelegram() {
-  const s = readSettingsForm();
-  if (!s.tgToken || !s.tgChat) { toast('Introduce BOT_TOKEN y CHAT_ID.', 'warn'); return; }
-  settings = { ...settings, ...s };
-  notifyTelegram('PRUEBA', 'Mensaje de prueba desde SolarYield Pro ✅', { force: true });
-  toast('Prueba enviada. Revisa Telegram (si no llega, revisa token/chat_id).', 'info', 5000);
-}
-function exportPlants() {
-  const blob = new Blob([JSON.stringify(getPlants(), null, 2)], { type: 'application/json' });
+/* ---- Copia de seguridad completa (localStorage syp_* + fotos IndexedDB) ---- */
+async function exportBackup() {
+  const data = { app: 'SolarYield Pro', version: APP_VERSION, created: new Date().toISOString(), storage: {}, photos: [] };
+  try { Object.keys(localStorage).filter((k) => k.startsWith('syp_')).forEach((k) => { data.storage[k] = localStorage.getItem(k); }); } catch {}
+  try { data.photos = await photoDB.all(); } catch {}
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = `solaryield-plantas-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  a.href = URL.createObjectURL(blob); a.download = `solaryield-copia-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  store.set('syp_last_backup', Date.now());
+  toast(`✅ Copia creada (${(blob.size / 1048576).toFixed(1)} MB · ${data.photos.length} fotos).`, 'ok', 4500);
+  backupInfo();
 }
-function importPlants(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const arr = JSON.parse(reader.result);
-      if (!Array.isArray(arr)) throw new Error();
-      const clean = arr.filter((p) => p && p.name && isFinite(p.lat) && isFinite(p.lon) && isFinite(p.kwp))
-        .map((p) => ({ id: p.id || 'p' + Math.random().toString(36).slice(2, 9), name: String(p.name).slice(0, 60), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0, pac: +p.pac || null, strings: p.strings, module: p.module }));
-      const merged = [...getPlants()];
-      clean.forEach((p) => { if (!merged.some((m) => m.name === p.name)) merged.push(p); });
-      setPlants(merged); refreshPlantSelect();
-      toast(`${clean.length} plantas importadas.`, 'ok');
-    } catch { toast('Archivo no válido.', 'err'); }
-  };
-  reader.readAsText(file);
+async function importBackup(file) {
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { return toast('Archivo no válido.', 'err'); }
+  // Formato antiguo v1.x: array de plantas
+  if (Array.isArray(data)) {
+    const clean = data.filter((p) => p && p.name && isFinite(p.lat) && isFinite(p.lon) && isFinite(p.kwp))
+      .map((p) => ({ id: p.id || 'p' + Math.random().toString(36).slice(2, 9), name: String(p.name).slice(0, 60), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0, pac: +p.pac || null, strings: p.strings, module: p.module }));
+    const merged = [...getPlants()];
+    clean.forEach((p) => { if (!merged.some((m) => m.name === p.name)) merged.push(p); });
+    setPlants(merged); refreshPlantSelect();
+    return toast(`${clean.length} plantas importadas.`, 'ok');
+  }
+  if (data?.app !== 'SolarYield Pro' || !data.storage) return toast('No es una copia de SolarYield Pro.', 'err');
+  const lbl = $('fileImport').closest('label');
+  if (!confirmTwice(lbl, `Se sustituirán los datos actuales por la copia del ${new Date(data.created).toLocaleDateString('es-ES')}. Pulsa Restaurar otra vez para confirmar.`)) { $('fileImport').value = ''; pendingRestore = file; return; }
+  try {
+    Object.keys(localStorage).filter((k) => k.startsWith('syp_')).forEach((k) => localStorage.removeItem(k));
+    Object.entries(data.storage).forEach(([k, v]) => { if (k.startsWith('syp_')) localStorage.setItem(k, v); });
+    await photoDB.clearAll();
+    for (const ph of data.photos || []) await photoDB.put(ph);
+  } catch (e) { return toast('Error restaurando: ' + e.message, 'err'); }
+  toast('✅ Copia restaurada. Recargando…', 'ok');
+  setTimeout(() => location.reload(), 900);
 }
+let pendingRestore = null, confirmTimer = null;
+/** Confirmación en dos toques sin diálogos bloqueantes. */
+function confirmTwice(el, msg) {
+  if (el.dataset.armed === '1') { el.dataset.armed = ''; clearTimeout(confirmTimer); return true; }
+  el.dataset.armed = '1'; toast(msg, 'warn', 5000);
+  confirmTimer = setTimeout(() => { el.dataset.armed = ''; pendingRestore = null; }, 6000);
+  return false;
+}
+function backupInfo() {
+  const t = store.get('syp_last_backup', null);
+  $('backupInfo').textContent = t ? `Última copia: ${new Date(t).toLocaleString('es-ES')}` : 'Aún no has hecho ninguna copia.';
+}
+function applyContrast() {
+  document.documentElement.classList.toggle('hc', !!settings.contrast);
+  $('btnContrast').setAttribute('aria-pressed', String(!!settings.contrast));
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', settings.contrast ? '#f1f5f9' : '#020617');
+  if (state.result) { renderChart(state.result); }
+  renderHistory();
+}
+function toggleContrast() {
+  settings.contrast = !settings.contrast; store.set(LS.settings, settings); applyContrast();
+  toast(settings.contrast ? '☀️ Alto contraste activado' : '🌙 Modo oscuro activado', 'info', 1800);
+}
+
+/* ------------------------------------------------------------------
+ * 14b. NAVEGACIÓN POR SECCIONES (desplegable)
+ * ------------------------------------------------------------------ */
+const SECTIONS = ['diag', 'strings', 'voc', 'energy', 'check', 'report', 'history'];
+const NEEDS_ANALYSIS = ['voc', 'energy', 'report'];
+let currentSec = 'diag';
+function showSection(sec, { scroll = true, save = true } = {}) {
+  if (!SECTIONS.includes(sec)) sec = 'diag';
+  currentSec = sec;
+  document.querySelectorAll('.sec').forEach((el) => {
+    const on = el.dataset.sec === sec;
+    el.classList.toggle('hidden', !on);
+    if (on) { el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
+  });
+  $('secSelect').value = sec;
+  if (save) { store.set('syp_section', sec); try { history.replaceState(null, '', '#' + sec); } catch {} }
+  updateCtx();
+  // Los gráficos se dibujan con el tamaño real al hacerse visibles
+  if (sec === 'diag' && state.result) renderChart(state.result);
+  if (sec === 'history') renderHistory();
+  if (sec === 'report') renderReport();
+  if (sec === 'check') renderChecklist();
+  if (NEEDS_ANALYSIS.includes(sec) && !state.result && !validateConfig(readConfig())) analyze();
+  if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function stepSection(d) { const i = SECTIONS.indexOf(currentSec); showSection(SECTIONS[(i + d + SECTIONS.length) % SECTIONS.length]); }
+function updateCtx() {
+  const bar = $('ctxBar');
+  const show = currentSec !== 'diag';
+  bar.classList.toggle('hidden', !show); bar.classList.toggle('flex', show);
+  if (!show) return;
+  const c = state.result?.cfg || readConfig();
+  const st = state.result?.status;
+  $('ctxLed').className = 'led shrink-0' + (st ? ' ' + { green: 'ok', amber: 'warn', red: 'err' }[st] : state.result ? ' ok' : '');
+  $('ctxText').textContent = c.kwp ? `${c.name || 'Punto sin nombre'} · ${fmt(c.kwp, 1)} kWp · ${orientName(c.azimuth)} ${c.tilt}°${state.result?.pi != null ? ` · ${fmt(state.result.pi * 100, 0)} %` : ''}` : 'Configura la planta en Diagnóstico';
+}
+function setupNav() {
+  $('secSelect').addEventListener('change', (e) => showSection(e.target.value));
+  $('secPrev').addEventListener('click', () => stepSection(-1));
+  $('secNext').addEventListener('click', () => stepSection(1));
+  $('ctxBar').addEventListener('click', () => showSection('diag'));
+  document.querySelectorAll('[data-goto]').forEach((b) => b.addEventListener('click', () => showSection(b.dataset.goto)));
+  const fromHash = location.hash.slice(1);
+  showSection(SECTIONS.includes(fromHash) ? fromHash : 'diag', { scroll: false, save: false });
+}
+
 function clearApiCache() {
-  try { Object.keys(localStorage).filter((k) => k.startsWith(LS.pvgis)).forEach((k) => localStorage.removeItem(k)); } catch {}
+  try { Object.keys(localStorage).filter((k) => k.startsWith('syp_pvgis_')).forEach((k) => localStorage.removeItem(k)); } catch {}
   meteoCache.clear();
   toast('Caché de APIs vaciada.', 'info');
 }
@@ -2309,6 +2433,482 @@ function setupInstall() {
 }
 
 /* ------------------------------------------------------------------
+ * 16a. FOTOS (IndexedDB: los datos grandes no caben en localStorage)
+ * ------------------------------------------------------------------ */
+const photoDB = {
+  _db: null,
+  open() {
+    if (this._db) return Promise.resolve(this._db);
+    return new Promise((res, rej) => {
+      const rq = indexedDB.open('solaryield', 1);
+      rq.onupgradeneeded = () => { const os = rq.result.createObjectStore('photos', { keyPath: 'id' }); os.createIndex('plant', 'plant'); };
+      rq.onsuccess = () => { this._db = rq.result; res(this._db); };
+      rq.onerror = () => rej(rq.error);
+    });
+  },
+  async tx(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => { const t = db.transaction('photos', mode); const os = t.objectStore('photos'); const out = fn(os); t.oncomplete = () => res(out?.result ?? out); t.onerror = () => rej(t.error); });
+  },
+  put(ph) { return this.tx('readwrite', (os) => os.put(ph)); },
+  del(id) { return this.tx('readwrite', (os) => os.delete(id)); },
+  all() { return this.tx('readonly', (os) => os.getAll()); },
+  async byPlant(plant) { return (await this.all()).filter((p) => p.plant === plant).sort((a, b) => a.t - b.t); },
+  async clearPlant(plant) { const list = await this.byPlant(plant); for (const p of list) await this.del(p.id); },
+  clearAll() { return this.tx('readwrite', (os) => os.clear()); },
+};
+const curPlantKey = () => plantKey(state.result?.cfg || readConfig()) || 'sin-planta';
+
+async function currentCoords() {
+  const c = readConfig();
+  try {
+    const st = await navigator.permissions.query({ name: 'geolocation' });
+    if (st.state === 'granted') {
+      const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 4000, maximumAge: 60000 }));
+      return { lat: pos.coords.latitude, lon: pos.coords.longitude };
+    }
+  } catch {}
+  return c.lat != null ? { lat: c.lat, lon: c.lon } : null;
+}
+
+/** Reduce la foto (máx. 1600 px), estampa fecha/hora/coordenadas y la guarda. */
+async function addPhoto(file, { itemId = null, caption = '' } = {}) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k);
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+    const now = new Date(), co = await currentCoords(), cfg = readConfig();
+    const stamp = [now.toLocaleString('es-ES'), co ? `${co.lat.toFixed(5)}, ${co.lon.toFixed(5)}` : null, cfg.name || null].filter(Boolean).join('  ·  ');
+    const fs = Math.max(14, Math.round(w / 55));
+    ctx.font = `600 ${fs}px system-ui, sans-serif`;
+    const pad = Math.round(fs * 0.6), bh = fs + pad * 2;
+    ctx.fillStyle = 'rgba(2,6,23,.62)'; ctx.fillRect(0, h - bh, w, bh);
+    ctx.fillStyle = '#fbbf24'; ctx.fillText('☀ SolarYield', pad, h - pad - fs * 0.15);
+    const lw = ctx.measureText('☀ SolarYield  ').width;
+    ctx.fillStyle = '#ffffff'; ctx.fillText(stamp, pad + lw, h - pad - fs * 0.15);
+    const ph = { id: 'ph' + now.getTime().toString(36) + Math.random().toString(36).slice(2, 6), plant: curPlantKey(), t: now.getTime(), lat: co?.lat ?? null, lon: co?.lon ?? null, w, h, caption, itemId, data: cv.toDataURL('image/jpeg', 0.74) };
+    await photoDB.put(ph);
+    return ph;
+  } finally { URL.revokeObjectURL(url); }
+}
+
+async function renderPhotos() {
+  const list = await photoDB.byPlant(curPlantKey()).catch(() => []);
+  $('phCount').textContent = list.length ? `(${list.length})` : '';
+  $('phGrid').innerHTML = list.length ? list.map((p) => `
+    <div class="ph-card" data-id="${p.id}">
+      <img src="${p.data}" alt="${escapeHtml(p.caption || 'Foto')}" loading="lazy" />
+      <button class="ph-del absolute top-1.5 right-1.5 w-8 h-8 rounded-full bg-black/60 text-white text-sm" aria-label="Borrar foto">✕</button>
+      ${p.itemId ? '<span class="absolute top-1.5 left-1.5 text-[0.6rem] font-bold px-1.5 py-0.5 rounded bg-red-500/85 text-white">DEFECTO</span>' : ''}
+      <input class="ph-cap w-full bg-transparent px-2 py-1.5 text-xs text-slate-200 outline-none border-t border-slate-800" maxlength="120" placeholder="Descripción…" value="${escapeHtml(p.caption || '')}" />
+    </div>`).join('') : '<p class="col-span-full text-xs text-slate-500">Aún no hay fotos en esta inspección.</p>';
+  $('phGrid').querySelectorAll('.ph-del').forEach((b) => b.addEventListener('click', async () => {
+    const card = b.closest('.ph-card');
+    if (!confirmTwice(b, 'Toca ✕ otra vez para borrar la foto.')) return;
+    await photoDB.del(card.dataset.id); renderPhotos(); renderChecklist(); renderReportIncludes();
+  }));
+  $('phGrid').querySelectorAll('.ph-cap').forEach((inp) => inp.addEventListener('change', async () => {
+    const all = await photoDB.all(); const ph = all.find((x) => x.id === inp.closest('.ph-card').dataset.id);
+    if (ph) { ph.caption = inp.value.trim(); await photoDB.put(ph); }
+  }));
+  return list;
+}
+
+async function onPhotoFiles(files, opts = {}) {
+  if (!files?.length) return;
+  toast(`Procesando ${files.length} foto${files.length > 1 ? 's' : ''}…`, 'info', 1500);
+  let n = 0;
+  for (const f of files) { try { await addPhoto(f, opts); n++; } catch (e) { console.warn(e); } }
+  if (n) toast(`📷 ${n} foto${n > 1 ? 's' : ''} añadida${n > 1 ? 's' : ''}.`, 'ok');
+  renderPhotos(); renderChecklist(); renderReportIncludes();
+}
+
+/* ------------------------------------------------------------------
+ * 16b. CHECKLIST DE MANTENIMIENTO PREVENTIVO
+ * ------------------------------------------------------------------ */
+const CHECKLIST = [
+  { id: 'mod', t: 'Generador FV (módulos)', i: '🟦', items: [
+    ['mod1', 'Vidrio sin roturas, microfisuras visibles ni delaminación'],
+    ['mod2', 'Sin burbujas, decoloración, quemaduras ni «snail trails»'],
+    ['mod3', 'Suciedad, excrementos, hojas o vegetación'],
+    ['mod4', 'Sin sombras nuevas (árboles, antenas, chimeneas, obras)'],
+    ['mod5', 'Cajas de conexión cerradas, sin puntos calientes ni olor a quemado'],
+    ['mod6', 'Marcos íntegros y conectados a tierra'],
+  ]},
+  { id: 'est', t: 'Estructura y cubierta', i: '🏗️', items: [
+    ['est1', 'Tornillería y grapas de fijación apretadas'],
+    ['est2', 'Sin corrosión en perfiles, anclajes ni tornillería'],
+    ['est3', 'Estanqueidad de la cubierta en los anclajes (sin goteras)'],
+    ['est4', 'Contrapesos / lastres en posición (estructuras en triángulo)'],
+  ]},
+  { id: 'dc', t: 'Cableado DC', i: '🔌', items: [
+    ['dc1', 'Conectores MC4 bien encajados, sin quemaduras ni mezcla de marcas'],
+    ['dc2', 'Cables sin cortes, aislamiento sano, sin roces ni tramos colgando'],
+    ['dc3', 'Bridas y fijaciones UV en buen estado'],
+    ['dc4', 'Canalizaciones y tubos fijados, cerrados y protegidos'],
+    ['dc5', 'Strings y polaridades correctamente etiquetados'],
+  ]},
+  { id: 'cdc', t: 'Cuadro / cajas de strings DC', i: '🧰', items: [
+    ['cdc1', 'Fusibles de string y portafusibles en buen estado'],
+    ['cdc2', 'Descargadores de sobretensión DC (indicador en verde)'],
+    ['cdc3', 'Seccionador DC maniobra correctamente'],
+    ['cdc4', 'Bornas apretadas, sin calentamientos (termografía si es posible)'],
+    ['cdc5', 'Envolvente estanca, prensaestopas y juntas correctos'],
+  ]},
+  { id: 'inv', t: 'Inversor', i: '⚡', items: [
+    ['inv1', 'Sin alarmas activas en pantalla o portal'],
+    ['inv2', 'Registro de eventos revisado (disparos, errores de aislamiento)'],
+    ['inv3', 'Ventiladores y rejillas limpios, temperatura normal'],
+    ['inv4', 'Sin ruidos, vibraciones ni olores anómalos'],
+    ['inv5', 'Comunicación con monitorización operativa y firmware al día'],
+    ['inv6', 'Distancias de ventilación y fijación a pared correctas'],
+  ]},
+  { id: 'cac', t: 'Cuadro AC y protecciones', i: '🛡️', items: [
+    ['cac1', 'Magnetotérmico en buen estado y bien dimensionado'],
+    ['cac2', 'Diferencial: disparo correcto con el botón de test'],
+    ['cac3', 'Descargadores de sobretensión AC (indicador en verde)'],
+    ['cac4', 'Bornas y embarrados apretados, sin calentamientos'],
+    ['cac5', 'Vatímetro / limitación de inyección funcionando'],
+  ]},
+  { id: 'seg', t: 'Puesta a tierra y seguridad', i: '⛑️', items: [
+    ['seg1', 'Continuidad de las tierras de estructura y módulos'],
+    ['seg2', 'Resistencia de aislamiento (Riso) de los strings correcta'],
+    ['seg3', 'Señalización de riesgo eléctrico y esquema unifilar presentes'],
+    ['seg4', 'Acceso seguro a cubierta (línea de vida, barandillas, escalera)'],
+  ]},
+  { id: 'med', t: 'Medidas y rendimiento', i: '📊', items: [
+    ['med1', 'Voc e Isc de los strings medidos y dentro de tolerancia'],
+    ['med2', 'Producción instantánea / diaria acorde a la esperada'],
+    ['med3', 'Contador de producción leído y anotado'],
+  ]},
+];
+const CK_TOTAL = CHECKLIST.reduce((a, s) => a + s.items.length, 0);
+const CK_KEY = 'syp_check';
+const getCk = () => { const all = store.get(CK_KEY, {}); return all[curPlantKey()] || { items: {} }; };
+const setCk = (ck) => { const all = store.get(CK_KEY, {}); ck.updated = Date.now(); all[curPlantKey()] = ck; store.set(CK_KEY, all); };
+let ckPhotoItem = null;
+
+async function renderChecklist() {
+  const ck = getCk();
+  const photos = await photoDB.byPlant(curPlantKey()).catch(() => []);
+  const phCount = (id) => photos.filter((p) => p.itemId === id).length;
+  const openIds = new Set([...document.querySelectorAll('#ckList details[open]')].map((d) => d.dataset.id));
+  const first = !document.querySelector('#ckList details');
+  $('ckList').innerHTML = CHECKLIST.map((sec) => {
+    const done = sec.items.filter(([id]) => ck.items[id]?.st).length;
+    const defs = sec.items.filter(([id]) => ck.items[id]?.st === 'def').length;
+    const open = first ? sec.id === 'mod' : openIds.has(sec.id);
+    return `<details class="ck-sec" data-id="${sec.id}" ${open ? 'open' : ''}>
+      <summary><span>${sec.i}</span><span class="flex-1">${sec.t}</span>
+        ${defs ? `<span class="text-[0.65rem] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-200">${defs} defecto${defs > 1 ? 's' : ''}</span>` : ''}
+        <span class="font-mono text-xs ${done === sec.items.length ? 'text-emerald-300' : 'text-slate-400'}">${done}/${sec.items.length}</span></summary>
+      ${sec.items.map(([id, txt]) => {
+        const it = ck.items[id] || {};
+        const n = phCount(id);
+        return `<div class="ck-item" data-id="${id}">
+          <div class="flex items-start gap-3">
+            <p class="flex-1 text-sm text-slate-200 leading-snug">${txt}</p>
+            <div class="ck-btns" role="group" aria-label="Estado">
+              <button data-st="ok" class="${it.st === 'ok' ? 'on-ok' : ''}" aria-pressed="${it.st === 'ok'}">OK</button>
+              <button data-st="def" class="${it.st === 'def' ? 'on-def' : ''}" aria-pressed="${it.st === 'def'}">✕</button>
+              <button data-st="na" class="${it.st === 'na' ? 'on-na' : ''}" aria-pressed="${it.st === 'na'}">N/A</button>
+            </div>
+          </div>
+          ${it.st === 'def' ? `<div class="flex gap-2 mt-2">
+            <input class="ck-note field field-sm flex-1 !font-sans !text-xs" maxlength="200" placeholder="Describe el defecto…" value="${escapeHtml(it.note || '')}" />
+            <button class="ck-photo btn-ghost !py-1.5 !px-3 text-xs shrink-0">📷${n ? ' ' + n : ''}</button>
+          </div>` : ''}
+        </div>`;
+      }).join('')}
+    </details>`;
+  }).join('');
+
+  $('ckList').querySelectorAll('.ck-btns button').forEach((b) => b.addEventListener('click', () => {
+    const id = b.closest('.ck-item').dataset.id, ck2 = getCk();
+    const cur = ck2.items[id] || {};
+    ck2.items[id] = { ...cur, st: cur.st === b.dataset.st ? null : b.dataset.st };
+    setCk(ck2); renderChecklist(); renderReportIncludes();
+  }));
+  $('ckList').querySelectorAll('.ck-note').forEach((inp) => inp.addEventListener('input', () => {
+    const id = inp.closest('.ck-item').dataset.id, ck2 = getCk();
+    ck2.items[id] = { ...(ck2.items[id] || {}), note: inp.value }; setCk(ck2);
+  }));
+  $('ckList').querySelectorAll('.ck-photo').forEach((b) => b.addEventListener('click', () => { ckPhotoItem = b.closest('.ck-item').dataset.id; $('ckPhotoInput').click(); }));
+
+  const vals = Object.values(ck.items).filter((x) => x.st);
+  const done = vals.length, defs = vals.filter((x) => x.st === 'def').length;
+  $('ckBar').style.width = (done / CK_TOTAL) * 100 + '%';
+  setBadge('ckSummary', `${done}/${CK_TOTAL}${defs ? ` · ${defs} defecto${defs > 1 ? 's' : ''}` : ''}`, defs ? 'err' : done === CK_TOTAL ? 'ok' : done ? 'warn' : null);
+}
+function ckItemText(id) { for (const sec of CHECKLIST) for (const [i, t] of sec.items) if (i === id) return t; return id; }
+function setupChecklist() {
+  $('ckPhotoInput').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (f && ckPhotoItem) { const ck = getCk(); await onPhotoFiles([f], { itemId: ckPhotoItem, caption: (ck.items[ckPhotoItem]?.note || ckItemText(ckPhotoItem)) }); }
+    ckPhotoItem = null;
+  });
+  $('btnCkAllOk').addEventListener('click', () => {
+    const ck = getCk(); let n = 0;
+    CHECKLIST.forEach((sec) => sec.items.forEach(([id]) => { if (!ck.items[id]?.st) { ck.items[id] = { ...(ck.items[id] || {}), st: 'ok' }; n++; } }));
+    setCk(ck); renderChecklist(); renderReportIncludes(); toast(`${n} puntos marcados como OK.`, 'ok');
+  });
+  $('btnCkReset').addEventListener('click', () => {
+    if (!confirmTwice($('btnCkReset'), 'Pulsa «Reiniciar» otra vez para vaciar el checklist.')) return;
+    setCk({ items: {} }); renderChecklist(); renderReportIncludes();
+  });
+}
+
+/* ------------------------------------------------------------------
+ * 16c. INFORME PDF
+ * ------------------------------------------------------------------ */
+const REP_KEY = 'syp_report';
+function getRep() { const all = store.get(REP_KEY, {}); return { tech: store.get('syp_tech', ''), company: store.get('syp_company', ''), ...(all[curPlantKey()] || {}) }; }
+function saveRep() {
+  const all = store.get(REP_KEY, {});
+  all[curPlantKey()] = { client: $('repClient').value.trim(), notes: $('repNotes').value, next: $('repNext').value };
+  store.set(REP_KEY, all);
+  store.set('syp_tech', $('repTech').value.trim()); store.set('syp_company', $('repCompany').value.trim());
+}
+function renderReport() {
+  const r = getRep();
+  $('repTech').value = r.tech || ''; $('repCompany').value = r.company || '';
+  $('repClient').value = r.client || ''; $('repNotes').value = r.notes || ''; $('repNext').value = r.next || '';
+  renderPhotos(); renderReportIncludes();
+}
+async function renderReportIncludes() {
+  const ck = getCk(); const ckDone = Object.values(ck.items).filter((x) => x.st).length;
+  const nPh = (await photoDB.byPlant(curPlantKey()).catch(() => [])).length;
+  const chip = (on, txt) => `<span class="text-[0.65rem] font-mono px-2 py-1 rounded-md border ${on ? 'border-emerald-400/50 text-emerald-200 bg-emerald-500/10' : 'border-slate-700 text-slate-500'}">${on ? '✓' : '○'} ${txt}</span>`;
+  $('repIncludes').innerHTML =
+    chip(!!state.result, 'Diagnóstico') + chip(!!strResult, 'Strings') + chip(!!(vocResult && (vocResult.mv != null || vocResult.mi != null)), 'Multímetro') +
+    chip(energyResult?.eReal != null, 'Energía diaria') + chip(ckDone > 0, `Checklist ${ckDone}/${CK_TOTAL}`) + chip(nPh > 0, `${nPh} fotos`);
+  const defs = Object.values(ck.items).filter((x) => x.st === 'def').length;
+  setBadge('repSummary', state.result ? (defs ? `${defs} defecto${defs > 1 ? 's' : ''}` : 'Listo') : 'Sin análisis', state.result ? (defs ? 'err' : 'ok') : null);
+}
+
+/** Carga jsPDF bajo demanda (solo al generar el informe). */
+let jsPdfPromise = null;
+function loadJsPdf() {
+  if (window.jspdf) return Promise.resolve(window.jspdf);
+  jsPdfPromise = jsPdfPromise || new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    sc.onload = () => res(window.jspdf); sc.onerror = () => { jsPdfPromise = null; rej(new Error('No se pudo cargar el generador de PDF (¿sin conexión?)')); };
+    document.head.appendChild(sc);
+  });
+  return jsPdfPromise;
+}
+async function imgToDataUrl(src) {
+  try { const b = await (await fetch(src)).blob(); return await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(b); }); } catch { return null; }
+}
+/** Las fuentes estándar de PDF solo tienen Latin-1: limpiamos emojis y símbolos. */
+const pdfTxt = (v) => String(v ?? '').replace(/[–—]/g, '-').replace(/…/g, '...').replace(/≈/g, '~').replace(/→/g, '->').replace(/[“”«»]/g, '"').replace(/[‘’]/g, "'").replace(/−/g, '-').replace(/²/g, '2').replace(/³/g, '3').replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '').replace(/ {2,}/g, ' ').trim();
+
+async function buildPdf() {
+  saveRep();
+  if (!state.result) { const e = validateConfig(readConfig()); if (e) throw new Error(e); await analyze(); }
+  const { jsPDF } = await loadJsPdf();
+  const r = state.result, c = r.cfg, rep = getRep(), ck = getCk();
+  const photos = await photoDB.byPlant(curPlantKey()).catch(() => []);
+  const logo = await imgToDataUrl('./icons/icon-192.png');
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, H = 297, M = 14, CW = W - 2 * M;
+  const C = { ink: [15, 23, 42], mute: [100, 116, 139], line: [226, 232, 240], cyan: [8, 145, 178], ok: [5, 150, 105], warn: [217, 119, 6], err: [220, 38, 38], band: [2, 6, 23] };
+  let y = 0;
+  const T = (txt, x, yy, o = {}) => doc.text(pdfTxt(txt), x, yy, o);
+  const font = (size, style = 'normal', col = C.ink) => { doc.setFont('helvetica', style); doc.setFontSize(size); doc.setTextColor(...col); };
+  const header = () => {
+    doc.setFillColor(...C.band); doc.rect(0, 0, W, 24, 'F');
+    doc.setFillColor(...C.cyan); doc.rect(0, 24, W, 0.8, 'F');
+    if (logo) doc.addImage(logo, 'PNG', M, 4, 16, 16);
+    font(15, 'bold', [103, 232, 249]); T('SOLARYIELD PRO', M + 20, 11.5);
+    font(8.5, 'normal', [203, 213, 225]); T('Informe de inspección fotovoltaica', M + 20, 17);
+    font(8.5, 'normal', [203, 213, 225]); T(new Date().toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' }), W - M, 11.5, { align: 'right' });
+    T(c.name || 'Punto de inspección', W - M, 17, { align: 'right' });
+    y = 32;
+  };
+  const need = (h) => { if (y + h > H - 16) { doc.addPage(); header(); } };
+  const section = (title) => { need(14); font(11, 'bold', C.cyan); T(title.toUpperCase(), M, y); doc.setDrawColor(...C.cyan); doc.setLineWidth(0.4); doc.line(M, y + 1.8, W - M, y + 1.8); y += 8; };
+  const kv = (pairs, cols = 2) => {
+    const cw = CW / cols;
+    for (let i = 0; i < pairs.length; i += cols) {
+      need(10);
+      pairs.slice(i, i + cols).forEach(([k, v], j) => {
+        font(7.5, 'normal', C.mute); T(k, M + j * cw, y);
+        font(10.5, 'bold', C.ink); T(v, M + j * cw, y + 4.8);
+      });
+      y += 11;
+    }
+  };
+  const pill = (txt, col, x, yy) => {
+    font(9, 'bold', [255, 255, 255]); const w = doc.getTextWidth(pdfTxt(txt)) + 8;
+    doc.setFillColor(...col); doc.roundedRect(x, yy - 4.6, w, 6.6, 1.6, 1.6, 'F'); T(txt, x + 4, yy); return w;
+  };
+  const para = (txt, size = 9.5, col = C.ink) => { font(size, 'normal', col); doc.splitTextToSize(pdfTxt(txt), CW).forEach((ln) => { need(5.2); T(ln, M, y); y += 4.6; }); y += 1.5; };
+  const stCol = (st) => ({ ok: C.ok, green: C.ok, warn: C.warn, amber: C.warn, err: C.err, red: C.err }[st] || C.mute);
+
+  header();
+  // --- Datos generales ---
+  section('1. Datos de la instalación');
+  kv([
+    ['Instalación', c.name || '-'], ['Cliente / titular', rep.client || '-'],
+    ['Coordenadas', `${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}`], ['Técnico', rep.tech || '-'],
+    ['Potencia pico', `${fmt(c.kwp, 2)} kWp`], ['Potencia AC inversor', c.pac ? `${fmt(c.pac, 1)} kW (DC/AC ${fmt(c.kwp / c.pac, 2)})` : '-'],
+    ['Orientación', `${orientName(c.azimuth)} (${c.azimuth}°)`], ['Inclinación', `${c.tilt}°`],
+  ]);
+  if (rep.company) kv([['Empresa mantenedora', rep.company], ['Fecha de la visita', new Date().toLocaleDateString('es-ES')]]);
+
+  // --- Diagnóstico ---
+  section('2. Diagnóstico de rendimiento');
+  kv([
+    ['Irradiancia en el plano', `${fmt(r.poaRef, 0)} W/m²${r.poaReal == null ? ' (cielo despejado)' : ''}`], ['Irradiancia cielo despejado', `${fmt(r.poaCs, 0)} W/m²`],
+    ['T. ambiente / célula', `${fmt(r.tAmb, 1)} / ${fmt(r.tCell, 1)} °C`], ['Nubosidad', r.clouds != null ? `${fmt(r.clouds, 0)} %` : '-'],
+    ['Potencia esperada', `${fmt(r.pExpected, 2)} kW${r.clipping ? ' (limitada por inversor)' : ''}`], ['Potencia real (inversor)', r.real != null ? `${fmt(r.real, 2)} kW` : 'No introducida'],
+  ]);
+  if (r.pi != null) {
+    need(12);
+    const stT = { green: 'RENDIMIENTO ÓPTIMO', amber: 'REVISAR SOMBREADO / SUCIEDAD', red: 'ALARMA: POSIBLE FALLO' }[r.status];
+    const w = pill(`${fmt(r.pi * 100, 1)} % vs esperado`, stCol(r.status), M, y + 1);
+    pill(stT, stCol(r.status), M + w + 3, y + 1);
+    font(8.5, 'normal', C.mute); T(`PR (IEC): ${fmt(r.pr * 100, 1)} %  ·  Desviación: ${r.dev >= 0 ? '+' : ''}${fmt(r.dev * 100, 1)} %`, M, y + 8);
+    y += 14;
+  }
+  if (energyResult?.eReal != null) {
+    kv([['Energía ' + (energyResult.which === 'today' ? 'hoy (hasta ahora)' : 'de ayer'), `${fmt(energyResult.eReal, 1)} kWh real / ${fmt(energyResult.eExp, 1)} kWh esperada`],
+        ['Rendimiento diario', energyResult.pi != null ? `${fmt(energyResult.pi * 100, 1)} %` : '-']]);
+  }
+  if (rainInfo) kv([['Días sin lluvia', String(rainInfo.daysSince ?? '+30')], ['Próxima lluvia', rainInfo.next ? (rainInfo.next.inDays === 0 ? 'hoy' : rainInfo.next.inDays === 1 ? 'mañana' : `en ${rainInfo.next.inDays} días`) + ` (${fmt(rainInfo.next.mm, 1)} mm)` : 'no prevista (3 días)']]);
+
+  // --- Strings ---
+  if (strResult) {
+    section('3. Comparativa de strings / MPPT');
+    const cols = [M, M + 40, M + 80, M + 115];
+    need(8); font(8, 'bold', C.mute); ['String', `Valor (${strResult.rawUnit})`, 'Desviación', 'Estado'].forEach((h, i) => T(h, cols[i], y)); y += 2;
+    doc.setDrawColor(...C.line); doc.line(M, y, W - M, y); y += 4.5;
+    strResult.rows.forEach((x) => {
+      need(6.5); font(9.5, 'normal', C.ink); T(x.name, cols[0], y); T(fmt(x.v, 2), cols[1], y);
+      font(9.5, 'bold', stCol(x.st)); T(`${x.dev >= 0 ? '+' : ''}${fmt(x.dev * 100, 1)} %`, cols[2], y);
+      T({ ok: 'Correcto', warn: 'Revisar', err: 'Fallo probable' }[x.st], cols[3], y); y += 5.8;
+    });
+    y += 2; strResult.issues.forEach((x) => para(`${x.name}: ${x.msg}`, 8.5, C.mute));
+  }
+
+  // --- Multímetro ---
+  if (vocResult && (vocResult.mv != null || vocResult.mi != null)) {
+    section('4. Medidas con multímetro');
+    const v = vocResult;
+    kv([['Voc esperado / medido', `${fmt(v.e.voc, 1)} V / ${v.mv != null ? fmt(v.mv, 1) + ' V' : '-'}`], ['Desviación Voc', v.devV != null ? `${v.devV >= 0 ? '+' : ''}${fmt(v.devV * 100, 1)} %` : '-'],
+        ['Isc esperado / medido', `${fmt(v.e.isc, 2)} A / ${v.mi != null ? fmt(v.mi, 2) + ' A' : '-'}`], ['Desviación Isc', v.devI != null ? `${v.devI >= 0 ? '+' : ''}${fmt(v.devI * 100, 1)} %` : '-'],
+        ['Condiciones', `${fmt(v.G, 0)} W/m² · ${fmt(v.Tc, 1)} °C célula`], ['Módulos en serie', String(v.e.N)]]);
+  }
+
+  // --- Checklist ---
+  const ckVals = Object.values(ck.items).filter((x) => x.st);
+  if (ckVals.length) {
+    need(40); section('5. Checklist de mantenimiento preventivo');
+    const nOk = ckVals.filter((x) => x.st === 'ok').length, nDef = ckVals.filter((x) => x.st === 'def').length, nNa = ckVals.filter((x) => x.st === 'na').length;
+    need(10); let x0 = M;
+    x0 += pill(`${nOk} OK`, C.ok, x0, y + 1) + 3; x0 += pill(`${nDef} defecto${nDef === 1 ? '' : 's'}`, nDef ? C.err : C.mute, x0, y + 1) + 3; pill(`${nNa} N/A · ${CK_TOTAL - ckVals.length} sin revisar`, C.mute, x0, y + 1);
+    y += 10;
+    CHECKLIST.forEach((sec) => {
+      need(12); font(9.5, 'bold', C.ink); T(sec.t, M, y); y += 5;
+      sec.items.forEach(([id, txt]) => {
+        const it = ck.items[id] || {};
+        const lines = doc.splitTextToSize(pdfTxt(txt), CW - 30);
+        const noteLines = it.st === 'def' && it.note ? doc.splitTextToSize(pdfTxt('Defecto: ' + it.note), CW - 30) : [];
+        need(4.4 * (lines.length + noteLines.length) + 2);
+        const lab = { ok: 'OK', def: 'DEFECTO', na: 'N/A' }[it.st] || '-';
+        const col = { ok: C.ok, def: C.err, na: C.mute }[it.st] || [203, 213, 225];
+        doc.setFillColor(...col); doc.circle(M + 1.6, y - 1.2, 1.3, 'F');
+        font(8.8, 'normal', C.ink); lines.forEach((ln, k) => T(ln, M + 5, y + k * 4.2));
+        font(8.5, 'bold', col); T(lab, W - M, y, { align: 'right' });
+        y += 4.2 * lines.length;
+        if (noteLines.length) { font(8.2, 'italic', C.err); noteLines.forEach((ln) => { T(ln, M + 5, y); y += 4; }); }
+        y += 1.2;
+      });
+      y += 2;
+    });
+  }
+
+  // --- Observaciones ---
+  if (rep.notes?.trim() || rep.next) {
+    section('6. Observaciones y trabajos realizados');
+    if (rep.notes?.trim()) para(rep.notes);
+    if (rep.next) { const d = new Date(); d.setMonth(d.getMonth() + Number(rep.next)); kv([['Próxima revisión recomendada', d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })], ['', '']]); }
+  }
+
+  // --- Fotos (2 por fila) ---
+  if (photos.length) {
+    section(`7. Reportaje fotográfico (${photos.length})`);
+    const pw = (CW - 6) / 2;
+    for (let i = 0; i < photos.length; i += 2) {
+      const row = photos.slice(i, i + 2);
+      const hs = row.map((p) => Math.min(pw * (p.h / p.w), 95));
+      const rh = Math.max(...hs) + 13;
+      need(rh);
+      row.forEach((p, j) => {
+        const x = M + j * (pw + 6), ih = hs[j];
+        try { doc.addImage(p.data, 'JPEG', x, y, pw, ih, undefined, 'FAST'); } catch {}
+        doc.setDrawColor(...C.line); doc.rect(x, y, pw, ih);
+        font(8.3, 'bold', p.itemId ? C.err : C.ink);
+        T((p.itemId ? 'DEFECTO: ' : '') + (p.caption || `Foto ${i + j + 1}`), x, y + ih + 4.2, { maxWidth: pw });
+        font(7.2, 'normal', C.mute); T(`${new Date(p.t).toLocaleString('es-ES')}${p.lat != null ? `  ·  ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}` : ''}`, x, y + ih + 8.4);
+      });
+      y += rh;
+    }
+  }
+
+  // --- Pie en todas las páginas ---
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setDrawColor(...C.line); doc.line(M, H - 11, W - M, H - 11);
+    font(7, 'normal', C.mute);
+    T(`Generado con SolarYield Pro · ${location.protocol.startsWith('http') ? location.host + location.pathname : 'app local'} · Datos meteo: Open-Meteo.com (CC BY 4.0). Valores orientativos.`, M, H - 7);
+    T(`Página ${i} de ${pages}`, W - M, H - 7, { align: 'right' });
+  }
+  const fname = `Informe-FV_${(c.name || 'planta').replace(/[^\w-]+/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`;
+  return { doc, fname };
+}
+
+async function downloadPdf() {
+  const btn = $('btnPdf'); const old = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Generando…';
+  try { const { doc, fname } = await buildPdf(); doc.save(fname); toast('📄 Informe PDF generado.', 'ok'); }
+  catch (e) { toast(e.message || 'Error al generar el PDF.', 'err', 5000); }
+  finally { btn.disabled = false; btn.textContent = old; }
+}
+async function sharePdf() {
+  const btn = $('btnPdfShare'); const old = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Preparando…';
+  try {
+    const { doc, fname } = await buildPdf();
+    const file = new File([doc.output('blob')], fname, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: fname });
+    else { doc.save(fname); toast('Tu navegador no permite compartir archivos: se ha descargado el PDF.', 'info', 4500); }
+  } catch (e) { if (e.name !== 'AbortError') toast(e.message || 'Error al compartir.', 'err', 5000); }
+  finally { btn.disabled = false; btn.textContent = old; }
+}
+async function newVisit() {
+  if (!confirmTwice($('btnNewVisit'), 'Pulsa otra vez para vaciar checklist, fotos y observaciones de esta planta.')) return;
+  const all = store.get(REP_KEY, {}); delete all[curPlantKey()]; store.set(REP_KEY, all);
+  setCk({ items: {} }); await photoDB.clearPlant(curPlantKey());
+  renderReport(); renderChecklist(); toast('Nueva inspección preparada.', 'ok');
+}
+function setupReport() {
+  ['repTech', 'repClient', 'repCompany', 'repNotes', 'repNext'].forEach((id) => $(id).addEventListener('change', saveRep));
+  $('repNotes').addEventListener('input', () => { clearTimeout(setupReport.t); setupReport.t = setTimeout(saveRep, 600); });
+  $('phCamera').addEventListener('change', (e) => { onPhotoFiles([...e.target.files]); e.target.value = ''; });
+  $('phGallery').addEventListener('change', (e) => { onPhotoFiles([...e.target.files]); e.target.value = ''; });
+  $('btnPdf').addEventListener('click', downloadPdf);
+  $('btnPdfShare').addEventListener('click', sharePdf);
+  $('btnNewVisit').addEventListener('click', newVisit);
+}
+
+/* ------------------------------------------------------------------
  * 16. INICIALIZACIÓN
  * ------------------------------------------------------------------ */
 function updateNetLed() { setLed('ledNet', navigator.onLine ? 'ok' : 'err'); }
@@ -2347,16 +2947,17 @@ function init() {
   $('btnNewPlant').addEventListener('click', newPlant);
   $('btnDeletePlant').addEventListener('click', deletePlant);
   $('btnDemoPlant').addEventListener('click', loadDemoPlant);
-  $('realKw').addEventListener('input', compare);
+  $('realKw').addEventListener('input', () => { compare(); updateCtx(); });
   $('btnShare').addEventListener('click', copyReport);
   $('btnWhatsapp').addEventListener('click', shareWhatsapp);
   $('btnSettings').addEventListener('click', openSettings);
   $('btnCloseSettings').addEventListener('click', closeSettings);
   $('settingsModal').addEventListener('click', (e) => { if (e.target.id === 'settingsModal') closeSettings(); });
   $('btnSaveSettings').addEventListener('click', saveSettings);
-  $('btnTgTest').addEventListener('click', testTelegram);
-  $('btnExport').addEventListener('click', exportPlants);
-  $('fileImport').addEventListener('change', (e) => e.target.files[0] && importPlants(e.target.files[0]));
+  $('btnExport').addEventListener('click', exportBackup);
+  $('fileImport').addEventListener('change', (e) => { const f = e.target.files[0] || pendingRestore; if (f) importBackup(f); });
+  $('fileImport').closest('label').addEventListener('click', (e) => { if (pendingRestore && $('fileImport').closest('label').dataset.armed === '1') { e.preventDefault(); importBackup(pendingRestore); } });
+  $('btnContrast').addEventListener('click', toggleContrast);
   $('btnClearCache').addEventListener('click', clearApiCache);
   window.addEventListener('online', updateNetLed);
   window.addEventListener('offline', updateNetLed);
@@ -2375,6 +2976,10 @@ function init() {
   setupVoc();
   setupEnergy();
   setupHistory();
+  setupChecklist();
+  setupReport();
+  applyContrast();
+  setupNav();
 
   // Service Worker (PWA) — solo en HTTPS o localhost
   if ('serviceWorker' in navigator && window.isSecureContext) {
