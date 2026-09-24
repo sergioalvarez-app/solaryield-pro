@@ -1023,7 +1023,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.6.1';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 const REPO = 'sergioalvarez-app/solaryield-pro';
 /** Estadísticas anónimas sin cookies (GoatCounter). Deja '' para desactivarlas. */
@@ -2186,7 +2186,7 @@ function setupVoc() {
 /* ------------------------------------------------------------------
  * 12d. BALANCE ENERGÉTICO DIARIO + DÍAS SIN LLUVIA
  * ------------------------------------------------------------------ */
-let eDay = 'today';
+let eDay = 'today', eDayAuto = true; // eDayAuto: la app elige «Ayer» si hoy aún no hay producción que comparar
 let energyResult = null, rainInfo = null;
 
 const shiftDate = (ymd, days) => { const d = new Date(ymd + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10); };
@@ -2262,13 +2262,23 @@ function renderEnergy() {
   document.querySelectorAll('.eDay').forEach((b) => b.classList.toggle('active', b.dataset.day === eDay));
   const tiles = $('eTiles'), rainT = $('rainTiles'), diag = $('eDiag');
   energyResult = null;
-  if (!r) { tiles.innerHTML = ''; rainT.innerHTML = ''; diag.innerHTML = '<p class="text-xs text-slate-500">Ejecuta un análisis para calcular la energía esperada.</p>'; setBadge('eSummary', 'Sin datos', null); return; }
+  if (!r) {
+    tiles.innerHTML = ''; rainT.innerHTML = '';
+    const cfgErr = validateConfig(readConfig());
+    if (cfgErr) diag.innerHTML = `<div class="rounded-lg border border-amber-400/40 bg-amber-500/10 text-amber-100 px-3 py-2 text-xs"><p>Para calcular la energía esperada, primero rellena los datos de la planta (coordenadas y kWp) en Diagnóstico rápido.</p><button type="button" class="btn-ghost mt-2 px-3 py-1.5 text-xs" onclick="showSection('diag')">⚡ Ir a Diagnóstico rápido</button></div>`;
+    else { diag.innerHTML = '<p class="text-xs text-slate-400">Calculando la energía esperada…</p>'; if (!$('btnAnalyze').disabled) analyze(); }
+    setBadge('eSummary', 'Sin datos', null); return;
+  }
+  // Por la noche o a primera hora «Hoy» todavía no tiene producción: se compara el día de ayer completo
+  if (eDayAuto && eDay === 'today' && expectedEnergy(r, 'today').e / r.cfg.kwp < 1) eDay = 'yesterday';
+  document.querySelectorAll('.eDay').forEach((b) => b.classList.toggle('active', b.dataset.day === eDay));
 
   const exp = expectedEnergy(r, eDay);
   const real = num($('eReal').value);
   const yieldExp = exp.e / r.cfg.kwp;
   const pi = real != null && exp.e > 0.05 ? real / exp.e : null;
-  const st = pi == null ? null : pi >= THRESHOLDS.green ? 'ok' : pi >= THRESHOLDS.amber ? 'warn' : 'err';
+  const tooHigh = pi != null && pi > 1.25; // más energía de la físicamente posible: dato o configuración erróneos
+  const st = pi == null ? null : tooHigh ? 'warn' : pi >= THRESHOLDS.green ? 'ok' : pi >= THRESHOLDS.amber ? 'warn' : 'err';
   const col = { ok: 'text-emerald-300', warn: 'text-amber-300', err: 'text-red-300' };
   const tile = (label, val, unit, sub, cls = '') => `
     <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
@@ -2295,14 +2305,16 @@ function renderEnergy() {
 
   const msgs = [];
   if (st === 'ok') msgs.push(['ok', 'Producción del día acorde con la irradiancia real. Si el diagnóstico instantáneo salía mal, probablemente fue una nube o una lectura puntual.']);
-  if (st === 'warn') msgs.push(['warn', 'Producción del día algo baja (70–85 %): revisa sombras, suciedad, disparos del inversor o limitación de exportación (inyección cero).']);
+  if (tooHigh) msgs.push(['warn', 'La energía real supera mucho la esperada: comprueba que la lectura sea del día elegido (hoy/ayer), que esté en kWh y que los kWp de la planta sean correctos.']);
+  else if (st === 'warn') msgs.push(['warn', 'Producción del día algo baja (70–85 %): revisa sombras, suciedad, disparos del inversor o limitación de exportación (inyección cero).']);
   if (st === 'err') msgs.push(['err', 'Producción del día muy baja (&lt; 70 %): posible fallo de strings, inversor parado parte del día o error en los kWp introducidos.']);
-  if (st && st !== 'ok' && rainInfo && (rainInfo.daysSince ?? 99) >= 20) msgs.push(['info', `Llevan ${rainInfo.daysSince ?? '+30'} días sin lluvia: la suciedad puede explicar parte de la pérdida.${rainInfo.next && rainInfo.next.inDays <= 3 ? ' Hay lluvia prevista pronto: puede ser buena idea esperar antes de limpiar.' : ''}`]);
-  if (eDay === 'today' && yieldExp < 0.5) msgs.push(['info', 'Todavía es pronto: con poca energía acumulada el porcentaje del día es poco fiable. Mejor compara el día de ayer completo.']);
+  if (st && st !== 'ok' && !tooHigh && rainInfo && (rainInfo.daysSince ?? 99) >= 20) msgs.push(['info', `Llevan ${rainInfo.daysSince ?? '+30'} días sin lluvia: la suciedad puede explicar parte de la pérdida.${rainInfo.next && rainInfo.next.inDays <= 3 ? ' Hay lluvia prevista pronto: puede ser buena idea esperar antes de limpiar.' : ''}`]);
+  if (real != null && exp.e <= 0.05) msgs.push(['warn', 'Hoy todavía no se espera producción (es de noche o acaba de amanecer). Pulsa «Ayer (completo)» e introduce la energía de ayer.']);
+  else if (eDay === 'today' && yieldExp < 0.5) msgs.push(['info', 'Todavía es pronto: con poca energía acumulada el porcentaje del día es poco fiable. Mejor compara el día de ayer completo.']);
   if (exp.source !== 'Open-Meteo') msgs.push(['info', 'Sin datos meteorológicos: la energía esperada es la de cielo despejado (máximo teórico), el rendimiento real puede ser mejor de lo indicado.']);
   const box = { ok: 'border-emerald-400/40 bg-emerald-500/10 text-emerald-100', warn: 'border-amber-400/40 bg-amber-500/10 text-amber-100', err: 'border-red-400/40 bg-red-500/10 text-red-100', info: 'border-slate-600/60 bg-slate-800/40 text-slate-300' };
   diag.innerHTML = msgs.map(([k, t]) => `<div class="flex gap-2.5 items-start rounded-lg border px-3 py-2 text-xs ${box[k]}"><i class="led ${k === 'info' ? '' : k} mt-1 shrink-0"></i><span>${t}</span></div>`).join('');
-  setBadge('eSummary', st === 'ok' ? 'Día OK' : st === 'warn' ? 'Día bajo' : st === 'err' ? 'Día muy bajo' : 'Esperada lista', st);
+  setBadge('eSummary', tooHigh ? 'Revisar dato' : st === 'ok' ? 'Día OK' : st === 'warn' ? 'Día bajo' : st === 'err' ? 'Día muy bajo' : 'Esperada lista', st);
   energyResult = { which: eDay, day: exp.day, eExp: exp.e, eReal: real, pi, st, source: exp.source };
 }
 
@@ -2630,7 +2642,7 @@ function setupImport() {
 }
 
 function setupEnergy() {
-  document.querySelectorAll('.eDay').forEach((b) => b.addEventListener('click', () => { eDay = b.dataset.day; $('eReal').value = ''; renderEnergy(); }));
+  document.querySelectorAll('.eDay').forEach((b) => b.addEventListener('click', () => { eDay = b.dataset.day; eDayAuto = false; $('eReal').value = ''; renderEnergy(); }));
   $('eReal').addEventListener('input', renderEnergy);
   renderEnergy();
 }
