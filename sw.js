@@ -5,7 +5,7 @@
  * - API Open-Meteo y analítica: siempre red (sin datos, la app usa su modelo de cielo despejado).
  * Sube CACHE_VERSION cada vez que publiques cambios.
  */
-const CACHE_VERSION = 'syp-v2.3.0';
+const CACHE_VERSION = 'syp-v2.4.0';
 const SHELL = [
   './',
   './index.html',
