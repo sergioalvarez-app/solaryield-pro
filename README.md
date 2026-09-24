@@ -8,10 +8,10 @@ Herramienta web gratuita y de código abierto (PWA) para el **diagnóstico rápi
 
 Se eligen desde el menú desplegable superior:
 
-- **⚡ Diagnóstico rápido** – irradiancia real en el plano del módulo (Open-Meteo) y de cielo despejado (modelo Ineichen-Perez), potencia esperada corregida por temperatura, pérdidas y límite del inversor (clipping). Se compara con la lectura del inversor → rendimiento, PR y semáforo 🟢🟡🔴. GPS e inclinómetro del móvil.
+- **⚡ Diagnóstico rápido** – plantas de una o varias orientaciones (Este-Oeste, dos aguas…) con su antigüedad; irradiancia real en el plano del módulo (Open-Meteo) y de cielo despejado (modelo Ineichen-Perez), potencia esperada corregida por temperatura, pérdidas y límite del inversor (clipping). Se compara con la lectura del inversor → rendimiento, PR y semáforo 🟢🟡🔴. GPS e inclinómetro del móvil.
 - **🔌 Strings / MPPT** – compara hasta 100 strings por corriente o potencia (normalizando por nº de módulos) y localiza strings abiertos o con pérdidas. Admite pegar columnas de Excel.
 - **🔋 Multímetro Voc / Isc** – valores esperados según la ficha del módulo y diagnóstico automático de la medida (string abierto, polaridad invertida, módulos de menos, diodos de bypass).
-- **📅 Energía diaria y lluvia** – energía esperada de hoy o de ayer con la irradiancia real, días sin lluvia y previsión.
+- **📅 Energía diaria y lluvia** – energía esperada de hoy o de ayer con la irradiancia real, días sin lluvia y previsión. **Importa el CSV/Excel del portal del inversor** (Huawei, SolarEdge, Fronius, SMA, GoodWe…) y compara día a día hasta 1 año con la meteorología histórica real: detecta paradas, suciedad progresiva y pérdidas.
 - **✅ Checklist de mantenimiento** – 38 puntos inspirados en IEC 62446-1 y buenas prácticas de O&M, con notas y fotos de cada defecto.
 - **📷 Informe con fotos (PDF)** – fotos con fecha, hora y coordenadas estampadas; informe PDF profesional para descargar o compartir por WhatsApp o email.
 - **📈 Historial** – evolución del rendimiento por planta, detección de limpiezas y exportación a CSV.
