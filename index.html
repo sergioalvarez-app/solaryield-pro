@@ -440,15 +440,19 @@
             <h2 class="hud-title">Comparador de strings / MPPT</h2>
             <span id="strSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Sin datos</span></span>
           </div>
-          <p class="text-xs text-slate-400 mb-4">Todos los strings comparten el mismo sol: compararlos entre sí detecta fallos aunque no sepas la irradiancia exacta. Mide todos en 2–3 minutos.</p>
+          <p class="text-xs text-slate-400 mb-4">Todos los strings comparten el mismo sol: compararlos entre sí detecta fallos aunque no sepas la irradiancia exacta. Mide todos en 2–3 minutos. <span class="text-slate-500">Truco: pega una columna de valores del portal o Excel en cualquier casilla y se reparten automáticamente.</span></p>
 
           <div class="flex flex-wrap items-center gap-2 mb-3">
             <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs font-mono" role="group" aria-label="Unidad">
               <button class="strUnit px-3 py-2" data-unit="A">Corriente (A)</button>
               <button class="strUnit px-3 py-2" data-unit="kW">Potencia (kW)</button>
             </div>
-            <button id="btnStrAdd" class="btn-ghost !py-2 text-xs">＋ String</button>
-            <button id="btnStrDel" class="btn-ghost !py-2 text-xs">－ String</button>
+            <div class="flex items-center rounded-lg border border-slate-700 overflow-hidden">
+              <button id="btnStrDel" class="px-3 py-2 text-cyan-200 hover:bg-cyan-500/10" aria-label="Quitar string">－</button>
+              <input id="strCount" class="w-14 bg-transparent text-center font-mono text-sm text-slate-100 outline-none border-x border-slate-700 py-2" type="number" min="2" max="100" inputmode="numeric" aria-label="Nº de strings" title="Nº de strings" />
+              <button id="btnStrAdd" class="px-3 py-2 text-cyan-200 hover:bg-cyan-500/10" aria-label="Añadir string">＋</button>
+            </div>
+            <span class="text-[0.65rem] text-slate-500">strings</span>
             <button id="btnStrClear" class="btn-danger !py-2 text-xs ml-auto">Limpiar</button>
           </div>
 
@@ -456,6 +460,53 @@
           <div id="strRows" class="space-y-2.5"></div>
           <p id="strNote" class="text-[0.65rem] text-slate-500 mt-3"></p>
           <div id="strDiag" class="mt-3 space-y-2"></div>
+        </div>
+
+        <!-- Comprobación con multímetro: Voc / Isc esperados -->
+        <div class="glass p-5" id="vocCard">
+          <span class="corner tl"></span><span class="corner br"></span>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 class="hud-title">Voc / Isc esperados · multímetro</h2>
+            <span id="vocSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Sin datos</span></span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">Con los datos de la ficha del módulo y la irradiancia/temperatura actuales, calcula qué deberías leer en el string y lo compara con tu medida.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Ficha -->
+            <div>
+              <p class="text-[0.65rem] uppercase tracking-widest text-emerald-300 mb-2">Ficha técnica del módulo (STC)</p>
+              <div class="grid grid-cols-3 gap-2">
+                <div><label class="label" for="modVoc">Voc (V)</label><input id="modVoc" class="field field-sm modIn" type="number" step="0.01" inputmode="decimal" placeholder="49.5" /></div>
+                <div><label class="label" for="modIsc">Isc (A)</label><input id="modIsc" class="field field-sm modIn" type="number" step="0.01" inputmode="decimal" placeholder="13.9" /></div>
+                <div><label class="label" for="modPmax">Pmax (W)</label><input id="modPmax" class="field field-sm modIn" type="number" step="1" inputmode="numeric" placeholder="550" /></div>
+                <div><label class="label" for="modVmp">Vmp (V)</label><input id="modVmp" class="field field-sm modIn" type="number" step="0.01" inputmode="decimal" placeholder="41.6" /></div>
+                <div><label class="label" for="modImp">Imp (A)</label><input id="modImp" class="field field-sm modIn" type="number" step="0.01" inputmode="decimal" placeholder="13.2" /></div>
+                <div><label class="label" for="modSeries" title="Módulos en serie por string">Mód. serie</label><input id="modSeries" class="field field-sm modIn" type="number" step="1" min="1" inputmode="numeric" placeholder="18" /></div>
+                <div><label class="label" for="modBeta" title="Coeficiente de temperatura de Voc"><span class="normal-case">β</span> Voc %/°C</label><input id="modBeta" class="field field-sm modIn" type="number" step="0.001" inputmode="decimal" placeholder="-0.27" /></div>
+                <div><label class="label" for="modAlpha" title="Coeficiente de temperatura de Isc"><span class="normal-case">α</span> Isc %/°C</label><input id="modAlpha" class="field field-sm modIn" type="number" step="0.001" inputmode="decimal" placeholder="0.048" /></div>
+                <div><label class="label" for="modCells" title="Células en serie (se estima si lo dejas vacío)">Células</label><input id="modCells" class="field field-sm modIn" type="number" step="1" inputmode="numeric" placeholder="auto" /></div>
+              </div>
+              <p class="text-[0.65rem] text-slate-500 mt-2">Se guarda con la planta. Si dejas β/α vacíos se usan valores típicos de silicio cristalino (−0,28 / +0,05 %/°C).</p>
+            </div>
+
+            <!-- Condiciones y medida -->
+            <div>
+              <p class="text-[0.65rem] uppercase tracking-widest text-emerald-300 mb-2">Condiciones y medida</p>
+              <div class="grid grid-cols-2 gap-2 mb-3">
+                <div><label class="label" for="condG">Irradiancia W/m²</label><input id="condG" class="field field-sm condIn" type="number" step="1" inputmode="numeric" placeholder="del análisis" /></div>
+                <div><label class="label" for="condT">T. célula °C</label><input id="condT" class="field field-sm condIn" type="number" step="0.1" inputmode="decimal" placeholder="del análisis" /></div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div><label class="label" for="measVoc">Voc medido (V)</label><input id="measVoc" class="field condIn !border-cyan-700/60" type="number" step="0.1" inputmode="decimal" placeholder="—" /></div>
+                <div><label class="label" for="measIsc">Isc medido (A)</label><input id="measIsc" class="field condIn !border-cyan-700/60" type="number" step="0.01" inputmode="decimal" placeholder="—" /></div>
+              </div>
+              <p class="text-[0.65rem] text-slate-500 mt-2">Irradiancia y T. célula se toman del último análisis. Si tienes célula calibrada o termómetro IR en la trasera del módulo, escríbelos: mejora mucho la precisión.</p>
+            </div>
+          </div>
+
+          <!-- Resultados -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5" id="vocTiles"></div>
+          <div id="vocDiag" class="mt-3 space-y-2"></div>
         </div>
 
         <!-- Gráfico curva diaria -->
@@ -574,7 +625,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
 /**
@@ -1024,6 +1075,7 @@ async function analyze() {
   renderMetrics(res);
   renderChart(res);
   compare();
+  calcVoc();
 
   $('prCard').classList.remove('scanning');
   btn.disabled = false; $('btnAnalyzeText').textContent = 'Actualizar análisis';
@@ -1243,6 +1295,7 @@ function loadSelectedPlant(run = true) {
   if (!p) return;
   writeConfig(p);
   applyStringsTemplate(p.strings);
+  if (p.module) writeModule(p.module);
   $('realKw').value = '';
   if (run) analyze();
 }
@@ -1254,8 +1307,8 @@ function savePlant() {
   if (!c.name) { $('plantName').focus(); toast('Ponle un nombre a la planta para guardarla.', 'warn'); return; }
   const plants = getPlants();
   const existing = plants.find((p) => p.name.toLowerCase() === c.name.toLowerCase());
-  if (existing) Object.assign(existing, c, { strings: stringsTemplate(), updated: Date.now() });
-  else plants.push({ id: 'p' + Date.now().toString(36), ...c, strings: stringsTemplate(), created: Date.now() });
+  if (existing) Object.assign(existing, c, { strings: stringsTemplate(), module: readModule(), updated: Date.now() });
+  else plants.push({ id: 'p' + Date.now().toString(36), ...c, strings: stringsTemplate(), module: readModule(), created: Date.now() });
   setPlants(plants);
   refreshPlantSelect((existing || plants[plants.length - 1]).id);
   toast(existing ? `Planta «${c.name}» actualizada.` : `Planta «${c.name}» guardada.`, 'ok');
@@ -1319,7 +1372,31 @@ function renderStrings() {
       <div class="str-bar mt-1.5"><i style="width:0"></i><b class="hidden"></b></div>
     </div>`).join('');
   $('strRows').querySelectorAll('input').forEach((inp) => inp.addEventListener('input', onStrInput));
+  $('strRows').querySelectorAll('.strVal').forEach((inp) => inp.addEventListener('paste', onStrPaste));
+  $('strCount').value = strState.rows.length;
   analyzeStrings();
+}
+
+const STR_MAX = 100;
+function setStrCount(n) {
+  n = clamp(Math.round(n) || 2, 2, STR_MAX);
+  while (strState.rows.length < n) strState.rows.push({});
+  if (strState.rows.length > n) strState.rows.length = n;
+  strSave(); renderStrings();
+}
+
+/** Pegar lista (columna de Excel, "8.1; 8.2; 7.9", etc.) repartida desde la fila actual. */
+function onStrPaste(e) {
+  const txt = (e.clipboardData || window.clipboardData).getData('text');
+  const nums = (txt.match(/-?\d+(?:[.,]\d+)?/g) || []).map((x) => num(x));
+  if (nums.length < 2) return; // pegado normal de un solo valor
+  e.preventDefault();
+  const start = Number(e.target.closest('[data-i]').dataset.i);
+  const need = Math.min(STR_MAX, start + nums.length);
+  while (strState.rows.length < need) strState.rows.push({});
+  nums.slice(0, need - start).forEach((v, k) => { strState.rows[start + k].v = v; });
+  strSave(); renderStrings();
+  toast(`${Math.min(nums.length, need - start)} valores pegados.`, 'ok');
 }
 
 function onStrInput(e) {
@@ -1404,8 +1481,9 @@ function setStrSummary(text, led) {
 
 function setupStrings() {
   document.querySelectorAll('.strUnit').forEach((b) => b.addEventListener('click', () => { strState.unit = b.dataset.unit; strSave(); renderStrings(); }));
-  $('btnStrAdd').addEventListener('click', () => { if (strState.rows.length >= 24) return toast('Máximo 24 strings.', 'warn'); strState.rows.push({}); strSave(); renderStrings(); });
-  $('btnStrDel').addEventListener('click', () => { if (strState.rows.length <= 2) return; strState.rows.pop(); strSave(); renderStrings(); });
+  $('btnStrAdd').addEventListener('click', () => { if (strState.rows.length >= STR_MAX) return toast(`Máximo ${STR_MAX} strings.`, 'warn'); setStrCount(strState.rows.length + 1); });
+  $('btnStrDel').addEventListener('click', () => setStrCount(strState.rows.length - 1));
+  $('strCount').addEventListener('change', (e) => setStrCount(num(e.target.value)));
   $('btnStrClear').addEventListener('click', () => { strState.rows = strState.rows.map((r) => ({ label: r.label, m: r.m })); strSave(); renderStrings(); });
   renderStrings();
 }
@@ -1416,6 +1494,122 @@ function applyStringsTemplate(t) {
   if (!t || !Array.isArray(t.rows) || !t.rows.length) return;
   strState = { unit: t.unit === 'kW' ? 'kW' : 'A', rows: t.rows.map((r) => ({ label: r.label || '', m: r.m ?? null })) };
   strSave(); renderStrings();
+}
+
+/* ------------------------------------------------------------------
+ * 12c. VOC / ISC ESPERADOS (comprobación con multímetro)
+ * ------------------------------------------------------------------ */
+const MOD_KEY = 'syp_module';
+const MOD_FIELDS = { modVoc: 'voc', modIsc: 'isc', modPmax: 'pmax', modVmp: 'vmp', modImp: 'imp', modSeries: 'series', modBeta: 'beta', modAlpha: 'alpha', modCells: 'cells' };
+let vocResult = null;
+
+function readModule() {
+  const m = {};
+  for (const [id, k] of Object.entries(MOD_FIELDS)) m[k] = num($(id).value);
+  return m;
+}
+function writeModule(m) {
+  if (!m) return;
+  for (const [id, k] of Object.entries(MOD_FIELDS)) $(id).value = m[k] ?? '';
+  store.set(MOD_KEY, m); calcVoc();
+}
+
+/** Modelo simplificado de un diodo para trasladar STC → condiciones reales. */
+function expectedElectrical(m, G, Tc) {
+  const beta = (m.beta ?? -0.28) / 100, alpha = (m.alpha ?? 0.05) / 100;
+  const cells = m.cells || Math.max(1, Math.round(m.voc / 0.68)); // ~0,68 V por célula (c-Si)
+  const n = 1.2, Vt = (1.380649e-23 * (Tc + 273.15)) / 1.602176634e-19; // tensión térmica
+  const dT = Tc - 25, g = Math.max(G, 1) / 1000;
+  const logTerm = n * cells * Vt * Math.log(g);
+  const vocMod = m.voc * (1 + beta * dT) + logTerm;
+  const iscMod = m.isc * g * (1 + alpha * dT);
+  const vmpMod = m.vmp ? m.vmp * (1 + beta * 1.15 * dT) + logTerm : null; // Vmp cae algo más que Voc con T
+  const impMod = m.imp ? m.imp * g * (1 + alpha * dT) : null;
+  const N = m.series || 1;
+  return { cells, vocMod, voc: vocMod * N, isc: iscMod, vmp: vmpMod ? vmpMod * N : null, imp: impMod, N };
+}
+
+function calcVoc() {
+  const m = readModule();
+  store.set(MOD_KEY, m);
+  const r = state.result;
+  const G = num($('condG').value) ?? (r ? r.poaRef : null);
+  const Tc = num($('condT').value) ?? (r ? r.tCell : null);
+  $('condG').placeholder = r ? `${fmt(r.poaRef, 0)} (análisis)` : 'W/m²';
+  $('condT').placeholder = r ? `${fmt(r.tCell, 1)} (análisis)` : '°C';
+  const tiles = $('vocTiles'), diag = $('vocDiag');
+  vocResult = null;
+  const tile = (label, val, unit, sub, cls = '') => `
+    <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
+      <p class="text-[0.6rem] uppercase tracking-widest text-slate-400">${label}</p>
+      <p class="metric-value text-xl ${cls}">${val}<span class="text-xs text-slate-400 font-mono ml-1">${unit}</span></p>
+      <p class="text-[0.6rem] font-mono text-cyan-300/70 mt-0.5 truncate">${sub}</p>
+    </div>`;
+
+  if (!m.voc || !m.isc) { tiles.innerHTML = ''; diag.innerHTML = '<p class="text-xs text-slate-500">Introduce al menos Voc e Isc de la ficha del módulo.</p>'; setVocSummary('Sin datos', null); return; }
+  if (G == null || Tc == null) { tiles.innerHTML = ''; diag.innerHTML = '<p class="text-xs text-slate-500">Ejecuta un análisis o escribe irradiancia y temperatura de célula.</p>'; setVocSummary('Sin condiciones', null); return; }
+  if (G < 100) { setVocSummary('Poca luz', 'warn'); }
+
+  const e = expectedElectrical(m, G, Tc);
+  const mv = num($('measVoc').value), mi = num($('measIsc').value);
+  const devV = mv != null ? mv / e.voc - 1 : null;
+  const devI = mi != null ? mi / e.isc - 1 : null;
+  const cV = devV == null ? '' : Math.abs(devV) <= 0.03 ? 'text-emerald-300' : Math.abs(devV) <= 0.06 ? 'text-amber-300' : 'text-red-300';
+  const cI = devI == null ? '' : Math.abs(devI) <= 0.10 ? 'text-emerald-300' : Math.abs(devI) <= 0.20 ? 'text-amber-300' : 'text-red-300';
+
+  tiles.innerHTML =
+    tile('Voc string esperado', fmt(e.voc, 1), 'V', `${e.N} × ${fmt(e.vocMod, 2)} V · ${e.cells} cél.`) +
+    tile('Isc esperado', fmt(e.isc, 2), 'A', `@ ${fmt(G, 0)} W/m² · ${fmt(Tc, 1)} °C`) +
+    tile('Voc medido', mv != null ? fmt(mv, 1) : '--', 'V', devV != null ? `${devV >= 0 ? '+' : ''}${fmt(devV * 100, 1)} %` : 'tolerancia ±3 %', cV) +
+    tile('Isc medido', mi != null ? fmt(mi, 2) : '--', 'A', devI != null ? `${devI >= 0 ? '+' : ''}${fmt(devI * 100, 1)} %` : 'tolerancia ±10 %', cI);
+  if (e.vmp && e.imp) tiles.innerHTML += `<p class="col-span-2 md:col-span-4 text-[0.65rem] font-mono text-slate-400">Punto de máxima potencia aprox.: Vmp ≈ ${fmt(e.vmp, 0)} V · Imp ≈ ${fmt(e.imp, 2)} A · P ≈ ${fmt((e.vmp * e.imp) / 1000, 2)} kW por string</p>`;
+
+  // Diagnóstico
+  const msgs = [];
+  if (mv != null) {
+    const vByp = e.vocMod / 3; // un módulo típico tiene 3 diodos de bypass
+    const deficit = e.voc - mv;
+    if (mv < 0) msgs.push(['err', `⚡ Tensión negativa: <strong>polaridad invertida</strong> en el string o en las puntas del multímetro. ¡No conectes el string así!`]);
+    else if (mv < 0.05 * e.voc) msgs.push(['err', 'Voc ≈ 0: string <strong>abierto</strong> (conector MC4 suelto, cable cortado, fusible o seccionador abierto).']);
+    else if (devV > 0.05) msgs.push(['warn', `Voc por encima de lo esperado: revisa el nº de módulos en serie (¿${Math.round(mv / e.vocMod)} en vez de ${e.N}?) o la temperatura de célula (puede estar más fría).`]);
+    else if (devV < -0.03) {
+      const mods = deficit / e.vocMod, diodes = Math.round(deficit / vByp);
+      if (Math.abs(mods - Math.round(mods)) < 0.2 && Math.round(mods) >= 1) msgs.push(['err', `Faltan ≈ <strong>${Math.round(mods)} módulo(s)</strong> de tensión (−${fmt(deficit, 0)} V): módulo puenteado, mal conexionado o nº de módulos distinto al indicado.`]);
+      else msgs.push([devV < -0.06 ? 'err' : 'warn', `Voc bajo (−${fmt(deficit, 0)} V ≈ ${diodes} diodo(s) de bypass de ${fmt(vByp, 1)} V): posible <strong>diodo de bypass en corto</strong>, célula dañada o temperatura de célula mayor de la estimada.`]);
+    } else {
+      msgs.push(['ok', 'Voc dentro de tolerancia (±3 %).']);
+      if (deficit >= 0.8 * vByp) msgs.push(['info', `Ojo: el déficit (−${fmt(deficit, 0)} V) equivale a ~${Math.max(1, Math.round(deficit / vByp))} diodo(s) de bypass, pero está dentro de la incertidumbre por temperatura. Mide el Voc de otro string idéntico <strong>en el mismo minuto</strong>: si la diferencia se mantiene, revisa diodos/cajas de conexión.`]);
+    }
+  }
+  if (mi != null) {
+    if (devI < -0.20) msgs.push(['err', 'Isc muy bajo: <strong>sombreado</strong>, suciedad fuerte, módulo degradado o irradiancia real menor que la estimada (nubes pasando).']);
+    else if (devI < -0.10) msgs.push(['warn', 'Isc algo bajo: suciedad, sombra parcial o diferencia entre la irradiancia del satélite y la real. Repite con cielo estable.']);
+    else if (devI > 0.15) msgs.push(['warn', 'Isc por encima de lo esperado: irradiancia real mayor (efecto borde de nube, albedo) o hay strings en paralelo en la medida.']);
+    else msgs.push(['ok', 'Isc dentro de tolerancia (±10 %).']);
+  }
+  if (G < 300) msgs.push(['warn', `Irradiancia baja (${fmt(G, 0)} W/m²): las medidas de Isc tienen mucha incertidumbre. Ideal &gt; 600 W/m² y cielo estable.`]);
+  if (!num($('condT').value)) msgs.push(['info', 'T. célula estimada con el modelo NOCT: si puedes, mídela con un termómetro IR en la trasera del módulo (cada 10 °C ≈ 3 % de Voc).']);
+
+  const box = { ok: 'border-emerald-400/40 bg-emerald-500/10 text-emerald-100', warn: 'border-amber-400/40 bg-amber-500/10 text-amber-100', err: 'border-red-400/40 bg-red-500/10 text-red-100', info: 'border-slate-600/60 bg-slate-800/40 text-slate-300' };
+  diag.innerHTML = msgs.map(([st, t]) => `<div class="flex gap-2.5 items-start rounded-lg border px-3 py-2 text-xs ${box[st]}"><i class="led ${st === 'info' ? '' : st} mt-1 shrink-0"></i><span>${t}</span></div>`).join('');
+
+  const worst = msgs.some((x) => x[0] === 'err') ? 'err' : msgs.some((x) => x[0] === 'warn') && (mv != null || mi != null) ? 'warn' : (mv != null || mi != null) ? 'ok' : null;
+  setVocSummary(worst === 'err' ? 'Revisar string' : worst === 'warn' ? 'Revisar' : worst === 'ok' ? 'Medidas OK' : 'Esperados listos', worst);
+  vocResult = { e, G, Tc, mv, mi, devV, devI, worst };
+}
+
+function setVocSummary(text, led) {
+  const el = $('vocSummary');
+  const styles = { ok: 'bg-emerald-500/15 text-emerald-200 border-emerald-400/50', warn: 'bg-amber-500/15 text-amber-200 border-amber-400/50', err: 'bg-red-500/15 text-red-200 border-red-400/50' };
+  el.className = `inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase border ${led ? styles[led] : 'bg-slate-800/80 text-slate-300 border-slate-600/60'}`;
+  el.innerHTML = `<i class="led ${led || ''}"></i><span>${text}</span>`;
+}
+
+function setupVoc() {
+  const m = store.get(MOD_KEY, null);
+  if (m) for (const [id, k] of Object.entries(MOD_FIELDS)) $(id).value = m[k] ?? '';
+  document.querySelectorAll('.modIn, .condIn').forEach((i) => i.addEventListener('input', calcVoc));
+  calcVoc();
 }
 
 /* ------------------------------------------------------------------
@@ -1449,6 +1643,12 @@ function buildReport() {
     lines.push('', `🔌 *Strings (${sr.rawUnit}):* ` + sr.rows.map((x) => `${x.name} ${fmt(x.v, 2)}`).join(' · '));
     if (!sr.issues.length) lines.push('✅ Todos los strings dentro de ±5 % de la referencia.');
     sr.issues.forEach((x) => lines.push(`${x.st === 'err' ? '🔴' : '🟡'} ${x.name}: ${(x.dev >= 0 ? '+' : '') + fmt(x.dev * 100, 1)} %`));
+  }
+  if (vocResult && (vocResult.mv != null || vocResult.mi != null)) {
+    const v = vocResult, em = { ok: '🟢', warn: '🟡', err: '🔴' }[v.worst] || '•';
+    lines.push('', `🔋 *Multímetro* (${fmt(v.G, 0)} W/m², ${fmt(v.Tc, 1)} °C célula):`);
+    if (v.mv != null) lines.push(`Voc: ${fmt(v.mv, 1)} V (esperado ${fmt(v.e.voc, 1)} V, ${v.devV >= 0 ? '+' : ''}${fmt(v.devV * 100, 1)} %)`);
+    if (v.mi != null) lines.push(`Isc: ${fmt(v.mi, 2)} A (esperado ${fmt(v.e.isc, 2)} A, ${v.devI >= 0 ? '+' : ''}${fmt(v.devI * 100, 1)} %) ${em}`);
   }
   if (r.degraded.length) lines.push('', '⚠️ Calculado en modo degradado (API no disponible).');
   lines.push('', `Fuentes: ${r.poaReal != null ? 'Open-Meteo, ' : ''}${r.csSource}`,
@@ -1528,7 +1728,7 @@ function importPlants(file) {
       const arr = JSON.parse(reader.result);
       if (!Array.isArray(arr)) throw new Error();
       const clean = arr.filter((p) => p && p.name && isFinite(p.lat) && isFinite(p.lon) && isFinite(p.kwp))
-        .map((p) => ({ id: p.id || 'p' + Math.random().toString(36).slice(2, 9), name: String(p.name).slice(0, 60), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0, strings: p.strings }));
+        .map((p) => ({ id: p.id || 'p' + Math.random().toString(36).slice(2, 9), name: String(p.name).slice(0, 60), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0, strings: p.strings, module: p.module }));
       const merged = [...getPlants()];
       clean.forEach((p) => { if (!merged.some((m) => m.name === p.name)) merged.push(p); });
       setPlants(merged); refreshPlantSelect();
@@ -1683,6 +1883,7 @@ function init() {
   $('helpModal').addEventListener('click', (e) => { if (e.target.id === 'helpModal') closeHelp(); });
   setupInstall();
   setupStrings();
+  setupVoc();
 
   // Service Worker (PWA) — solo en HTTPS o localhost
   if ('serviceWorker' in navigator && window.isSecureContext) {

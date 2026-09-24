@@ -7,6 +7,7 @@ Herramienta web gratuita (PWA) de **diagnóstico rápido para plantas fotovoltai
 - Comparador con la lectura del inversor: rendimiento vs. esperado, PR (IEC), desviación y semáforo de estado.
 - GPS, inclinómetro con el acelerómetro del móvil y plantas guardadas en el propio dispositivo.
 - Comparador de strings/MPPT (corriente o potencia, normalizado por nº de módulos) para localizar strings abiertos o con pérdidas.
+- Voc/Isc esperados según la ficha del módulo, con diagnóstico automático de la medida del multímetro (string abierto, polaridad, diodos de bypass, módulos de menos).
 - Modo degradado offline (modelo astronómico local) y alertas opcionales por Telegram.
 
 Sin registro, sin servidor, sin cookies: los datos se guardan solo en tu navegador.
