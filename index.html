@@ -180,6 +180,13 @@
     .str-bar > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 9999px; transition: width .8s cubic-bezier(.2,.8,.2,1), background .3s; box-shadow: 0 0 10px currentColor; }
     .str-bar > b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #a78bfa; opacity: .8; }
     .field-sm { padding: 0.45rem 0.6rem; font-size: 0.9rem; }
+    .perm-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem; border-radius: 0.8rem; border: 1px solid rgba(51,65,85,.8); background: rgba(2,6,23,.55); transition: all .3s; }
+    .perm-item.ok { border-color: rgba(52,211,153,.55); background: rgba(16,185,129,.08); }
+    .perm-item.err { border-color: rgba(248,113,113,.5); background: rgba(239,68,68,.07); }
+    .perm-btn { flex-shrink: 0; min-width: 5.6rem; padding: 0.5rem 0.7rem; border-radius: 0.6rem; font-size: 0.78rem; font-weight: 700; color: #02131a; background: linear-gradient(135deg, #06b6d4, #10b981); box-shadow: 0 0 16px -6px #22d3ee; }
+    .perm-btn.busy { opacity: .6; }
+    .perm-item.ok .perm-btn { background: transparent; color: #6ee7b7; box-shadow: none; border: 1px solid rgba(52,211,153,.5); }
+    .perm-item.err .perm-btn { background: transparent; color: #fecaca; box-shadow: none; border: 1px solid rgba(248,113,113,.5); }
     .eDay { color: #94a3b8; transition: all .2s; }
     .eDay.active { background: rgba(8, 145, 178, 0.35); color: #ecfeff; box-shadow: 0 0 12px -4px var(--cyan) inset; }
     input[type=number] { -moz-appearance: textfield; appearance: textfield; }
@@ -673,10 +680,55 @@
       <div class="grid grid-cols-2 gap-2 mb-6">
         <button id="btnExport" class="btn-ghost">Exportar plantas</button>
         <label class="btn-ghost text-center cursor-pointer">Importar plantas<input id="fileImport" type="file" accept="application/json" class="hidden" /></label>
+        <button id="btnPerms" class="btn-ghost col-span-2">🔐 Revisar permisos del móvil</button>
         <button id="btnClearCache" class="btn-danger col-span-2">Vaciar caché de APIs</button>
       </div>
 
       <button id="btnSaveSettings" class="btn-primary w-full text-sm">Guardar ajustes</button>
+    </div>
+  </div>
+
+  <!-- ============ MODAL PERMISOS (primer uso) ============ -->
+  <div id="permModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4">
+    <div class="glass w-full sm:max-w-md max-h-[94vh] overflow-y-auto p-6 !rounded-b-none sm:!rounded-2xl" style="padding-bottom: max(1.5rem, env(safe-area-inset-bottom));">
+      <div class="flex items-center gap-3 mb-2">
+        <img src="./icons/icon-192.png" alt="" width="44" height="44" class="rounded-xl" />
+        <div>
+          <h2 class="font-hud font-extrabold tracking-widest text-cyan-200">SOLARYIELD PRO</h2>
+          <p class="text-[0.65rem] uppercase tracking-[0.2em] text-slate-400">Configuración inicial</p>
+        </div>
+      </div>
+      <p class="text-sm text-slate-300 mb-4">Para usarla en campo, la app necesita algunos permisos. Tócalos uno a uno: el móvil te preguntará. <span class="text-slate-400">Nada sale de tu dispositivo.</span></p>
+
+      <div class="space-y-2.5" id="permList">
+        <div class="perm-item" data-perm="geo">
+          <span class="text-2xl" aria-hidden="true">📍</span>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-slate-100">Ubicación (GPS)</p>
+            <p class="text-xs text-slate-400">Coordenadas de la planta para calcular el sol.</p>
+          </div>
+          <button class="perm-btn">Permitir</button>
+        </div>
+        <div class="perm-item" data-perm="motion">
+          <span class="text-2xl" aria-hidden="true">📐</span>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-slate-100">Sensores de movimiento</p>
+            <p class="text-xs text-slate-400">Nivel (inclinación) y brújula (orientación).</p>
+          </div>
+          <button class="perm-btn">Activar</button>
+        </div>
+        <div class="perm-item" data-perm="install">
+          <span class="text-2xl" aria-hidden="true">📲</span>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-slate-100">Instalar en el móvil</p>
+            <p class="text-xs text-slate-400">Icono en inicio, pantalla completa y uso sin cobertura.</p>
+          </div>
+          <button class="perm-btn">Instalar</button>
+        </div>
+      </div>
+
+      <button id="btnPermDone" class="btn-primary w-full text-sm mt-5">Empezar</button>
+      <button id="btnPermSkip" class="w-full text-xs text-slate-500 hover:text-slate-300 mt-3">Ahora no</button>
     </div>
   </div>
 
@@ -710,7 +762,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '1.4.1';
+const APP_VERSION = '1.4.2';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
 /**
@@ -1082,13 +1134,7 @@ async function requestMotion(needMagnetometer = false) {
   if (isIOS && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
     try { return (await DeviceOrientationEvent.requestPermission()) === 'granted' ? 'ok' : 'denied'; } catch { return 'denied'; }
   }
-  try {
-    const names = needMagnetometer ? ['accelerometer', 'gyroscope', 'magnetometer'] : ['accelerometer', 'gyroscope'];
-    for (const n of names) {
-      const st = await navigator.permissions.query({ name: n });
-      if (st.state === 'denied') return 'denied';
-    }
-  } catch { /* API no soportada: seguimos y comprobamos si llegan eventos */ }
+  // En Android no nos fiamos de ninguna respuesta de "permiso": la prueba real es si llegan eventos.
   return 'ok';
 }
 const isTouchDevice = () => navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
@@ -2260,6 +2306,71 @@ function showHelp(key) {
 }
 function closeHelp() { const m = $('helpModal'); m.classList.add('hidden'); m.classList.remove('flex'); }
 
+/* ------------------------------------------------------------------
+ * 15c. PANTALLA DE PERMISOS (primer uso)
+ * ------------------------------------------------------------------ */
+const PERM_KEY = 'syp_onboarded';
+function setPerm(key, st, label) {
+  const el = document.querySelector(`.perm-item[data-perm="${key}"]`);
+  el.classList.remove('ok', 'err'); if (st === 'ok' || st === 'err') el.classList.add(st);
+  const b = el.querySelector('.perm-btn'); b.classList.toggle('busy', st === 'busy'); b.textContent = label;
+}
+async function permGeo() {
+  if (!('geolocation' in navigator)) return setPerm('geo', 'err', 'No disponible');
+  setPerm('geo', 'busy', 'Esperando…');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setPerm('geo', 'ok', '✓ Permitido');
+      if (!$('lat').value) { $('lat').value = pos.coords.latitude.toFixed(5); $('lon').value = pos.coords.longitude.toFixed(5); $('gpsAcc').textContent = `±${Math.round(pos.coords.accuracy)} m`; setLed('ledGps', 'ok'); persistLast(); }
+    },
+    (err) => setPerm('geo', err.code === 1 ? 'err' : 'ok', err.code === 1 ? '✕ Denegado' : '✓ Permitido'),
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+  );
+}
+async function permMotion() {
+  if (typeof DeviceOrientationEvent === 'undefined') return setPerm('motion', 'err', 'No disponible');
+  setPerm('motion', 'busy', 'Probando…');
+  if ((await requestMotion(true)) === 'denied') { setPerm('motion', 'err', '✕ Bloqueado'); showHelp('sensor'); return; }
+  const evt = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
+  let got = false;
+  const h = (e) => { if (e.beta != null) got = true; };
+  window.addEventListener(evt, h);
+  await sleep(2000);
+  window.removeEventListener(evt, h);
+  if (got) setPerm('motion', 'ok', '✓ Activo');
+  else if (isTouchDevice()) { setPerm('motion', 'err', '✕ Bloqueado'); showHelp('sensor'); }
+  else setPerm('motion', 'err', 'Sin sensor');
+}
+async function permInstall() {
+  if (isStandalone()) return setPerm('install', 'ok', '✓ Instalada');
+  if (deferredInstall) {
+    deferredInstall.prompt();
+    const { outcome } = await deferredInstall.userChoice;
+    deferredInstall = null;
+    if (outcome === 'accepted') { setPerm('install', 'ok', '✓ Instalada'); $('btnInstall').classList.add('hidden'); }
+  } else if (isIOS) showHelp('install');
+  else toast('Menú del navegador ⋮ → «Instalar app» o «Añadir a pantalla de inicio».', 'info', 5000);
+}
+async function refreshPermStates() {
+  if (isStandalone()) setPerm('install', 'ok', '✓ Instalada');
+  try { const g = await navigator.permissions.query({ name: 'geolocation' }); if (g.state === 'granted') setPerm('geo', 'ok', '✓ Permitido'); if (g.state === 'denied') setPerm('geo', 'err', '✕ Denegado'); } catch {}
+}
+function openPerms() {
+  const m = $('permModal'); m.classList.remove('hidden'); m.classList.add('flex');
+  refreshPermStates();
+}
+function closePerms() { const m = $('permModal'); m.classList.add('hidden'); m.classList.remove('flex'); store.set(PERM_KEY, true); }
+function setupPerms() {
+  document.querySelector('[data-perm="geo"] .perm-btn').addEventListener('click', permGeo);
+  document.querySelector('[data-perm="motion"] .perm-btn').addEventListener('click', permMotion);
+  document.querySelector('[data-perm="install"] .perm-btn').addEventListener('click', permInstall);
+  $('btnPermDone').addEventListener('click', closePerms);
+  $('btnPermSkip').addEventListener('click', closePerms);
+  $('btnPerms').addEventListener('click', () => { closeSettings(); openPerms(); });
+  // Primera vez en un móvil → mostrar automáticamente
+  if (!store.get(PERM_KEY, false) && isTouchDevice()) setTimeout(openPerms, 600);
+}
+
 function setupInstall() {
   const btn = $('btnInstall');
   const show = () => { btn.classList.remove('hidden'); btn.classList.add('flex'); };
@@ -2348,6 +2459,7 @@ function init() {
   $('btnHelpOk').addEventListener('click', closeHelp);
   $('helpModal').addEventListener('click', (e) => { if (e.target.id === 'helpModal') closeHelp(); });
   setupInstall();
+  setupPerms();
   setupStrings();
   setupVoc();
   setupEnergy();
