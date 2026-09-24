@@ -859,6 +859,7 @@
     <footer class="mt-10 text-center text-[0.7rem] text-slate-500 font-mono tracking-wider">
       SOLARYIELD PRO · <span id="authorLine"></span> · Datos guardados solo en este dispositivo<br class="sm:hidden">
       <span class="hidden sm:inline"> · </span><a class="underline hover:text-cyan-300" href="https://github.com/sergioalvarez-app/solaryield-pro" target="_blank" rel="noopener">Código abierto (GPL-3.0)</a>
+      <div class="mt-4 flex justify-center"><label class="inline-flex items-center gap-2 text-slate-400"><span aria-hidden="true">🌐</span><select id="footLang" class="langSel no-i18n bg-transparent border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-sans text-slate-300" aria-label="Idioma / Language"></select></label></div>
       <div class="mt-4"><button id="btnFeedback" class="btn-ghost !py-2.5 !px-4 text-xs font-sans">💬 Enviar sugerencia o avisar de un error</button></div>
       <p id="statsNote" class="hidden mt-2 text-[0.6rem]">Estadísticas de uso anónimas, sin cookies (GoatCounter).</p>
     </footer>
@@ -881,6 +882,9 @@
         <div><label class="label" for="setDegr">Degradación (%/año)</label><input id="setDegr" class="field" type="number" step="0.05" min="0" max="2" /></div>
       </div>
 
+
+      <h3 class="text-xs uppercase tracking-widest text-emerald-300 mb-3">Idioma</h3>
+      <select id="setLang" class="field langSel mb-6 !font-sans no-i18n" aria-label="Idioma / Language"></select>
 
       <h3 class="text-xs uppercase tracking-widest text-emerald-300 mb-3">Pantalla</h3>
       <label class="flex items-center gap-3 mb-6 cursor-pointer select-none">
@@ -990,7 +994,7 @@
   </div>
 
   <!-- Burbuja de ayuda (?) -->
-  <div id="helpPop" class="hidden" role="dialog" aria-modal="false" aria-labelledby="hpTitle">
+  <div id="helpPop" class="hidden no-i18n" role="dialog" aria-modal="false" aria-labelledby="hpTitle">
     <i class="hp-arrow"></i>
     <div class="glass !rounded-xl p-4 !bg-[#0b1324]">
       <div class="flex items-start gap-3">
@@ -1019,7 +1023,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '2.5.0';
+const APP_VERSION = '2.6.0';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 const REPO = 'sergioalvarez-app/solaryield-pro';
 /** Estadísticas anónimas sin cookies (GoatCounter). Deja '' para desactivarlas. */
@@ -1046,13 +1050,141 @@ const METEO_CACHE_MIN = 5;
 const LS = { settings: 'syp_settings', plants: 'syp_plants', last: 'syp_last' };
 
 /* ------------------------------------------------------------------
+ * 1b. IDIOMAS (i18n)
+ * La app está escrita en español; una capa traduce en tiempo real todo lo que
+ * aparece en pantalla (textos, placeholders, títulos), el PDF, el informe y el
+ * calendario. Diccionarios en i18n/<lang>.json (se guardan offline).
+ * Claves: texto exacto en español, o patrón con {0},{1}… para textos con números.
+ * Si falta una traducción, se muestra el español (nunca se rompe nada).
+ * ------------------------------------------------------------------ */
+const LANGS = { es: 'Español', en: 'English', fr: 'Français', de: 'Deutsch', it: 'Italiano', pt: 'Português', ca: 'Català' };
+const LOCALES = { es: 'es-ES', en: 'en-GB', fr: 'fr-FR', de: 'de-DE', it: 'it-IT', pt: 'pt-PT', ca: 'ca-ES' };
+let LANG = 'es', DICT = null, PATS = [];
+const LOC = () => LOCALES[LANG] || 'es-ES';
+const I18N_ORIG = new WeakMap(); // nodo/atributo → { orig, out }
+const I18N_ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+const normKey = (t) => t.replace(/\s+/g, ' ').trim();
+const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+function detectLang() {
+  for (const l of navigator.languages || [navigator.language || 'es']) {
+    const c = String(l).toLowerCase().slice(0, 2);
+    if (LANGS[c]) return c;
+  }
+  return 'es';
+}
+/** Traduce un texto (exacto o por patrón). Conserva espacios iniciales/finales. */
+function tr(s) {
+  if (typeof window !== 'undefined' && window.__i18nCollect && s) window.__i18nCollect(s);
+  if (LANG === 'es' || !DICT || !s || typeof s !== 'string') return s;
+  const k = normKey(s); if (!k || !/[A-Za-zÀ-ÿ]/.test(k)) return s;
+  let out = DICT.exact[k];
+  if (out == null) {
+    for (const p of PATS) {
+      if (p.first && !k.includes(p.first)) continue;
+      const m = k.match(p.re);
+      if (m) { out = p.tpl.replace(/\{(\d+)\}/g, (_, i) => { const v = m[Number(i) + 1] ?? ''; return /[A-Za-zÀ-ÿ]{3,}/.test(v) && v.length < k.length ? tr(v) : v; }); break; }
+    }
+  }
+  if (out == null) return s;
+  const lead = s.match(/^\s*/)[0], trail = s.match(/\s*$/)[0];
+  return lead + out + trail;
+}
+function compilePats(pat) {
+  PATS = Object.entries(pat || {}).map(([k, tpl]) => {
+    const parts = k.split(/(\{\d+\})/);
+    const order = []; let re = '^';
+    parts.forEach((pt) => { const m = pt.match(/^\{(\d+)\}$/); if (m) { order.push(Number(m[1])); re += '(.+?)'; } else re += escRe(pt); });
+    re += '$';
+    // Reordenar grupos a su índice {n}
+    const fixed = tpl.replace(/\{(\d+)\}/g, (_, n) => `{${order.indexOf(Number(n))}}`);
+    const lits = parts.filter((x) => !/^\{\d+\}$/.test(x)).sort((a, b) => b.length - a.length);
+    return { re: new RegExp(re), tpl: fixed, first: (lits[0] || '').trim() };
+  }).sort((a, b) => b.first.length - a.first.length);
+}
+function translateNode(node) {
+  if (node.nodeType === 3) {
+    const v = node.nodeValue; if (!v || !v.trim()) return;
+    const rec = I18N_ORIG.get(node);
+    const orig = rec && rec.out === v ? rec.orig : v;
+    const out = tr(orig);
+    if (out !== v) { node.nodeValue = out; }
+    if (rec?.orig !== orig || rec?.out !== out) I18N_ORIG.set(node, { orig, out });
+    return;
+  }
+  if (node.nodeType !== 1) return;
+  const el = node;
+  for (const a of I18N_ATTRS) {
+    if (!el.hasAttribute(a)) continue;
+    const v = el.getAttribute(a), key = el; let map = I18N_ORIG.get(key);
+    if (!map || !map.attrs) { map = { attrs: {} }; I18N_ORIG.set(key, map); }
+    const rec = map.attrs[a];
+    const orig = rec && rec.out === v ? rec.orig : v;
+    const out = tr(orig);
+    if (out !== v) el.setAttribute(a, out);
+    map.attrs[a] = { orig, out };
+  }
+}
+const I18N_SKIP = 'script,style,textarea,.no-i18n';
+function translateTree(root) {
+  if (!root) return;
+  if (root.nodeType === 3) { if (!root.parentElement?.closest(I18N_SKIP)) translateNode(root); return; }
+  if (root.nodeType !== 1 || root.closest?.(I18N_SKIP)) return;
+  translateNode(root);
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {
+    acceptNode: (n) => (n.nodeType === 1 && n.matches(I18N_SKIP) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+  });
+  let n; while ((n = w.nextNode())) translateNode(n);
+}
+/** Texto original (español) de un elemento, aunque esté traducido. */
+function origText(el) {
+  let t = ''; const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n;
+  while ((n = w.nextNode())) { const r = I18N_ORIG.get(n); t += r && r.out === n.nodeValue ? r.orig : n.nodeValue; }
+  return t;
+}
+let i18nObserver = null;
+function startI18nObserver() {
+  if (i18nObserver) return;
+  i18nObserver = new MutationObserver((muts) => {
+    if (LANG === 'es' && !window.__i18nCollect) return;
+    for (const m of muts) {
+      if (m.type === 'characterData') translateNode(m.target);
+      else if (m.type === 'attributes') translateNode(m.target);
+      else m.addedNodes.forEach((n) => translateTree(n));
+    }
+  });
+  i18nObserver.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS });
+}
+async function loadDict(lang) {
+  if (lang === 'es') { DICT = null; PATS = []; return; }
+  const res = await fetch(`./i18n/${lang}.json`, { cache: 'no-cache' }).catch(() => null) || await caches.match(`./i18n/${lang}.json`);
+  if (!res || !res.ok) throw new Error('No se pudo cargar el idioma');
+  const d = await res.json();
+  DICT = { exact: d.exact || {}, help: d.help || {} };
+  compilePats(d.pat);
+}
+async function setLang(lang, { save = true } = {}) {
+  if (!LANGS[lang]) lang = 'es';
+  try { await loadDict(lang); } catch (e) { toast('No se pudo cargar el idioma: ' + e.message, 'err'); lang = 'es'; DICT = null; PATS = []; }
+  LANG = lang;
+  if (save) { settings.lang = lang; store.set(LS.settings, settings); }
+  document.documentElement.lang = lang;
+  document.title = tr('SolarYield Pro · Diagnóstico FV rápido');
+  document.querySelectorAll('.langSel').forEach((s2) => { s2.value = lang; });
+  translateTree(document.body);
+  document.querySelectorAll('.hq[data-hk]').forEach((b) => b.setAttribute('aria-label', tr('Ayuda') + ': ' + ((DICT?.help?.[b.dataset.hk]) || HELP_TXT[b.dataset.hk])[0]));
+  // Re-dibujar lo que tiene números con formato local
+  try { if (state.result) { renderMetrics(state.result); renderChart(state.result); compare(); calcVoc(); renderEnergy(); } renderHistory(); updateCtx(); } catch {}
+}
+
+/* ------------------------------------------------------------------
  * 2. UTILIDADES
  * ------------------------------------------------------------------ */
 const $ = (id) => document.getElementById(id);
 const rad = Math.PI / 180;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const fmt = (v, d = 1) => (v == null || !isFinite(v) ? '--' : Number(v).toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }));
+const fmt = (v, d = 1) => (v == null || !isFinite(v) ? '--' : Number(v).toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d }));
 const num = (v) => { const n = parseFloat(String(v).replace(',', '.')); return isFinite(n) ? n : null; };
 
 const store = {
@@ -1096,7 +1228,7 @@ const orientName = (az) => {
   const names = [[0, 'Sur'], [-45, 'Sureste'], [45, 'Suroeste'], [-90, 'Este'], [90, 'Oeste'], [-135, 'Noreste'], [135, 'Noroeste'], [180, 'Norte'], [-180, 'Norte']];
   let best = names[0];
   for (const n of names) if (Math.abs(a - n[0]) < Math.abs(a - best[0])) best = n;
-  return best[1];
+  return tr(best[1]);
 };
 
 /* ------------------------------------------------------------------
@@ -1525,7 +1657,7 @@ async function analyze() {
 function showDegraded(list) {
   const b = $('degradedBanner');
   if (!list.length) { b.classList.add('hidden'); b.classList.remove('flex'); return; }
-  $('degradedText').textContent = list.join(' ');
+  $('degradedText').textContent = list.map((x) => tr(x)).join(' ');
   b.classList.remove('hidden'); b.classList.add('flex');
 }
 
@@ -1575,10 +1707,11 @@ function compare() {
   let hint = txt[2];
   if (pi > 1.3) { txt[0] = 'Revisar datos de entrada'; txt[1] = 'warn'; }
   if (pi > 1.15) hint = 'Producción por encima de lo esperado: revisa los kWp introducidos o si hay nubosidad variable (efecto borde de nube).';
+  const extra = [];
   if (r.clipping && real >= 0.95 * r.cfg.pac) hint = `✂️ Inversor en clipping: está limitado a ${fmt(r.cfg.pac, 1)} kW y el campo podría dar ${fmt(r.pExpectedDc, 1)} kW. Es una pérdida normal por sobredimensionado DC/AC (o inyección cero), no un fallo.`;
-  else if (!r.cfg.pac && real > 0 && Math.abs(real - Math.round(real)) < 0.02 && pi < THRESHOLDS.green && r.pExpected > real * 1.1) hint += ' Si la lectura se queda "clavada" en un valor redondo, puede ser el límite del inversor: indica su potencia AC.';
-  if (r.degraded.length && r.poaReal == null) hint += ' ⚠️ Referencia de cielo despejado: si hay nubes, el rendimiento real puede ser mejor de lo indicado.';
-  setStatus(txt[0], txt[1], hint);
+  else if (!r.cfg.pac && real > 0 && Math.abs(real - Math.round(real)) < 0.02 && pi < THRESHOLDS.green && r.pExpected > real * 1.1) extra.push('Si la lectura se queda "clavada" en un valor redondo, puede ser el límite del inversor: indica su potencia AC.');
+  if (r.degraded.length && r.poaReal == null) extra.push('⚠️ Referencia de cielo despejado: si hay nubes, el rendimiento real puede ser mejor de lo indicado.');
+  setStatus(txt[0], txt[1], [hint, ...extra].map((x) => tr(x)).join(' '));
   r.real = real; r.pi = pi; r.pr = pr; r.dev = dev; r.status = status;
   renderChart(r);
 }
@@ -1897,9 +2030,11 @@ function analyzeStrings() {
   const worst = issues.some((r) => r.st === 'err') ? 'err' : issues.length ? 'warn' : 'ok';
   setStrSummary(worst === 'ok' ? 'Strings OK' : `${issues.length} a revisar`, worst);
   const unitTxt = canNorm ? 'kW/módulo' : strState.unit;
-  note.textContent = `Referencia (${filled.length >= 3 ? 'mediana' : 'máximo'}): ${fmt(canNorm ? ref * 1000 : ref, canNorm ? 0 : 2)} ${canNorm ? 'W/módulo' : strState.unit}. Línea violeta = referencia.` +
-    (mixed ? ' ⚠️ Rellena el nº de módulos en todas las filas para normalizar strings de distinta longitud.' : '') +
-    (filled.length === 2 ? ' Con solo 2 strings se ve la diferencia, pero no cuál es el correcto.' : '');
+  note.textContent = [
+    `Referencia (${filled.length >= 3 ? 'mediana' : 'máximo'}): ${fmt(canNorm ? ref * 1000 : ref, canNorm ? 0 : 2)} ${canNorm ? 'W/módulo' : strState.unit}. Línea violeta = referencia.`,
+    mixed ? '⚠️ Rellena el nº de módulos en todas las filas para normalizar strings de distinta longitud.' : null,
+    filled.length === 2 ? 'Con solo 2 strings se ve la diferencia, pero no cuál es el correcto.' : null,
+  ].filter(Boolean).map((x) => tr(x)).join(' ');
   $('strDiag').innerHTML = issues.map((r) => `
     <div class="flex gap-2.5 items-start rounded-lg border px-3 py-2 text-xs ${r.st === 'err' ? 'border-red-400/40 bg-red-500/10 text-red-100' : 'border-amber-400/40 bg-amber-500/10 text-amber-100'}">
       <i class="led ${r.st} mt-1 shrink-0"></i>
@@ -2152,7 +2287,7 @@ function renderEnergy() {
   if (rainInfo) {
     const ds = rainInfo.daysSince;
     const dsTxt = ds == null ? `>${rainInfo.over}` : String(ds);
-    const dayName = (ymd) => new Date(ymd + 'T12:00:00Z').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', timeZone: 'UTC' });
+    const dayName = (ymd) => new Date(ymd + 'T12:00:00Z').toLocaleDateString(LOC(), { weekday: 'long', day: 'numeric', timeZone: 'UTC' });
     rainT.innerHTML =
       tile('Días sin lluvia', dsTxt, 'días', ds === 0 ? 'Ha llovido hoy' : rainInfo.lastMm != null ? `Última: ${fmt(rainInfo.lastMm, 1)} mm` : 'en los últimos 30 días', ds != null && ds < 7 ? 'text-emerald-300' : ds != null && ds < 21 ? '' : 'text-amber-300') +
       tile('Próxima lluvia', rainInfo.next ? (rainInfo.next.inDays === 0 ? 'Hoy' : rainInfo.next.inDays === 1 ? 'Mañana' : `${rainInfo.next.inDays} d`) : 'No prevista', '', rainInfo.next ? `${dayName(rainInfo.next.date)} · ${fmt(rainInfo.next.mm, 1)} mm` : 'en los próximos 3 días');
@@ -2462,7 +2597,7 @@ function renderImpResult() {
   const bx = { ok: 'border-emerald-400/40 bg-emerald-500/10 text-emerald-100', warn: 'border-amber-400/40 bg-amber-500/10 text-amber-100', err: 'border-red-400/40 bg-red-500/10 text-red-100', info: 'border-slate-600/60 bg-slate-800/40 text-slate-300' };
   $('impDiag').innerHTML = msgs.map(([k, t]) => `<div class="flex gap-2.5 items-start rounded-lg border px-3 py-2 text-xs ${bx[k]}"><i class="led ${k === 'info' ? '' : k} mt-1 shrink-0"></i><span>${t}</span></div>`).join('');
   const worst = [...rows].sort((a, b) => a.pi - b.pi).slice(0, 5).filter((r) => r.pi < THRESHOLDS.green);
-  $('impWorst').innerHTML = worst.length ? `<p class="text-[0.6rem] uppercase tracking-widest text-slate-400">Peores días</p>` + worst.map((r) => `<div class="flex items-center gap-2.5 rounded-lg bg-slate-950/50 border border-slate-800 px-3 py-1.5 text-xs font-mono"><i class="led ${st(r.pi)} shrink-0"></i><span class="text-slate-400 w-24 shrink-0">${new Date(r.d + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit' })}</span><span class="text-slate-200 flex-1">${fmt(r.real, 1)} / ${fmt(r.exp, 1)} kWh</span><span class="${col[st(r.pi)]}">${fmt(r.pi * 100, 0)} %</span></div>`).join('') : '';
+  $('impWorst').innerHTML = worst.length ? `<p class="text-[0.6rem] uppercase tracking-widest text-slate-400">Peores días</p>` + worst.map((r) => `<div class="flex items-center gap-2.5 rounded-lg bg-slate-950/50 border border-slate-800 px-3 py-1.5 text-xs font-mono"><i class="led ${st(r.pi)} shrink-0"></i><span class="text-slate-400 w-24 shrink-0">${new Date(r.d + 'T12:00:00').toLocaleDateString(LOC(), { weekday: 'short', day: '2-digit', month: '2-digit' })}</span><span class="text-slate-200 flex-1">${fmt(r.real, 1)} / ${fmt(r.exp, 1)} kWh</span><span class="${col[st(r.pi)]}">${fmt(r.pi * 100, 0)} %</span></div>`).join('') : '';
   $('impResult').classList.remove('hidden');
   setBadge('impSummary', `${fmt(piAll * 100, 0)} % · ${rows.length} días`, st(piAll));
 }
@@ -2562,14 +2697,14 @@ function renderHistory() {
   [50, 70, 85, 100].filter((v) => v > yMin && v < yMax).forEach((v) => {
     grid += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(148,163,184,.15)" stroke-dasharray="3 4"/><text x="${pad.l - 5}" y="${Y(v) + 3}" text-anchor="end" fill="#64748b" font-size="10" font-family="JetBrains Mono">${v}%</text>`;
   });
-  const fmtD = (t) => new Date(t).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+  const fmtD = (t) => new Date(t).toLocaleDateString(LOC(), { day: '2-digit', month: '2-digit' });
   const xl = pts.length > 1 ? `<text x="${X(x0)}" y="${H - 6}" fill="#64748b" font-size="10" font-family="JetBrains Mono">${fmtD(x0)}</text><text x="${X(x1)}" y="${H - 6}" text-anchor="end" fill="#64748b" font-size="10" font-family="JetBrains Mono">${fmtD(x1)}</text>` : '';
   const line = pts.map((p, i) => `${i ? 'L' : 'M'}${X(p.x).toFixed(1)},${Y(p.y * 100).toFixed(1)}`).join(' ');
   box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="none" role="img" aria-label="Historial de rendimiento">
     ${band(yMin, 70, 'rgba(248,113,113,.07)')}${band(70, 85, 'rgba(251,191,36,.07)')}${band(85, yMax, 'rgba(52,211,153,.06)')}
     ${grid}${xl}
     ${pts.length > 1 ? `<path d="${line}" fill="none" stroke="#22d3ee" stroke-width="1.8" opacity=".7"/>` : ''}
-    ${pts.map((p) => `<circle cx="${X(p.x)}" cy="${Y(p.y * 100)}" r="${p.daily ? 5.5 : 4}" fill="${colOf(p.y)}" stroke="#020617" stroke-width="1.5"><title>${new Date(p.x).toLocaleString('es-ES')} · ${fmt(p.y * 100, 1)} %${p.daily ? ' (diario)' : ''}</title></circle>`).join('')}
+    ${pts.map((p) => `<circle cx="${X(p.x)}" cy="${Y(p.y * 100)}" r="${p.daily ? 5.5 : 4}" fill="${colOf(p.y)}" stroke="#020617" stroke-width="1.5"><title>${new Date(p.x).toLocaleString(LOC())} · ${fmt(p.y * 100, 1)} %${p.daily ? ' (diario)' : ''}</title></circle>`).join('')}
   </svg>`;
 
   // Tendencia: se reinicia tras un salto brusco hacia arriba (limpieza, reparación)
@@ -2592,7 +2727,7 @@ function renderHistory() {
   list.innerHTML = recs.slice(-8).reverse().map((r) => `
     <div class="flex items-center gap-2.5 rounded-lg bg-slate-950/50 border border-slate-800 px-3 py-1.5 text-xs font-mono">
       <i class="led ${led(r.ePi ?? r.pi)} shrink-0"></i>
-      <span class="text-slate-400 whitespace-nowrap shrink-0">${new Date(r.t).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+      <span class="text-slate-400 whitespace-nowrap shrink-0">${new Date(r.t).toLocaleString(LOC(), { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
       <span class="text-slate-200 truncate flex-1">${r.pi != null ? `Inst. ${fmt(r.pi * 100, 0)}%` : ''}${r.pi != null && r.ePi != null ? ' · ' : ''}${r.ePi != null ? `Día ${fmt(r.ePi * 100, 0)}%` : ''}${r.strIssues ? ` · ${r.strIssues} str.` : ''}${r.rainDays != null ? ` · ${r.rainDays} d sin lluvia` : ''}</span>
       <button class="text-slate-500 hover:text-red-300 px-1" data-del="${r.t}" aria-label="Borrar registro">✕</button>
     </div>`).join('');
@@ -2607,7 +2742,7 @@ function exportHistoryCsv() {
   if (!recs.length) return toast('No hay registros para exportar.', 'warn');
   const cols = ['fecha', 'irradiancia_Wm2', 'p_esperada_kW', 'p_real_kW', 'rend_inst_%', 'pr_%', 't_celula_C', 'nubes_%', 'dia', 'e_esperada_kWh', 'e_real_kWh', 'rend_diario_%', 'strings_a_revisar', 'dias_sin_lluvia'];
   const n = (v, d = 2) => (v == null ? '' : Number(v).toFixed(d).replace('.', ','));
-  const rows = recs.map((r) => [new Date(r.t).toLocaleString('es-ES'), n(r.poa, 0), n(r.pExp), n(r.real), n(r.pi != null ? r.pi * 100 : null, 1), n(r.pr != null ? r.pr * 100 : null, 1), n(r.tCell, 1), n(r.clouds, 0), r.eDay || '', n(r.eExp, 1), n(r.eReal, 1), n(r.ePi != null ? r.ePi * 100 : null, 1), r.strIssues ?? '', r.rainDays ?? '']);
+  const rows = recs.map((r) => [new Date(r.t).toLocaleString(LOC()), n(r.poa, 0), n(r.pExp), n(r.real), n(r.pi != null ? r.pi * 100 : null, 1), n(r.pr != null ? r.pr * 100 : null, 1), n(r.tCell, 1), n(r.clouds, 0), r.eDay || '', n(r.eExp, 1), n(r.eReal, 1), n(r.ePi != null ? r.ePi * 100 : null, 1), r.strIssues ?? '', r.rainDays ?? '']);
   const csv = '\ufeff' + [cols, ...rows].map((r) => r.join(';')).join('\n'); // ; y BOM para Excel en español
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
@@ -2644,7 +2779,7 @@ function buildReport() {
     '☀️ *SolarYield Pro · Informe rápido FV*',
     `📍 ${c.name || 'Punto de inspección'} (${c.lat.toFixed(4)}, ${c.lon.toFixed(4)})`,
     `🔧 ${fmt(c.kwp, 2)} kWp · ${isMulti(c) ? orientSummary(c) : `${orientName(c.azimuth)} (${c.azimuth}°) · Incl. ${c.tilt}°`}${c.year ? ` · desde ${c.year}` : ''}`,
-    `🕒 ${r.time.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}`,
+    `🕒 ${r.time.toLocaleString(LOC(), { dateStyle: 'short', timeStyle: 'short' })}`,
     '',
     `🌤️ Irradiancia plano: ${fmt(r.poaRef, 0)} W/m²${r.poaReal == null ? ' (cielo despejado)' : ''}`,
     `☁️ Nubes: ${r.clouds != null ? fmt(r.clouds, 0) + ' %' : 'N/D'} · T amb: ${fmt(r.tAmb, 1)} °C · T célula: ${fmt(r.tCell, 1)} °C`,
@@ -2678,7 +2813,7 @@ function buildReport() {
   if (r.degraded.length) lines.push('', '⚠️ Calculado en modo degradado (API no disponible).');
   lines.push('', `Fuentes: ${r.poaReal != null ? 'Open-Meteo + ' : ''}modelo Ineichen`,
     `— Generado con SolarYield Pro${location.protocol.startsWith('http') ? ' · ' + location.origin + location.pathname : ''}`);
-  return lines.join('\n');
+  return lines.map((l) => tr(l)).join('\n');
 }
 
 async function copyReport() {
@@ -2762,7 +2897,7 @@ async function importBackup(file) {
   }
   if (data?.app !== 'SolarYield Pro' || !data.storage) return toast('No es una copia de SolarYield Pro.', 'err');
   const lbl = $('fileImport').closest('label');
-  if (!confirmTwice(lbl, `Se sustituirán los datos actuales por la copia del ${new Date(data.created).toLocaleDateString('es-ES')}. Pulsa Restaurar otra vez para confirmar.`)) { $('fileImport').value = ''; pendingRestore = file; return; }
+  if (!confirmTwice(lbl, `Se sustituirán los datos actuales por la copia del ${new Date(data.created).toLocaleDateString(LOC())}. Pulsa Restaurar otra vez para confirmar.`)) { $('fileImport').value = ''; pendingRestore = file; return; }
   try {
     Object.keys(localStorage).filter((k) => k.startsWith('syp_')).forEach((k) => localStorage.removeItem(k));
     Object.entries(data.storage).forEach(([k, v]) => { if (k.startsWith('syp_')) localStorage.setItem(k, v); });
@@ -2782,7 +2917,7 @@ function confirmTwice(el, msg) {
 }
 function backupInfo() {
   const t = store.get('syp_last_backup', null);
-  $('backupInfo').textContent = t ? `Última copia: ${new Date(t).toLocaleString('es-ES')}` : 'Aún no has hecho ninguna copia.';
+  $('backupInfo').textContent = t ? `Última copia: ${new Date(t).toLocaleString(LOC())}` : 'Aún no has hecho ninguna copia.';
 }
 function applyContrast() {
   document.documentElement.classList.toggle('hc', !!settings.contrast);
@@ -3100,7 +3235,7 @@ async function addPhoto(file, { itemId = null, caption = '' } = {}) {
     const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
     const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
     const now = new Date(), co = await currentCoords(), cfg = readConfig();
-    const stamp = [now.toLocaleString('es-ES'), co ? `${co.lat.toFixed(5)}, ${co.lon.toFixed(5)}` : null, cfg.name || null].filter(Boolean).join('  ·  ');
+    const stamp = [now.toLocaleString(LOC()), co ? `${co.lat.toFixed(5)}, ${co.lon.toFixed(5)}` : null, cfg.name || null].filter(Boolean).join('  ·  ');
     const fs = Math.max(14, Math.round(w / 55));
     ctx.font = `600 ${fs}px system-ui, sans-serif`;
     const pad = Math.round(fs * 0.6), bh = fs + pad * 2;
@@ -3325,7 +3460,7 @@ function sigLoad(url, t) {
   sigSetup.resize?.(); sigClear();
   if (!url) return;
   sig.dirty = true; $('sigHint').classList.add('hidden'); sigDrawImage(url);
-  $('sigInfo').textContent = t ? `Firmado el ${new Date(t).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}` : 'Firmado';
+  $('sigInfo').textContent = t ? `Firmado el ${new Date(t).toLocaleString(LOC(), { dateStyle: 'short', timeStyle: 'short' })}` : 'Firmado';
 }
 /** Recorta los márgenes vacíos para que la firma se vea grande en el PDF. */
 function sigTrimmed() {
@@ -3342,7 +3477,7 @@ function sigTrimmed() {
 function sigSave() {
   const t = Date.now();
   saveRep({ sig: $('sigPad').toDataURL('image/png'), sigT: t });
-  $('sigInfo').textContent = `Firmado el ${new Date(t).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}`;
+  $('sigInfo').textContent = `Firmado el ${new Date(t).toLocaleString(LOC(), { dateStyle: 'short', timeStyle: 'short' })}`;
 }
 
 /* ---- Recordatorio de la próxima revisión ---- */
@@ -3355,22 +3490,22 @@ function nextVisitDate() {
 function updateCalBox() {
   const d = nextVisitDate();
   $('calBox').classList.toggle('hidden', !d);
-  if (d) $('calDate').textContent = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  if (d) $('calDate').textContent = d.toLocaleDateString(LOC(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 function calEventData() {
   const c = state.result?.cfg || readConfig(), rep = getRep(), ck = getCk();
-  const defs = CHECKLIST.flatMap((s2) => s2.items).filter(([id]) => ck.items[id]?.st === 'def').map(([id, t]) => `• ${t}${ck.items[id].note ? ' — ' + ck.items[id].note : ''}`);
+  const defs = CHECKLIST.flatMap((s2) => s2.items).filter(([id]) => ck.items[id]?.st === 'def').map(([id, t]) => `• ${tr(t)}${ck.items[id].note ? ' — ' + ck.items[id].note : ''}`);
   const title = `Revisión FV · ${c.name || 'Planta'}${rep.client ? ' (' + rep.client + ')' : ''}`;
   const lines = [
     `Mantenimiento preventivo de la instalación fotovoltaica.`,
     `Planta: ${c.name || '-'} · ${c.kwp ? fmt(c.kwp, 2) + ' kWp' : ''}${c.kwp ? ' · ' + orientSummary(c) : ''}`,
     rep.client ? `Cliente: ${rep.client}` : null,
-    `Última revisión: ${new Date().toLocaleDateString('es-ES')}${rep.supervisor ? ' · Supervisor: ' + rep.supervisor : ''}`,
+    `Última revisión: ${new Date().toLocaleDateString(LOC())}${rep.supervisor ? ' · Supervisor: ' + rep.supervisor : ''}`,
     state.result?.pi != null ? `Rendimiento en la última visita: ${fmt(state.result.pi * 100, 0)} %` : null,
     defs.length ? `\nDefectos pendientes de la última visita:\n${defs.join('\n')}` : null,
     `\nAbrir en SolarYield Pro: ${location.origin}${location.pathname}#diag`,
   ].filter(Boolean);
-  return { title, details: lines.join('\n'), location: c.lat != null ? `${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}` : '' };
+  return { title: tr(title), details: lines.map((l) => l.split('\n').map((x) => tr(x)).join('\n')).join('\n'), location: c.lat != null ? `${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}` : '' };
 }
 const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
 function addToGoogleCalendar() {
@@ -3464,7 +3599,7 @@ async function imgToDataUrl(src) {
   try { const b = await (await fetch(src)).blob(); return await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(b); }); } catch { return null; }
 }
 /** Las fuentes estándar de PDF solo tienen Latin-1: limpiamos emojis y símbolos. */
-const pdfTxt = (v) => String(v ?? '').replace(/[–—]/g, '-').replace(/…/g, '...').replace(/≈/g, '~').replace(/→/g, '->').replace(/[“”«»]/g, '"').replace(/[‘’]/g, "'").replace(/−/g, '-').replace(/²/g, '2').replace(/³/g, '3').replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '').replace(/ {2,}/g, ' ').trim();
+const pdfTxt = (v) => String(tr(String(v ?? ''))).replace(/[–—]/g, '-').replace(/…/g, '...').replace(/≈/g, '~').replace(/→/g, '->').replace(/[“”«»]/g, '"').replace(/[‘’]/g, "'").replace(/−/g, '-').replace(/²/g, '2').replace(/³/g, '3').replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '').replace(/ {2,}/g, ' ').trim();
 
 async function buildPdf() {
   saveRep();
@@ -3485,7 +3620,7 @@ async function buildPdf() {
     if (logo) doc.addImage(logo, 'PNG', M, 4, 16, 16);
     font(15, 'bold', [103, 232, 249]); T('SOLARYIELD PRO', M + 20, 11.5);
     font(8.5, 'normal', [203, 213, 225]); T('Informe de inspección fotovoltaica', M + 20, 17);
-    font(8.5, 'normal', [203, 213, 225]); T(new Date().toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' }), W - M, 11.5, { align: 'right' });
+    font(8.5, 'normal', [203, 213, 225]); T(new Date().toLocaleString(LOC(), { dateStyle: 'long', timeStyle: 'short' }), W - M, 11.5, { align: 'right' });
     T(c.name || 'Punto de inspección', W - M, 17, { align: 'right' });
     y = 32;
   };
@@ -3520,7 +3655,7 @@ async function buildPdf() {
   ]);
   if (isMulti(c)) kv(arraysOf(c).map((a, i) => [`Campo ${i + 1}`, `${fmt(a.kwp, 2)} kWp · ${orientName(a.azimuth)} (${a.azimuth}°) · ${a.tilt}°`]));
   if (c.year) kv([['Puesta en marcha', String(c.year)], ['Degradación considerada', `-${fmt((1 - degrFactor(c)) * 100, 1)} %`]]);
-  if (rep.company) kv([['Empresa mantenedora', rep.company], ['Fecha de la visita', new Date().toLocaleDateString('es-ES')]]);
+  if (rep.company) kv([['Empresa mantenedora', rep.company], ['Fecha de la visita', new Date().toLocaleDateString(LOC())]]);
 
   // --- Diagnóstico ---
   section('2. Diagnóstico de rendimiento');
@@ -3598,7 +3733,7 @@ async function buildPdf() {
   if (rep.notes?.trim() || rep.next) {
     section('6. Observaciones y trabajos realizados');
     if (rep.notes?.trim()) para(rep.notes);
-    if (rep.next) { const d = new Date(); d.setMonth(d.getMonth() + Number(rep.next)); kv([['Próxima revisión recomendada', d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })], ['', '']]); }
+    if (rep.next) { const d = new Date(); d.setMonth(d.getMonth() + Number(rep.next)); kv([['Próxima revisión recomendada', d.toLocaleDateString(LOC(), { month: 'long', year: 'numeric' })], ['', '']]); }
   }
 
   // --- Fotos (2 por fila) ---
@@ -3616,7 +3751,7 @@ async function buildPdf() {
         doc.setDrawColor(...C.line); doc.rect(x, y, pw, ih);
         font(8.3, 'bold', p.itemId ? C.err : C.ink);
         T((p.itemId ? 'DEFECTO: ' : '') + (p.caption || `Foto ${i + j + 1}`), x, y + ih + 4.2, { maxWidth: pw });
-        font(7.2, 'normal', C.mute); T(`${new Date(p.t).toLocaleString('es-ES')}${p.lat != null ? `  ·  ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}` : ''}`, x, y + ih + 8.4);
+        font(7.2, 'normal', C.mute); T(`${new Date(p.t).toLocaleString(LOC())}${p.lat != null ? `  ·  ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}` : ''}`, x, y + ih + 8.4);
       });
       y += rh;
     }
@@ -3638,7 +3773,7 @@ async function buildPdf() {
       doc.addImage(sigImg.url, 'PNG', bx + 4, y + 23.5, sigImg.w * k, sigImg.h * k);
     }
     font(7.5, 'normal', C.mute);
-    T(`Fecha: ${new Date(rep.sigT || Date.now()).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}`, bx + bw + 6, y + 6);
+    T(`Fecha: ${new Date(rep.sigT || Date.now()).toLocaleString(LOC(), { dateStyle: 'short', timeStyle: 'short' })}`, bx + bw + 6, y + 6);
     font(8, 'normal', C.mute);
     doc.splitTextToSize(pdfTxt('El técnico supervisor declara que la inspección se ha realizado según los puntos indicados en este informe y que los datos reflejan el estado de la instalación en la fecha de la visita.'), CW - bw - 6).forEach((ln, k) => T(ln, bx + bw + 6, y + 13 + k * 4));
     y += bh + 6;
@@ -3786,17 +3921,18 @@ function attachHelps() {
   for (const [sel, key, txt] of HELP_MAP) {
     document.querySelectorAll(sel).forEach((el) => {
       if (el.querySelector(':scope > .hq')) return;
-      if (txt && !el.textContent.toLowerCase().includes(txt.toLowerCase())) return;
+      if (txt && !origText(el).toLowerCase().includes(txt.toLowerCase())) return;
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'hq'; b.dataset.hk = key; b.textContent = '?';
-      b.setAttribute('aria-label', 'Ayuda: ' + HELP_TXT[key][0]); b.setAttribute('aria-expanded', 'false');
+      b.setAttribute('aria-label', tr('Ayuda') + ': ' + ((DICT?.help?.[key]) || HELP_TXT[key])[0]); b.setAttribute('aria-expanded', 'false');
+      b.classList.add('no-i18n');
       el.appendChild(b);
     });
   }
 }
 let hpAnchor = null;
 function openHelpPop(btn) {
-  const [title, body] = HELP_TXT[btn.dataset.hk] || ['Ayuda', ''];
+  const [title, body] = (DICT?.help?.[btn.dataset.hk]) || HELP_TXT[btn.dataset.hk] || ['Ayuda', ''];
   if (hpAnchor === btn) return closeHelpPop();
   closeHelpPop();
   hpAnchor = btn; btn.setAttribute('aria-expanded', 'true');
@@ -3896,6 +4032,15 @@ function trackSection(sec) {
  * ------------------------------------------------------------------ */
 function updateNetLed() { setLed('ledNet', navigator.onLine ? 'ok' : 'err'); }
 
+async function initLang() {
+  document.querySelectorAll('.langSel').forEach((sel) => {
+    sel.innerHTML = Object.entries(LANGS).map(([c, n]) => `<option value="${c}">${n}</option>`).join('');
+    sel.addEventListener('change', () => setLang(sel.value));
+  });
+  startI18nObserver();
+  await setLang(settings.lang || detectLang(), { save: !!settings.lang });
+}
+
 function init() {
   $('appVersion').textContent = APP_VERSION;
   $('authorLine').innerHTML = AUTHOR.linkedin
@@ -3951,7 +4096,7 @@ function init() {
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (state.result) renderChart(state.result); renderHistory(); }, 200); });
 
   updateNetLed();
-  setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString('es-ES'); }, 1000);
+  setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString(LOC()); }, 1000);
   compare();
 
   $('btnCloseHelp').addEventListener('click', closeHelp);
@@ -3971,6 +4116,7 @@ function init() {
   setupFeedback();
   setupStats();
   setupNav();
+  initLang();
 
   // Service Worker (PWA) — solo en HTTPS o localhost
   if ('serviceWorker' in navigator && window.isSecureContext) {

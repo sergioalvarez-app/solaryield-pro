@@ -20,6 +20,8 @@ Además: plantas guardadas para consulta remota, ayudas (?) en cada dato, **modo
 
 **📶 Funciona sin cobertura:** tras la primera visita, la app entera (estilos, fuentes y generador de PDF) queda guardada en el móvil. Sin datos móviles se usa el modelo astronómico de cielo despejado.
 
+**🌍 7 idiomas:** español, English, français, Deutsch, italiano, português y català. Se elige solo según el idioma del móvil y se puede cambiar en Ajustes o al pie de la página (también traduce el informe PDF y el recordatorio de calendario).
+
 **💬 ¿Ideas o errores?** Usa el botón *Enviar sugerencia* de la app o abre un [issue](https://github.com/sergioalvarez-app/solaryield-pro/issues).
 
 Sin registro, sin servidor y sin cookies: todos los datos se guardan solo en tu dispositivo.

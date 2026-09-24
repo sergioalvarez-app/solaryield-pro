@@ -5,7 +5,7 @@
  * - API Open-Meteo y analítica: siempre red (sin datos, la app usa su modelo de cielo despejado).
  * Sube CACHE_VERSION cada vez que publiques cambios.
  */
-const CACHE_VERSION = 'syp-v2.5.0';
+const CACHE_VERSION = 'syp-v2.6.0';
 const SHELL = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const SHELL = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './vendor/jspdf.umd.min.js',
+  './i18n/en.json', './i18n/fr.json', './i18n/de.json', './i18n/it.json', './i18n/pt.json', './i18n/ca.json',
   './fonts/orbitron-latin-600-normal.woff2',
   './fonts/orbitron-latin-800-normal.woff2',
   './fonts/jetbrains-mono-latin-400-normal.woff2',
