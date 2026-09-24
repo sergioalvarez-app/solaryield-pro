@@ -16,11 +16,21 @@ Se eligen desde el menú desplegable superior:
 - **📷 Informe con fotos (PDF)** – fotos con fecha, hora y coordenadas estampadas; informe PDF profesional para descargar o compartir por WhatsApp o email.
 - **📈 Historial** – evolución del rendimiento por planta, detección de limpiezas y exportación a CSV.
 
-Además: plantas guardadas para consulta remota, **modo alto contraste** para leer a pleno sol, **copia de seguridad completa**, funcionamiento sin conexión y modo degradado si la API meteorológica falla.
+Además: plantas guardadas para consulta remota, ayudas (?) en cada dato, **modo alto contraste** para leer a pleno sol y **copia de seguridad completa**.
+
+**📶 Funciona sin cobertura:** tras la primera visita, la app entera (estilos, fuentes y generador de PDF) queda guardada en el móvil. Sin datos móviles se usa el modelo astronómico de cielo despejado.
+
+**💬 ¿Ideas o errores?** Usa el botón *Enviar sugerencia* de la app o abre un [issue](https://github.com/sergioalvarez-app/solaryield-pro/issues).
 
 Sin registro, sin servidor y sin cookies: todos los datos se guardan solo en tu dispositivo.
 
 **Datos:** [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0). Valores orientativos: no sustituyen una medición con piranómetro calibrado.
+
+## Créditos de terceros
+
+- [jsPDF](https://github.com/parallax/jsPDF) (MIT) – `vendor/`
+- Fuentes Orbitron, JetBrains Mono y Space Grotesk (SIL OFL 1.1) – `fonts/`
+- Estilos generados con [Tailwind CSS](https://tailwindcss.com) (MIT)
 
 ## Licencia
 

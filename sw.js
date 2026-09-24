@@ -1,11 +1,11 @@
 /* SolarYield Pro — Service Worker
- * - App shell: cache-first (funciona offline).
- * - Tailwind CDN, Google Fonts y jsPDF (cdnjs): stale-while-revalidate.
- * - API Open-Meteo: SIEMPRE red, nunca se cachea aquí
- *   (la app ya tiene su propio fallback astronómico si fallan).
+ * La app completa (HTML, estilos, fuentes, iconos y generador de PDF) se guarda
+ * en el móvil en la primera visita: después funciona SIN COBERTURA.
+ * - App: caché primero (instantánea y offline); la página se actualiza desde la red si hay conexión.
+ * - API Open-Meteo y analítica: siempre red (sin datos, la app usa su modelo de cielo despejado).
  * Sube CACHE_VERSION cada vez que publiques cambios.
  */
-const CACHE_VERSION = 'syp-v2.1.0';
+const CACHE_VERSION = 'syp-v2.3.0';
 const SHELL = [
   './',
   './index.html',
@@ -13,9 +13,17 @@ const SHELL = [
   './icons/icon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  './vendor/jspdf.umd.min.js',
+  './fonts/orbitron-latin-600-normal.woff2',
+  './fonts/orbitron-latin-800-normal.woff2',
+  './fonts/jetbrains-mono-latin-400-normal.woff2',
+  './fonts/jetbrains-mono-latin-600-normal.woff2',
+  './fonts/jetbrains-mono-latin-700-normal.woff2',
+  './fonts/space-grotesk-latin-400-normal.woff2',
+  './fonts/space-grotesk-latin-500-normal.woff2',
+  './fonts/space-grotesk-latin-600-normal.woff2',
+  './fonts/space-grotesk-latin-700-normal.woff2',
 ];
-const API_HOSTS = ['api.open-meteo.com'];
-const CDN_HOSTS = ['cdn.tailwindcss.com', 'fonts.googleapis.com', 'fonts.gstatic.com', 'cdnjs.cloudflare.com'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -33,29 +41,22 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return; // APIs y analítica: directo a la red
 
-  if (API_HOSTS.includes(url.hostname)) return; // red directa
-
-  if (CDN_HOSTS.includes(url.hostname)) {
+  // Página principal: red primero (para recibir versiones nuevas) con respaldo en caché
+  if (req.mode === 'navigate') {
     event.respondWith(
-      caches.open(CACHE_VERSION).then(async (cache) => {
-        const cached = await cache.match(req);
-        const network = fetch(req).then((res) => { if (res && (res.ok || res.type === 'opaque')) cache.put(req, res.clone()); return res; }).catch(() => cached);
-        return cached || network;
-      })
+      fetch(req)
+        .then((res) => { const copy = res.clone(); caches.open(CACHE_VERSION).then((c) => c.put('./index.html', copy)); return res; })
+        .catch(() => caches.match('./index.html'))
     );
     return;
   }
-
-  if (url.origin === self.location.origin) {
-    // Navegación: red primero (para ver actualizaciones), caché si no hay conexión
-    if (req.mode === 'navigate') {
-      event.respondWith(
-        fetch(req).then((res) => { caches.open(CACHE_VERSION).then((c) => c.put('./index.html', res.clone())); return res; })
-          .catch(() => caches.match('./index.html'))
-      );
-      return;
-    }
-    event.respondWith(caches.match(req).then((hit) => hit || fetch(req)));
-  }
+  // Resto de archivos de la app: caché primero, red si falta (y se guarda)
+  event.respondWith(
+    caches.match(req, { ignoreSearch: true }).then((hit) => hit || fetch(req).then((res) => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE_VERSION).then((c) => c.put(req, copy)); }
+      return res;
+    }))
+  );
 });
