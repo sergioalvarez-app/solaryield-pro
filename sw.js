@@ -5,7 +5,7 @@
  *   (la app ya tiene su propio fallback astronómico si fallan).
  * Sube CACHE_VERSION cada vez que publiques cambios.
  */
-const CACHE_VERSION = 'syp-v1.4.0';
+const CACHE_VERSION = 'syp-v1.4.1';
 const SHELL = [
   './',
   './index.html',

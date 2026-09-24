@@ -710,7 +710,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.4.1';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
 /**
@@ -1073,6 +1073,30 @@ function onOrientation(e) {
   $('levelValue').textContent = levelEma.toFixed(1) + '°';
 }
 
+/* ---- Permisos de sensores de movimiento ----
+ * iOS: hay que pedirlo con DeviceOrientationEvent.requestPermission() dentro del toque.
+ * Android/Chrome: NO se pide así (algunos navegadores devuelven "denied" sin motivo);
+ * el permiso real es el ajuste "Sensores de movimiento" del sitio. Consultamos la
+ * Permissions API solo para diagnosticar. */
+async function requestMotion(needMagnetometer = false) {
+  if (isIOS && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    try { return (await DeviceOrientationEvent.requestPermission()) === 'granted' ? 'ok' : 'denied'; } catch { return 'denied'; }
+  }
+  try {
+    const names = needMagnetometer ? ['accelerometer', 'gyroscope', 'magnetometer'] : ['accelerometer', 'gyroscope'];
+    for (const n of names) {
+      const st = await navigator.permissions.query({ name: n });
+      if (st.state === 'denied') return 'denied';
+    }
+  } catch { /* API no soportada: seguimos y comprobamos si llegan eventos */ }
+  return 'ok';
+}
+const isTouchDevice = () => navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+function sensorNoData(kind) {
+  if (isTouchDevice()) showHelp('sensor');
+  else toast(`${kind} no disponible en este dispositivo (¿estás en un PC?).`, 'warn', 4500);
+}
+
 /* ---- Brújula: orientación del panel = proyección horizontal de la normal de la pantalla ---- */
 let compassEma = null, compassSeen = false, compassTiltEma = null, compassEvt = null;
 function panelFromOrientation(alphaAbs, beta, gamma) {
@@ -1108,17 +1132,12 @@ function onCompass(e) {
 }
 async function startCompass() {
   if (typeof DeviceOrientationEvent === 'undefined') { toast('Este dispositivo no tiene brújula.', 'err'); return; }
-  try {
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      const p = await DeviceOrientationEvent.requestPermission();
-      if (p !== 'granted') { showHelp('sensor'); return; }
-    }
-  } catch { showHelp('sensor'); return; }
+  if ((await requestMotion(true)) === 'denied') { showHelp('sensor'); return; }
   compassEma = null; compassTiltEma = null; compassSeen = false;
   compassEvt = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
   window.addEventListener(compassEvt, onCompass);
   $('compassPanel').classList.remove('hidden');
-  setTimeout(() => { if (compassEvt && !compassSeen) { toast('Brújula no disponible en este dispositivo/navegador (¿estás en un PC?).', 'warn', 4500); stopCompass(); } }, 3000);
+  setTimeout(() => { if (compassEvt && !compassSeen) { stopCompass(); sensorNoData('Brújula'); } }, 3000);
 }
 function stopCompass(mode = null) {
   if (compassEvt) window.removeEventListener(compassEvt, onCompass);
@@ -1135,18 +1154,13 @@ function stopCompass(mode = null) {
 
 async function startLevel() {
   if (typeof DeviceOrientationEvent === 'undefined') { toast('Este dispositivo no tiene sensor de orientación.', 'err'); return; }
-  try {
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') { // iOS 13+
-      const p = await DeviceOrientationEvent.requestPermission();
-      if (p !== 'granted') { showHelp('sensor'); return; }
-    }
-  } catch { showHelp('sensor'); return; }
+  if ((await requestMotion(false)) === 'denied') { showHelp('sensor'); return; }
   levelEma = null; levelSeen = false; state.levelActive = true;
   $('levelPanel').classList.remove('hidden');
   $('levelValue').textContent = '--°';
   window.addEventListener('deviceorientation', onOrientation);
   setTimeout(() => {
-    if (state.levelActive && !levelSeen) { toast('No llegan datos del sensor (¿estás en un PC?).', 'warn'); stopLevel(); }
+    if (state.levelActive && !levelSeen) { stopLevel(); sensorNoData('Inclinómetro'); }
   }, 3000);
 }
 
@@ -2210,7 +2224,21 @@ const HELP = {
         <li>En el aviso de iOS, pulsa <strong>«Permitir»</strong>.</li>
       </ol>
       <p class="text-slate-400 text-xs">Si no aparece el aviso: <em>Ajustes → Apps → Safari → Avanzado → Datos de sitios web</em>, busca <strong>github.io</strong> y bórralo. Luego repite los pasos.</p>`
-      : `<p>El navegador ha denegado el acceso al sensor de orientación. Revisa los permisos del sitio (icono 🔒 junto a la dirección → <em>Sensores de movimiento</em> → Permitir) y vuelve a intentarlo.</p>`,
+      : `
+      <p>Chrome no está dejando que la web lea los <strong>sensores de movimiento</strong> del móvil (inclinómetro y brújula).</p>
+      <p class="font-semibold text-cyan-200">Opción rápida:</p>
+      <ol class="list-decimal pl-5 space-y-1">
+        <li>Toca el icono <strong>⚙︎ / 🔒</strong> a la izquierda de la dirección web.</li>
+        <li><em>Permisos</em> (o <em>Configuración del sitio</em>) → <strong>Sensores de movimiento</strong> → <strong>Permitir</strong>.</li>
+        <li>Recarga la página y vuelve a pulsar el botón.</li>
+      </ol>
+      <p class="font-semibold text-cyan-200">Si no aparece la opción:</p>
+      <ol class="list-decimal pl-5 space-y-1">
+        <li>Chrome <strong>⋮</strong> → <em>Configuración</em> → <em>Configuración de sitios</em> → <strong>Sensores de movimiento</strong>.</li>
+        <li>Activa <em>«Los sitios pueden usar sensores de movimiento»</em>.</li>
+        <li>Si <strong>sergioalvarez-app.github.io</strong> aparece en <em>No permitido</em>, tócalo y cámbialo a Permitir.</li>
+      </ol>
+      <p class="text-slate-400 text-xs">Si instalaste la app en la pantalla de inicio, usa estos mismos permisos de Chrome. En navegadores como Samsung Internet o Brave el ajuste está en su menú de privacidad/permisos del sitio.</p>`,
   },
   install: {
     title: 'Instalar en iPhone / iPad',
