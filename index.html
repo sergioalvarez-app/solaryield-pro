@@ -180,6 +180,8 @@
     .str-bar > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 9999px; transition: width .8s cubic-bezier(.2,.8,.2,1), background .3s; box-shadow: 0 0 10px currentColor; }
     .str-bar > b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #a78bfa; opacity: .8; }
     .field-sm { padding: 0.45rem 0.6rem; font-size: 0.9rem; }
+    .eDay { color: #94a3b8; transition: all .2s; }
+    .eDay.active { background: rgba(8, 145, 178, 0.35); color: #ecfeff; box-shadow: 0 0 12px -4px var(--cyan) inset; }
     input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -433,6 +435,30 @@
           <!-- generadas por JS -->
         </div>
 
+        <!-- Balance energético diario + lluvia -->
+        <div class="glass p-5" id="energyCard">
+          <span class="corner tl"></span><span class="corner br"></span>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 class="hud-title">Balance energético diario</h2>
+            <span id="eSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Sin datos</span></span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">La energía del día compensa nubes pasajeras y lecturas puntuales: es el indicador más fiable para confirmar un problema.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-3 items-end mb-4">
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs font-mono" role="group" aria-label="Día">
+              <button class="eDay px-3 py-2.5" data-day="today">Hoy (hasta ahora)</button>
+              <button class="eDay px-3 py-2.5" data-day="yesterday">Ayer (completo)</button>
+            </div>
+            <div class="relative">
+              <label class="label" for="eReal">Energía leída en inversor / portal</label>
+              <input id="eReal" class="field pr-14" type="number" step="0.1" min="0" inputmode="decimal" placeholder="0.0" />
+              <span class="absolute right-3 bottom-3 text-slate-400 font-mono text-sm">kWh</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="eTiles"></div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3" id="rainTiles"></div>
+          <div id="eDiag" class="mt-3 space-y-2"></div>
+        </div>
+
         <!-- Comparador de strings / MPPT -->
         <div class="glass p-5" id="stringsCard">
           <span class="corner tl"></span><span class="corner br"></span>
@@ -523,7 +549,24 @@
           <div id="chart" class="w-full h-[240px] sm:h-[280px] text-slate-500 text-sm flex items-center justify-center">Ejecuta un análisis para ver la curva.</div>
         </div>
 
+        <!-- Historial por planta -->
+        <div class="glass p-5" id="historyCard">
+          <span class="corner tl"></span><span class="corner br"></span>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 class="hud-title">Historial · <span id="histPlant" class="normal-case text-slate-300">—</span></h2>
+            <span id="histTrend" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Sin tendencia</span></span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Cada vez que pulses <em>Guardar en historial</em> se registra el diagnóstico. Con varias visitas verás la tendencia (suciedad, degradación) y el efecto de una limpieza.</p>
+          <div id="histChart" class="w-full h-[200px] text-slate-500 text-sm flex items-center justify-center">Sin registros para esta planta.</div>
+          <div id="histList" class="mt-3 space-y-1.5"></div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button id="btnHistCsv" class="btn-ghost !py-2 text-xs">⬇ Exportar CSV</button>
+            <button id="btnHistClear" class="btn-danger !py-2 text-xs ml-auto">Borrar historial de esta planta</button>
+          </div>
+        </div>
+
         <!-- Acciones -->
+        <button id="btnHistSave" class="btn-ghost w-full !py-3 flex items-center justify-center gap-2">💾 Guardar diagnóstico en el historial</button>
         <div class="flex flex-col sm:flex-row gap-3">
           <button id="btnShare" class="btn-primary flex-1 flex items-center justify-center gap-2 text-sm">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -625,7 +668,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
 /**
@@ -857,7 +900,7 @@ async function getMeteo(cfg) {
   const vars = 'temperature_2m,cloud_cover,shortwave_radiation,direct_normal_irradiance,diffuse_radiation,global_tilted_irradiance,wind_speed_10m,is_day';
   const url = `${API.openMeteo}?latitude=${cfg.lat}&longitude=${cfg.lon}&current=${vars}` +
     `&hourly=temperature_2m,global_tilted_irradiance,cloud_cover&tilt=${cfg.tilt}&azimuth=${cfg.azimuth}` +
-    `&forecast_days=1&timezone=auto`;
+    `&daily=precipitation_sum&past_days=30&forecast_days=3&timezone=auto`;
   const data = await fetchJSON(url, { api: 'Open-Meteo' });
   if (!data || !data.current) throw new ApiError('Open-Meteo', 0, 'Respuesta inesperada');
   meteoCache.set(key, { t: Date.now(), data });
@@ -1076,6 +1119,8 @@ async function analyze() {
   renderChart(res);
   compare();
   calcVoc();
+  renderEnergy();
+  renderHistory();
 
   $('prCard').classList.remove('scanning');
   btn.disabled = false; $('btnAnalyzeText').textContent = 'Actualizar análisis';
@@ -1222,7 +1267,9 @@ function renderChart(r) {
   const fc = [];
   if (r.meteo?.hourly?.time) {
     const hh = r.meteo.hourly;
+    const today = siteToday(r);
     hh.time.forEach((t, i) => {
+      if (!t.startsWith(today)) return;
       const hour = Number(t.slice(11, 13)) + Number(t.slice(14, 16)) / 60 - 0.5;
       const g = hh.global_tilted_irradiance?.[i];
       if (g != null) fc.push([hour, pvPower(r.cfg.kwp, g, hh.temperature_2m?.[i] ?? r.tAmb)]);
@@ -1296,6 +1343,7 @@ function loadSelectedPlant(run = true) {
   writeConfig(p);
   applyStringsTemplate(p.strings);
   if (p.module) writeModule(p.module);
+  renderHistory();
   $('realKw').value = '';
   if (run) analyze();
 }
@@ -1613,6 +1661,265 @@ function setupVoc() {
 }
 
 /* ------------------------------------------------------------------
+ * 12d. BALANCE ENERGÉTICO DIARIO + DÍAS SIN LLUVIA
+ * ------------------------------------------------------------------ */
+let eDay = 'today';
+let energyResult = null, rainInfo = null;
+
+const shiftDate = (ymd, days) => { const d = new Date(ymd + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10); };
+const minutesOf = (iso) => Number(iso.slice(11, 13)) * 60 + Number(iso.slice(14, 16));
+function siteToday(r) {
+  if (r.meteo?.current?.time) return r.meteo.current.time.slice(0, 10);
+  return new Date(r.time.getTime() + r.utcOffset * 1000).toISOString().slice(0, 10);
+}
+
+/** Energía esperada (kWh) para hoy-hasta-ahora o ayer completo. */
+function expectedEnergy(r, which) {
+  const kwp = r.cfg.kwp;
+  const today = siteToday(r);
+  const day = which === 'today' ? today : shiftDate(today, -1);
+  const h = r.meteo?.hourly;
+  if (h?.time && h.global_tilted_irradiance) {
+    const nowM = which === 'today' ? minutesOf(r.meteo.current.time) : 24 * 60;
+    let e = 0, eCs = 0;
+    h.time.forEach((t, i) => {
+      if (!t.startsWith(day)) return;
+      const endM = minutesOf(t) || 0;       // valor = media de la hora que termina en t
+      let frac = 1;
+      if (which === 'today') {
+        if (endM > nowM) frac = clamp((nowM - (endM - 60)) / 60, 0, 1);
+        if (endM === 0) frac = 0;            // la hora 00:00 pertenece al día anterior
+      }
+      if (frac <= 0) return;
+      const g = h.global_tilted_irradiance[i] ?? 0;
+      e += pvPower(kwp, g, h.temperature_2m?.[i] ?? r.tAmb) * frac;
+    });
+    // último tramo 23:00-24:00 de ayer está en el primer valor 00:00 de hoy
+    if (which === 'yesterday') { const i0 = h.time.indexOf(today + 'T00:00'); if (i0 >= 0) e += pvPower(kwp, h.global_tilted_irradiance[i0] ?? 0, h.temperature_2m?.[i0] ?? r.tAmb); }
+    return { e, day, source: 'Open-Meteo' };
+  }
+  // Fallback: integración del modelo de cielo despejado (cota máxima)
+  const midnight = Date.parse(day + 'T00:00:00Z') - r.utcOffset * 1000;
+  const end = which === 'today' ? r.time.getTime() : midnight + 86400000;
+  let e = 0;
+  for (let t = midnight; t < end; t += 15 * 60000) e += pvPower(kwp, clearSkyPOA(new Date(t), r.cfg).poa, r.tAmb) * 0.25;
+  return { e, day, source: 'Cielo despejado (máx.)' };
+}
+
+function computeRain(r) {
+  const d = r.meteo?.daily;
+  if (!d?.time || !d.precipitation_sum) return null;
+  const today = siteToday(r);
+  const ti = d.time.indexOf(today);
+  if (ti < 0) return null;
+  let last = null;
+  for (let i = ti; i >= 0; i--) { if ((d.precipitation_sum[i] ?? 0) >= 1) { last = i; break; } }
+  let next = null;
+  for (let i = ti; i < d.time.length; i++) { if ((d.precipitation_sum[i] ?? 0) >= 1) { next = i; break; } }
+  const daysSince = last == null ? null : ti - last;
+  return {
+    daysSince, over: last == null ? d.time.slice(0, ti + 1).length - 1 : null,
+    lastMm: last != null ? d.precipitation_sum[last] : null,
+    next: next != null ? { date: d.time[next], mm: d.precipitation_sum[next], inDays: next - ti } : null,
+  };
+}
+
+function renderEnergy() {
+  const r = state.result;
+  document.querySelectorAll('.eDay').forEach((b) => b.classList.toggle('active', b.dataset.day === eDay));
+  const tiles = $('eTiles'), rainT = $('rainTiles'), diag = $('eDiag');
+  energyResult = null;
+  if (!r) { tiles.innerHTML = ''; rainT.innerHTML = ''; diag.innerHTML = '<p class="text-xs text-slate-500">Ejecuta un análisis para calcular la energía esperada.</p>'; setBadge('eSummary', 'Sin datos', null); return; }
+
+  const exp = expectedEnergy(r, eDay);
+  const real = num($('eReal').value);
+  const yieldExp = exp.e / r.cfg.kwp;
+  const pi = real != null && exp.e > 0.05 ? real / exp.e : null;
+  const st = pi == null ? null : pi >= THRESHOLDS.green ? 'ok' : pi >= THRESHOLDS.amber ? 'warn' : 'err';
+  const col = { ok: 'text-emerald-300', warn: 'text-amber-300', err: 'text-red-300' };
+  const tile = (label, val, unit, sub, cls = '') => `
+    <div class="rounded-xl bg-slate-950/60 border border-slate-700/60 p-3">
+      <p class="text-[0.6rem] uppercase tracking-widest text-slate-400">${label}</p>
+      <p class="metric-value text-xl ${cls}">${val}<span class="text-xs text-slate-400 font-mono ml-1">${unit}</span></p>
+      <p class="text-[0.6rem] font-mono text-cyan-300/70 mt-0.5 truncate">${sub}</p>
+    </div>`;
+  tiles.innerHTML =
+    tile('Energía esperada', fmt(exp.e, 1), 'kWh', `${exp.day} · ${exp.source}`) +
+    tile('Energía real', real != null ? fmt(real, 1) : '--', 'kWh', 'Inversor / portal') +
+    tile('Rendimiento diario', pi != null ? fmt(pi * 100, 1) : '--', '%', pi != null ? `${pi >= 1 ? '+' : ''}${fmt((pi - 1) * 100, 1)} % vs esperado` : 'vs esperado', st ? col[st] : '') +
+    tile('Yield esperado', fmt(yieldExp, 2), 'kWh/kWp', real != null ? `Real: ${fmt(real / r.cfg.kwp, 2)} kWh/kWp` : 'horas solares pico');
+
+  // Lluvia / suciedad
+  rainInfo = computeRain(r);
+  if (rainInfo) {
+    const ds = rainInfo.daysSince;
+    const dsTxt = ds == null ? `>${rainInfo.over}` : String(ds);
+    const soilMin = ds == null ? rainInfo.over * 0.1 : ds * 0.1, soilMax = ds == null ? rainInfo.over * 0.2 : ds * 0.2;
+    const dayName = (ymd) => new Date(ymd + 'T12:00:00Z').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', timeZone: 'UTC' });
+    rainT.innerHTML =
+      tile('Días sin lluvia', dsTxt, 'días', ds === 0 ? 'Ha llovido hoy' : rainInfo.lastMm != null ? `Última: ${fmt(rainInfo.lastMm, 1)} mm` : 'en los últimos 30 días', ds != null && ds < 7 ? 'text-emerald-300' : ds != null && ds < 21 ? '' : 'text-amber-300') +
+      tile('Próxima lluvia', rainInfo.next ? (rainInfo.next.inDays === 0 ? 'Hoy' : rainInfo.next.inDays === 1 ? 'Mañana' : `${rainInfo.next.inDays} d`) : 'No prevista', '', rainInfo.next ? `${dayName(rainInfo.next.date)} · ${fmt(rainInfo.next.mm, 1)} mm` : 'en los próximos 3 días') +
+      tile('Suciedad estimada', `${fmt(Math.min(soilMin, 10), 1)}–${fmt(Math.min(soilMax, 15), 1)}`, '%', 'orientativo: 0,1–0,2 %/día seco');
+  } else rainT.innerHTML = '';
+
+  const msgs = [];
+  if (st === 'ok') msgs.push(['ok', 'Producción del día acorde con la irradiancia real. Si el diagnóstico instantáneo salía mal, probablemente fue una nube o una lectura puntual.']);
+  if (st === 'warn') msgs.push(['warn', 'Producción del día algo baja (70–85 %): revisa sombras, suciedad, disparos del inversor o limitación de exportación (inyección cero).']);
+  if (st === 'err') msgs.push(['err', 'Producción del día muy baja (&lt; 70 %): posible fallo de strings, inversor parado parte del día o error en los kWp introducidos.']);
+  if (st && st !== 'ok' && rainInfo && (rainInfo.daysSince ?? 99) >= 20) msgs.push(['info', `Llevan ${rainInfo.daysSince ?? '+30'} días sin lluvia: la suciedad puede explicar parte de la pérdida.${rainInfo.next && rainInfo.next.inDays <= 3 ? ' Hay lluvia prevista pronto: puede ser buena idea esperar antes de limpiar.' : ''}`]);
+  if (eDay === 'today' && yieldExp < 0.5) msgs.push(['info', 'Todavía es pronto: con poca energía acumulada el porcentaje del día es poco fiable. Mejor compara el día de ayer completo.']);
+  if (exp.source !== 'Open-Meteo') msgs.push(['info', 'Sin datos meteorológicos: la energía esperada es la de cielo despejado (máximo teórico), el rendimiento real puede ser mejor de lo indicado.']);
+  const box = { ok: 'border-emerald-400/40 bg-emerald-500/10 text-emerald-100', warn: 'border-amber-400/40 bg-amber-500/10 text-amber-100', err: 'border-red-400/40 bg-red-500/10 text-red-100', info: 'border-slate-600/60 bg-slate-800/40 text-slate-300' };
+  diag.innerHTML = msgs.map(([k, t]) => `<div class="flex gap-2.5 items-start rounded-lg border px-3 py-2 text-xs ${box[k]}"><i class="led ${k === 'info' ? '' : k} mt-1 shrink-0"></i><span>${t}</span></div>`).join('');
+  setBadge('eSummary', st === 'ok' ? 'Día OK' : st === 'warn' ? 'Día bajo' : st === 'err' ? 'Día muy bajo' : 'Esperada lista', st);
+  energyResult = { which: eDay, day: exp.day, eExp: exp.e, eReal: real, pi, st, source: exp.source };
+}
+
+function setBadge(id, text, led) {
+  const el = $(id);
+  const styles = { ok: 'bg-emerald-500/15 text-emerald-200 border-emerald-400/50', warn: 'bg-amber-500/15 text-amber-200 border-amber-400/50', err: 'bg-red-500/15 text-red-200 border-red-400/50' };
+  el.className = `inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase border ${led ? styles[led] : 'bg-slate-800/80 text-slate-300 border-slate-600/60'}`;
+  el.innerHTML = `<i class="led ${led || ''}"></i><span>${text}</span>`;
+}
+
+function setupEnergy() {
+  document.querySelectorAll('.eDay').forEach((b) => b.addEventListener('click', () => { eDay = b.dataset.day; $('eReal').value = ''; renderEnergy(); }));
+  $('eReal').addEventListener('input', renderEnergy);
+  renderEnergy();
+}
+
+/* ------------------------------------------------------------------
+ * 12e. HISTORIAL POR PLANTA
+ * ------------------------------------------------------------------ */
+const HIST_KEY = 'syp_history';
+const HIST_MAX = 300;
+const plantKey = (c) => (c.name ? 'n:' + c.name.trim().toLowerCase() : (c.lat != null && c.lon != null ? `c:${(+c.lat).toFixed(3)},${(+c.lon).toFixed(3)}` : null));
+const getHist = () => store.get(HIST_KEY, {});
+
+function saveHistory() {
+  const r = state.result;
+  if (!r) return toast('Primero ejecuta un análisis.', 'warn');
+  const key = plantKey(r.cfg);
+  const rec = {
+    t: Date.now(), poa: r.poaRef, pExp: r.pExpected, real: r.real ?? null, pi: r.pi ?? null, pr: r.pr ?? null,
+    tCell: r.tCell, clouds: r.clouds,
+    eDay: energyResult?.eReal != null ? energyResult.day : null, eExp: energyResult?.eReal != null ? energyResult.eExp : null,
+    eReal: energyResult?.eReal ?? null, ePi: energyResult?.pi ?? null,
+    strIssues: strResult ? strResult.issues.length : null, strWorst: strResult?.worst ?? null,
+    vocWorst: vocResult && (vocResult.mv != null || vocResult.mi != null) ? vocResult.worst : null,
+    rainDays: rainInfo?.daysSince ?? null,
+  };
+  if (rec.pi == null && rec.ePi == null) return toast('Introduce la producción real (kW) o la energía del día (kWh) antes de guardar.', 'warn', 4500);
+  const all = getHist();
+  all[key] = [...(all[key] || []), rec].slice(-HIST_MAX);
+  store.set(HIST_KEY, all);
+  renderHistory();
+  toast('💾 Diagnóstico guardado en el historial.', 'ok');
+}
+
+/** Regresión lineal simple: pendiente en %/30 días. */
+function trendPerMonth(pts) {
+  const n = pts.length; if (n < 3) return null;
+  const xs = pts.map((p) => p.x / 86400000), ys = pts.map((p) => p.y * 100);
+  const mx = xs.reduce((a, b) => a + b) / n, my = ys.reduce((a, b) => a + b) / n;
+  let num_ = 0, den = 0; xs.forEach((x, i) => { num_ += (x - mx) * (ys[i] - my); den += (x - mx) ** 2; });
+  return den ? (num_ / den) * 30 : null;
+}
+
+function renderHistory() {
+  const c = state.result?.cfg || readConfig();
+  const key = plantKey(c);
+  $('histPlant').textContent = c.name || (key ? key.slice(2) : '—');
+  const recs = (key && getHist()[key]) || [];
+  const box = $('histChart'), list = $('histList');
+  if (!recs.length) {
+    box.innerHTML = 'Sin registros para esta planta.'; list.innerHTML = '';
+    setBadge('histTrend', 'Sin tendencia', null); return;
+  }
+  const pts = recs.map((r) => ({ x: r.t, y: r.ePi ?? r.pi, daily: r.ePi != null })).filter((p) => p.y != null);
+  // Gráfico
+  const W = box.clientWidth || 600, H = box.clientHeight || 200, pad = { l: 38, r: 12, t: 10, b: 24 };
+  const x0 = Math.min(...pts.map((p) => p.x)), x1 = Math.max(...pts.map((p) => p.x));
+  const span = Math.max(x1 - x0, 86400000);
+  const yMin = Math.min(40, ...pts.map((p) => p.y * 100 - 5)), yMax = Math.max(115, ...pts.map((p) => p.y * 100 + 5));
+  const X = (x) => pad.l + (pts.length === 1 ? 0.5 : (x - x0) / span) * (W - pad.l - pad.r);
+  const Y = (v) => H - pad.b - ((v - yMin) / (yMax - yMin)) * (H - pad.t - pad.b);
+  const band = (a, b, col) => `<rect x="${pad.l}" width="${W - pad.l - pad.r}" y="${Y(b)}" height="${Math.max(0, Y(a) - Y(b))}" fill="${col}"/>`;
+  const colOf = (y) => (y >= THRESHOLDS.green ? '#34d399' : y >= THRESHOLDS.amber ? '#fbbf24' : '#f87171');
+  let grid = '';
+  [50, 70, 85, 100].filter((v) => v > yMin && v < yMax).forEach((v) => {
+    grid += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(148,163,184,.15)" stroke-dasharray="3 4"/><text x="${pad.l - 5}" y="${Y(v) + 3}" text-anchor="end" fill="#64748b" font-size="10" font-family="JetBrains Mono">${v}%</text>`;
+  });
+  const fmtD = (t) => new Date(t).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+  const xl = pts.length > 1 ? `<text x="${X(x0)}" y="${H - 6}" fill="#64748b" font-size="10" font-family="JetBrains Mono">${fmtD(x0)}</text><text x="${X(x1)}" y="${H - 6}" text-anchor="end" fill="#64748b" font-size="10" font-family="JetBrains Mono">${fmtD(x1)}</text>` : '';
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${X(p.x).toFixed(1)},${Y(p.y * 100).toFixed(1)}`).join(' ');
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="none" role="img" aria-label="Historial de rendimiento">
+    ${band(yMin, 70, 'rgba(248,113,113,.07)')}${band(70, 85, 'rgba(251,191,36,.07)')}${band(85, yMax, 'rgba(52,211,153,.06)')}
+    ${grid}${xl}
+    ${pts.length > 1 ? `<path d="${line}" fill="none" stroke="#22d3ee" stroke-width="1.8" opacity=".7"/>` : ''}
+    ${pts.map((p) => `<circle cx="${X(p.x)}" cy="${Y(p.y * 100)}" r="${p.daily ? 5.5 : 4}" fill="${colOf(p.y)}" stroke="#020617" stroke-width="1.5"><title>${new Date(p.x).toLocaleString('es-ES')} · ${fmt(p.y * 100, 1)} %${p.daily ? ' (diario)' : ''}</title></circle>`).join('')}
+  </svg>`;
+
+  // Tendencia: se reinicia tras un salto brusco hacia arriba (limpieza, reparación)
+  let jump = -1;
+  for (let i = 1; i < pts.length; i++) if (pts[i].y - pts[i - 1].y >= 0.08) jump = i;
+  const seg = jump > 0 ? pts.slice(jump) : pts;
+  const tr = trendPerMonth(seg);
+  const spanDays = seg.length > 1 ? (seg[seg.length - 1].x - seg[0].x) / 86400000 : 0;
+  if (jump === pts.length - 1) setBadge('histTrend', `Recuperado +${fmt((pts[jump].y - pts[jump - 1].y) * 100, 0)} % (¿limpieza?)`, 'ok');
+  else if (tr == null || spanDays < 3) setBadge('histTrend', `${pts.length} registro${pts.length > 1 ? 's' : ''}`, null);
+  else if (tr <= -1.5) setBadge('histTrend', `Tendencia ${fmt(tr, 1)} %/mes`, tr <= -4 ? 'err' : 'warn');
+  else setBadge('histTrend', `Estable (${tr >= 0 ? '+' : ''}${fmt(tr, 1)} %/mes)`, 'ok');
+  if (jump > 0) {
+    const jx = X(pts[jump].x);
+    box.querySelector('svg').insertAdjacentHTML('beforeend', `<line x1="${jx}" x2="${jx}" y1="${pad.t}" y2="${H - pad.b}" stroke="#a78bfa" stroke-dasharray="3 4" opacity=".7"/><text x="${jx - 4}" y="${pad.t + 10}" text-anchor="end" fill="#c4b5fd" font-size="10" font-family="JetBrains Mono">limpieza?</text>`);
+  }
+
+  // Lista (últimos 8)
+  const led = (y) => (y == null ? '' : y >= THRESHOLDS.green ? 'ok' : y >= THRESHOLDS.amber ? 'warn' : 'err');
+  list.innerHTML = recs.slice(-8).reverse().map((r) => `
+    <div class="flex items-center gap-2.5 rounded-lg bg-slate-950/50 border border-slate-800 px-3 py-1.5 text-xs font-mono">
+      <i class="led ${led(r.ePi ?? r.pi)} shrink-0"></i>
+      <span class="text-slate-400 whitespace-nowrap shrink-0">${new Date(r.t).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+      <span class="text-slate-200 truncate flex-1">${r.pi != null ? `Inst. ${fmt(r.pi * 100, 0)}%` : ''}${r.pi != null && r.ePi != null ? ' · ' : ''}${r.ePi != null ? `Día ${fmt(r.ePi * 100, 0)}%` : ''}${r.strIssues ? ` · ${r.strIssues} str.` : ''}${r.rainDays != null ? ` · ${r.rainDays} d sin lluvia` : ''}</span>
+      <button class="text-slate-500 hover:text-red-300 px-1" data-del="${r.t}" aria-label="Borrar registro">✕</button>
+    </div>`).join('');
+  list.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => {
+    const all = getHist(); all[key] = (all[key] || []).filter((x) => String(x.t) !== b.dataset.del); store.set(HIST_KEY, all); renderHistory();
+  }));
+}
+
+function exportHistoryCsv() {
+  const c = state.result?.cfg || readConfig();
+  const key = plantKey(c); const recs = (key && getHist()[key]) || [];
+  if (!recs.length) return toast('No hay registros para exportar.', 'warn');
+  const cols = ['fecha', 'irradiancia_Wm2', 'p_esperada_kW', 'p_real_kW', 'rend_inst_%', 'pr_%', 't_celula_C', 'nubes_%', 'dia', 'e_esperada_kWh', 'e_real_kWh', 'rend_diario_%', 'strings_a_revisar', 'dias_sin_lluvia'];
+  const n = (v, d = 2) => (v == null ? '' : Number(v).toFixed(d).replace('.', ','));
+  const rows = recs.map((r) => [new Date(r.t).toLocaleString('es-ES'), n(r.poa, 0), n(r.pExp), n(r.real), n(r.pi != null ? r.pi * 100 : null, 1), n(r.pr != null ? r.pr * 100 : null, 1), n(r.tCell, 1), n(r.clouds, 0), r.eDay || '', n(r.eExp, 1), n(r.eReal, 1), n(r.ePi != null ? r.ePi * 100 : null, 1), r.strIssues ?? '', r.rainDays ?? '']);
+  const csv = '\ufeff' + [cols, ...rows].map((r) => r.join(';')).join('\n'); // ; y BOM para Excel en español
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `solaryield-historial-${(c.name || 'planta').replace(/[^\w-]+/g, '_')}.csv`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function clearHistory() {
+  const btn = $('btnHistClear');
+  if (!btn.dataset.confirm) { btn.dataset.confirm = '1'; btn.textContent = '¿Seguro? Toca otra vez'; setTimeout(() => { btn.dataset.confirm = ''; btn.textContent = 'Borrar historial de esta planta'; }, 3000); return; }
+  btn.dataset.confirm = ''; btn.textContent = 'Borrar historial de esta planta';
+  const key = plantKey(state.result?.cfg || readConfig());
+  const all = getHist(); delete all[key]; store.set(HIST_KEY, all); renderHistory();
+  toast('Historial borrado.', 'info');
+}
+
+function setupHistory() {
+  $('btnHistSave').addEventListener('click', saveHistory);
+  $('btnHistCsv').addEventListener('click', exportHistoryCsv);
+  $('btnHistClear').addEventListener('click', clearHistory);
+  renderHistory();
+}
+
+/* ------------------------------------------------------------------
  * 13. INFORME RÁPIDO (portapapeles / WhatsApp)
  * ------------------------------------------------------------------ */
 function buildReport() {
@@ -1644,6 +1951,11 @@ function buildReport() {
     if (!sr.issues.length) lines.push('✅ Todos los strings dentro de ±5 % de la referencia.');
     sr.issues.forEach((x) => lines.push(`${x.st === 'err' ? '🔴' : '🟡'} ${x.name}: ${(x.dev >= 0 ? '+' : '') + fmt(x.dev * 100, 1)} %`));
   }
+  if (energyResult && energyResult.eReal != null) {
+    const e = energyResult, em = { ok: '🟢', warn: '🟡', err: '🔴' }[e.st] || '•';
+    lines.push('', `📅 *Energía ${e.which === 'today' ? 'hoy (hasta ahora)' : 'ayer'}:* ${fmt(e.eReal, 1)} kWh real / ${fmt(e.eExp, 1)} kWh esperada → ${e.pi != null ? fmt(e.pi * 100, 1) + ' %' : '--'} ${em}`);
+  }
+  if (rainInfo) lines.push(`🌧️ Días sin lluvia: ${rainInfo.daysSince ?? '+30'}${rainInfo.next ? ` · próxima lluvia en ${rainInfo.next.inDays} d (${fmt(rainInfo.next.mm, 1)} mm)` : ''}`);
   if (vocResult && (vocResult.mv != null || vocResult.mi != null)) {
     const v = vocResult, em = { ok: '🟢', warn: '🟡', err: '🔴' }[v.worst] || '•';
     lines.push('', `🔋 *Multímetro* (${fmt(v.G, 0)} W/m², ${fmt(v.Tc, 1)} °C célula):`);
@@ -1872,7 +2184,7 @@ function init() {
   $('btnClearCache').addEventListener('click', clearApiCache);
   window.addEventListener('online', updateNetLed);
   window.addEventListener('offline', updateNetLed);
-  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => state.result && renderChart(state.result), 200); });
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (state.result) renderChart(state.result); renderHistory(); }, 200); });
 
   updateNetLed();
   setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString('es-ES'); }, 1000);
@@ -1884,6 +2196,8 @@ function init() {
   setupInstall();
   setupStrings();
   setupVoc();
+  setupEnergy();
+  setupHistory();
 
   // Service Worker (PWA) — solo en HTTPS o localhost
   if ('serviceWorker' in navigator && window.isSecureContext) {
