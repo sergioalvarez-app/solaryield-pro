@@ -887,7 +887,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.0.1';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
 
@@ -1172,7 +1172,7 @@ function onOrientation(e) {
 
 /* ---- Permisos de sensores de movimiento ----
  * iOS: hay que pedirlo con DeviceOrientationEvent.requestPermission() dentro del toque.
- * Android/Chrome: NO se pide así (algunos navegadores devuelven "denied" sin motivo);
+ * Android (Chrome, Brave, Edge, Samsung, Firefox…): NO se pide así (algunos navegadores devuelven "denied" sin motivo);
  * el permiso real es el ajuste "Sensores de movimiento" del sitio. Consultamos la
  * Permissions API solo para diagnosticar. */
 async function requestMotion() {
@@ -2297,48 +2297,95 @@ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platfor
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 let deferredInstall = null;
 
+/** Detección del navegador para dar instrucciones concretas (cada uno esconde los permisos en un sitio). */
+function detectBrowser() {
+  const ua = navigator.userAgent;
+  if (isIOS) return { id: 'ios', name: /CriOS/.test(ua) ? 'Chrome (iPhone)' : /FxiOS/.test(ua) ? 'Firefox (iPhone)' : navigator.brave ? 'Brave (iPhone)' : 'Safari' };
+  if (navigator.brave) return { id: 'brave', name: 'Brave' };
+  if (/SamsungBrowser/i.test(ua)) return { id: 'samsung', name: 'Samsung Internet' };
+  if (/EdgA|Edg\//.test(ua)) return { id: 'edge', name: 'Microsoft Edge' };
+  if (/OPR\/|OPT\/|Opera/.test(ua)) return { id: 'opera', name: 'Opera' };
+  if (/DuckDuckGo/i.test(ua)) return { id: 'ddg', name: 'DuckDuckGo' };
+  if (/Firefox/.test(ua)) return { id: 'firefox', name: 'Firefox' };
+  if (/MiuiBrowser|XiaoMi/i.test(ua)) return { id: 'miui', name: 'Mi Browser' };
+  if (/Chrome\//.test(ua)) return { id: 'chrome', name: 'Chrome' };
+  return { id: 'other', name: 'tu navegador' };
+}
+const BROWSER = detectBrowser();
+const HOST = location.host || 'sergioalvarez-app.github.io';
+const ol = (items) => `<ol class="list-decimal pl-5 space-y-1">${items.map((x) => `<li>${x}</li>`).join('')}</ol>`;
+const h4 = (t) => `<p class="font-semibold text-cyan-200">${t}</p>`;
+const FALLBACK_TILT = `<p class="text-slate-400 text-xs">El nivel es opcional: si no lo consigues, escribe la inclinación a mano o elige <em>Plana / Coplanar / Triángulo</em>. Todo lo demás funciona igual.</p>`;
+const chromiumSite = (menu) => ol([
+  `${menu} → <em>Configuración</em> → <em>Configuración de sitios</em> (o <em>Permisos de sitios</em>) → <strong>Sensores de movimiento</strong>.`,
+  'Activa <em>«Los sitios pueden usar sensores de movimiento»</em>.',
+  `Si <strong>${HOST}</strong> aparece en <em>No permitido / Bloqueado</em>, tócalo y cámbialo a <strong>Permitir</strong>.`,
+]);
+
+const SENSOR_HELP = {
+  ios: () => `
+    <p>El iPhone ha bloqueado el sensor para esta web. Suele pasar si una vez se pulsó <strong>«No permitir»</strong>: iOS lo recuerda. Es igual en Safari, Chrome, Brave o Firefox (en iPhone todos usan el mismo motor).</p>
+    ${h4('Cómo reactivarlo:')}
+    ${ol(['Cierra <strong>esta pestaña</strong> (no basta con recargar).', 'Vuelve a abrir la web y pulsa <em>Usar nivel del móvil</em>.', 'En el aviso de iOS, pulsa <strong>«Permitir»</strong>.'])}
+    <p class="text-slate-400 text-xs">Si no aparece el aviso: <em>Ajustes → Apps → Safari → Avanzado → Datos de sitios web</em>, busca <strong>github.io</strong> y bórralo.</p>`,
+  brave: () => `
+    <p>Brave bloquea los sensores de dos formas: con el <strong>permiso del sitio</strong> y con la protección <strong>anti-huellas digitales</strong> de Shields (aunque el permiso esté activado).</p>
+    ${h4('1. Shields (lo más habitual):')}
+    ${ol(['Toca el icono del <strong>león 🦁</strong> en la barra de direcciones.', 'En <em>Bloquear huella digital</em> (Fingerprinting) elige <strong>Estándar</strong> o desactívalo para este sitio. También puedes bajar los <em>Shields</em> solo aquí.', 'Recarga la página.'])}
+    ${h4('2. Permiso del sitio:')}
+    ${chromiumSite('Brave <strong>⋮</strong>')}`,
+  chrome: () => `
+    ${h4('Opción rápida:')}
+    ${ol(['Toca el icono <strong>⚙︎ / 🔒</strong> a la izquierda de la dirección.', '<em>Permisos</em> → <strong>Sensores de movimiento</strong> → <strong>Permitir</strong>.', 'Recarga la página.'])}
+    ${h4('Si no aparece la opción:')}
+    ${chromiumSite('Chrome <strong>⋮</strong>')}`,
+  edge: () => `
+    ${h4('En Microsoft Edge:')}
+    ${ol(['Toca el <strong>🔒</strong> junto a la dirección → <em>Permisos</em> → <strong>Sensores de movimiento</strong> → Permitir.', 'Si no aparece: menú <strong>⋯</strong> → <em>Configuración</em> → <em>Privacidad y seguridad</em> → <em>Permisos de sitio</em> → <strong>Sensores de movimiento</strong>.', 'Comprueba también que la <em>Prevención de seguimiento</em> no esté en <em>Estricta</em> para este sitio. Recarga.'])}`,
+  opera: () => `
+    ${h4('En Opera:')}
+    ${chromiumSite('Menú de Opera (icono <strong>O</strong> o <strong>⋮</strong>)')}`,
+  samsung: () => `
+    ${h4('En Samsung Internet:')}
+    ${ol(['Menú <strong>≡</strong> (abajo) → <em>Ajustes</em> → <em>Sitios web y descargas</em> (o <em>Privacidad</em>) → <em>Permisos del sitio</em>.', 'Busca <strong>Sensores de movimiento</strong> (o <em>Movimiento y orientación</em>) y permítelo.', 'Desactiva el <em>bloqueo inteligente anti-seguimiento</em> para este sitio si está activo y recarga.'])}
+    <p class="text-slate-400 text-xs">Algunas versiones de Samsung Internet no muestran este ajuste. Si no lo encuentras, abre la app en Chrome solo para medir la inclinación.</p>`,
+  firefox: () => `
+    <p>Firefox para Android no tiene un permiso de sensores por sitio: los permite por defecto, salvo que la <strong>protección contra rastreo</strong> los esté bloqueando.</p>
+    ${ol(['Toca el <strong>escudo 🛡️ / candado</strong> de la barra de direcciones.', 'Desactiva la <em>Protección mejorada contra el rastreo</em> para este sitio.', 'Si usas modo <em>Estricto</em>, pásalo a <em>Estándar</em> (Ajustes → Protección contra rastreo). Recarga.'])}`,
+  ddg: () => `
+    <p>El navegador DuckDuckGo bloquea muchas funciones del dispositivo por privacidad y no permite activar los sensores por sitio.</p>
+    ${ol(['Toca el <strong>escudo</strong> junto a la dirección y desactiva la protección para este sitio.', 'Si sigue sin funcionar, abre la app en Chrome, Brave o Edge para medir la inclinación.'])}`,
+  miui: () => `${h4('En Mi Browser (Xiaomi):')}${ol(['Menú → <em>Ajustes</em> → <em>Privacidad y seguridad</em> → <em>Permisos del sitio</em> → sensores/movimiento → Permitir.', 'Si no aparece, abre la app en Chrome para medir la inclinación.'])}`,
+  other: () => `${ol(['Busca en el menú del navegador <em>Ajustes → Permisos del sitio → Sensores de movimiento</em> y permítelo para este sitio.', 'Desactiva el bloqueo anti-rastreo o anti-huellas para este sitio, si existe.', 'Recarga la página.'])}`,
+};
+
+const INSTALL_HELP = {
+  ios: ['Pulsa el botón <strong>Compartir</strong> <span class="inline-block px-1.5 rounded border border-slate-500">⬆︎</span> (en Chrome/Brave está en la barra de direcciones).', 'Desliza y elige <strong>«Añadir a pantalla de inicio»</strong>.', 'Pulsa <strong>«Añadir»</strong>. Se abrirá a pantalla completa como una app.'],
+  brave: ['Menú <strong>⋮</strong> → <strong>«Instalar app»</strong> o <em>«Añadir a pantalla de inicio»</em>.', 'Confirma con <strong>Instalar</strong>.'],
+  chrome: ['Menú <strong>⋮</strong> → <strong>«Instalar app»</strong> (o <em>«Añadir a pantalla de inicio»</em>).', 'Confirma con <strong>Instalar</strong>.'],
+  edge: ['Menú <strong>⋯</strong> → <strong>«Añadir al teléfono»</strong> / <em>«Instalar app»</em>.'],
+  opera: ['Menú → <strong>«Añadir a…» → «Pantalla de inicio»</strong>.'],
+  samsung: ['Menú <strong>≡</strong> → <strong>«Añadir página a»</strong> → <strong>«Pantalla de inicio»</strong>.'],
+  firefox: ['Menú <strong>⋮</strong> → <strong>«Instalar»</strong> o <em>«Añadir a pantalla de inicio»</em>.'],
+  ddg: ['Menú → <strong>«Añadir a pantalla de inicio»</strong>.'],
+  miui: ['Menú → <strong>«Añadir a pantalla de inicio»</strong>.'],
+  other: ['Busca en el menú del navegador <strong>«Instalar app»</strong> o <strong>«Añadir a pantalla de inicio»</strong>.'],
+};
+
 const HELP = {
-  sensor: {
-    title: 'Permiso del sensor de movimiento',
-    body: isIOS ? `
-      <p>El iPhone ha bloqueado el acceso al sensor para esta web. Normalmente es porque se pulsó <strong>«No permitir»</strong> una vez; iOS lo recuerda.</p>
-      <p class="font-semibold text-cyan-200">Cómo reactivarlo:</p>
-      <ol class="list-decimal pl-5 space-y-1">
-        <li>Cierra <strong>esta pestaña</strong> del navegador (no basta con recargar).</li>
-        <li>Vuelve a abrir la web y pulsa <em>Usar nivel del móvil</em>.</li>
-        <li>En el aviso de iOS, pulsa <strong>«Permitir»</strong>.</li>
-      </ol>
-      <p class="text-slate-400 text-xs">Si no aparece el aviso: <em>Ajustes → Apps → Safari → Avanzado → Datos de sitios web</em>, busca <strong>github.io</strong> y bórralo. Luego repite los pasos.</p>`
-      : `
-      <p>Chrome no está dejando que la web lea los <strong>sensores de movimiento</strong> del móvil (el nivel para medir la inclinación).</p>
-      <p class="font-semibold text-cyan-200">Opción rápida:</p>
-      <ol class="list-decimal pl-5 space-y-1">
-        <li>Toca el icono <strong>⚙︎ / 🔒</strong> a la izquierda de la dirección web.</li>
-        <li><em>Permisos</em> (o <em>Configuración del sitio</em>) → <strong>Sensores de movimiento</strong> → <strong>Permitir</strong>.</li>
-        <li>Recarga la página y vuelve a pulsar el botón.</li>
-      </ol>
-      <p class="font-semibold text-cyan-200">Si no aparece la opción:</p>
-      <ol class="list-decimal pl-5 space-y-1">
-        <li>Chrome <strong>⋮</strong> → <em>Configuración</em> → <em>Configuración de sitios</em> → <strong>Sensores de movimiento</strong>.</li>
-        <li>Activa <em>«Los sitios pueden usar sensores de movimiento»</em>.</li>
-        <li>Si <strong>sergioalvarez-app.github.io</strong> aparece en <em>No permitido</em>, tócalo y cámbialo a Permitir.</li>
-      </ol>
-      <p class="text-slate-400 text-xs">Si instalaste la app en la pantalla de inicio, usa estos mismos permisos de Chrome. En navegadores como Samsung Internet o Brave el ajuste está en su menú de privacidad/permisos del sitio.</p>`,
-  },
-  install: {
-    title: 'Instalar en iPhone / iPad',
-    body: `
-      <ol class="list-decimal pl-5 space-y-2">
-        <li>Abre esta web en <strong>Safari</strong> (o Chrome en iOS 16.4+).</li>
-        <li>Pulsa el botón <strong>Compartir</strong> <span class="inline-block px-1.5 rounded border border-slate-500">⬆︎</span> de la barra inferior.</li>
-        <li>Desliza y elige <strong>«Añadir a pantalla de inicio»</strong>.</li>
-        <li>Pulsa <strong>«Añadir»</strong>. Se abrirá a pantalla completa como una app.</li>
-      </ol>`,
-  },
+  sensor: () => ({
+    title: `Sensores de movimiento · ${BROWSER.name}`,
+    body: `<p class="text-xs text-slate-400">Navegador detectado: <strong class="text-slate-200">${BROWSER.name}</strong></p>` + (SENSOR_HELP[BROWSER.id] || SENSOR_HELP.other)() + FALLBACK_TILT,
+  }),
+  install: () => ({
+    title: `Instalar la app · ${BROWSER.name}`,
+    body: `<p class="text-xs text-slate-400 mb-2">Navegador detectado: <strong class="text-slate-200">${BROWSER.name}</strong></p>` + ol(INSTALL_HELP[BROWSER.id] || INSTALL_HELP.other) +
+      `<p class="text-slate-400 text-xs mt-3">Una vez instalada tendrás el icono en la pantalla de inicio, se abrirá a pantalla completa y funcionará también sin cobertura.</p>`,
+  }),
 };
 
 function showHelp(key) {
-  const h = HELP[key];
+  const h = typeof HELP[key] === 'function' ? HELP[key]() : HELP[key];
   $('helpTitle').textContent = h.title;
   $('helpBody').innerHTML = h.body;
   const m = $('helpModal'); m.classList.remove('hidden'); m.classList.add('flex');
@@ -2387,8 +2434,7 @@ async function permInstall() {
     const { outcome } = await deferredInstall.userChoice;
     deferredInstall = null;
     if (outcome === 'accepted') { setPerm('install', 'ok', '✓ Instalada'); $('btnInstall').classList.add('hidden'); }
-  } else if (isIOS) showHelp('install');
-  else toast('Menú del navegador ⋮ → «Instalar app» o «Añadir a pantalla de inicio».', 'info', 5000);
+  } else showHelp('install');
 }
 async function refreshPermStates() {
   if (isStandalone()) setPerm('install', 'ok', '✓ Instalada');
@@ -2415,7 +2461,7 @@ function setupInstall() {
   const show = () => { btn.classList.remove('hidden'); btn.classList.add('flex'); };
   const hide = () => { btn.classList.add('hidden'); btn.classList.remove('flex'); };
   if (isStandalone()) return; // ya instalada
-  if (isIOS) show(); // iOS no tiene aviso automático: mostramos instrucciones
+  if (isIOS || (isTouchDevice() && ['firefox', 'samsung', 'opera', 'ddg', 'miui', 'other'].includes(BROWSER.id))) show(); // sin aviso automático: mostramos instrucciones
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstall = e; show(); });
   window.addEventListener('appinstalled', () => { hide(); deferredInstall = null; toast('✅ SolarYield Pro instalada.', 'ok'); });
   btn.addEventListener('click', async () => {
@@ -2424,10 +2470,8 @@ function setupInstall() {
       const { outcome } = await deferredInstall.userChoice;
       if (outcome === 'accepted') hide();
       deferredInstall = null;
-    } else if (isIOS) {
-      showHelp('install');
     } else {
-      toast('Usa el menú del navegador → «Instalar app» o «Añadir a pantalla de inicio».', 'info', 5000);
+      showHelp('install');
     }
   });
 }
