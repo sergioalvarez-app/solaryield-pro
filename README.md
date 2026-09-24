@@ -10,7 +10,6 @@ Herramienta web gratuita (PWA) de **diagnóstico rápido para plantas fotovoltai
 - Voc/Isc esperados según la ficha del módulo, con diagnóstico automático de la medida del multímetro (string abierto, polaridad, diodos de bypass, módulos de menos).
 - Balance energético diario (hoy/ayer) con la irradiancia real, días sin lluvia y estimación de suciedad.
 - Historial por planta con gráfico de tendencia y exportación a CSV.
-- Brújula del móvil para medir la orientación (y la inclinación) del panel.
 - Detección de clipping / límite de inyección del inversor para evitar falsas alarmas.
 - Modo degradado offline (modelo astronómico local) y alertas opcionales por Telegram.
 

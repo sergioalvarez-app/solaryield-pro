@@ -336,38 +336,7 @@
               </div>
             </div>
             <p class="text-[0.65rem] text-slate-500 mt-1">Azimut fino: 0° Sur · −90° Este · +90° Oeste (convenio PVGIS).</p>
-            <button id="btnCompass" class="btn-ghost w-full mt-2 flex items-center justify-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/></svg>
-              Medir orientación con la brújula
-            </button>
-            <!-- Brújula en vivo -->
-            <div id="compassPanel" class="hidden mt-3 rounded-xl border border-cyan-400/40 bg-cyan-500/5 p-3">
-              <div class="flex items-center gap-4">
-                <svg id="compassRose" width="84" height="84" viewBox="0 0 100 100" class="shrink-0">
-                  <circle cx="50" cy="50" r="46" fill="rgba(2,6,23,.7)" stroke="rgba(34,211,238,.5)"/>
-                  <g id="roseDial" style="transition: transform .25s linear; transform-origin: 50px 50px">
-                    <text x="50" y="16" text-anchor="middle" fill="#f87171" font-size="12" font-weight="700" font-family="JetBrains Mono">N</text>
-                    <text x="50" y="92" text-anchor="middle" fill="#67e8f9" font-size="11" font-family="JetBrains Mono">S</text>
-                    <text x="89" y="54" text-anchor="middle" fill="#67e8f9" font-size="11" font-family="JetBrains Mono">E</text>
-                    <text x="11" y="54" text-anchor="middle" fill="#67e8f9" font-size="11" font-family="JetBrains Mono">O</text>
-                  </g>
-                  <path d="M50 22 L56 50 L50 46 L44 50 Z" fill="#fbbf24"/>
-                  <circle cx="50" cy="50" r="3" fill="#fbbf24"/>
-                </svg>
-                <div class="min-w-0">
-                  <p class="text-[0.65rem] uppercase tracking-widest text-cyan-300">Orientación del panel</p>
-                  <p class="metric-value text-3xl"><span id="compassAz">--</span>°</p>
-                  <p class="text-xs text-slate-300"><span id="compassName">—</span> · incl. <span id="compassTilt">--</span>°</p>
-                </div>
-              </div>
-              <p class="text-[0.65rem] text-slate-400 mt-2">Apoya el móvil plano sobre el cristal del módulo, lejos del marco y de estructuras de acero. Si el valor salta, calibra moviendo el móvil en forma de 8.</p>
-              <p id="compassWarn" class="hidden text-[0.65rem] text-amber-300 mt-1"></p>
-              <div class="grid grid-cols-3 gap-2 mt-3">
-                <button id="btnCompassFix" class="btn-primary !py-2 !px-1 text-[0.65rem]">Fijar orient.</button>
-                <button id="btnCompassFixBoth" class="btn-ghost !py-2 !px-1 text-[0.65rem]">Orient. + incl.</button>
-                <button id="btnCompassCancel" class="btn-ghost !py-2 !px-1 text-[0.65rem]">Cancelar</button>
-              </div>
-            </div>
+
           </div>
 
           <!-- Inclinación -->
@@ -713,7 +682,7 @@
           <span class="text-2xl" aria-hidden="true">📐</span>
           <div class="flex-1 min-w-0">
             <p class="font-semibold text-slate-100">Sensores de movimiento</p>
-            <p class="text-xs text-slate-400">Nivel (inclinación) y brújula (orientación).</p>
+            <p class="text-xs text-slate-400">Nivel: mide la inclinación apoyando el móvil en el panel.</p>
           </div>
           <button class="perm-btn">Activar</button>
         </div>
@@ -762,7 +731,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '1.4.2';
+const APP_VERSION = '1.5.0';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
 /**
@@ -1130,7 +1099,7 @@ function onOrientation(e) {
  * Android/Chrome: NO se pide así (algunos navegadores devuelven "denied" sin motivo);
  * el permiso real es el ajuste "Sensores de movimiento" del sitio. Consultamos la
  * Permissions API solo para diagnosticar. */
-async function requestMotion(needMagnetometer = false) {
+async function requestMotion() {
   if (isIOS && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
     try { return (await DeviceOrientationEvent.requestPermission()) === 'granted' ? 'ok' : 'denied'; } catch { return 'denied'; }
   }
@@ -1143,60 +1112,6 @@ function sensorNoData(kind) {
   else toast(`${kind} no disponible en este dispositivo (¿estás en un PC?).`, 'warn', 4500);
 }
 
-/* ---- Brújula: orientación del panel = proyección horizontal de la normal de la pantalla ---- */
-let compassEma = null, compassSeen = false, compassTiltEma = null, compassEvt = null;
-function panelFromOrientation(alphaAbs, beta, gamma) {
-  // Matriz de rotación W3C (Z-X'-Y''); eje z del dispositivo en marco Tierra (x=Este, y=Norte, z=Arriba)
-  const a = alphaAbs * rad, b = beta * rad, g = gamma * rad;
-  const zx = Math.cos(g) * Math.sin(a) * Math.sin(b) + Math.cos(a) * Math.sin(g);
-  const zy = Math.sin(a) * Math.sin(g) - Math.cos(a) * Math.cos(g) * Math.sin(b);
-  const zz = Math.cos(b) * Math.cos(g);
-  const tilt = Math.acos(clamp(zz, -1, 1)) / rad;
-  const azN = (Math.atan2(zx, zy) / rad + 360) % 360;   // desde el Norte, sentido horario
-  const azPv = ((azN - 180 + 540) % 360) - 180;          // convenio PVGIS: 0 = Sur, +Oeste
-  return { tilt, azPv, azN };
-}
-function onCompass(e) {
-  let alpha = null;
-  if (typeof e.webkitCompassHeading === 'number') alpha = 360 - e.webkitCompassHeading; // iOS
-  else if (e.absolute === true || e.type === 'deviceorientationabsolute') alpha = e.alpha;
-  if (alpha == null || e.beta == null || e.gamma == null) return;
-  compassSeen = true;
-  const { tilt, azPv, azN } = panelFromOrientation(alpha, e.beta, e.gamma);
-  // Media exponencial circular
-  if (compassEma == null) compassEma = azPv;
-  else { let d = azPv - compassEma; d = ((d + 540) % 360) - 180; compassEma = ((compassEma + 0.2 * d + 540) % 360) - 180; }
-  compassTiltEma = compassTiltEma == null ? tilt : compassTiltEma * 0.85 + tilt * 0.15;
-  const az = Math.round(compassEma);
-  $('compassAz').textContent = (az > 0 ? '+' : '') + az;
-  $('compassName').textContent = orientName(az);
-  $('compassTilt').textContent = compassTiltEma.toFixed(0);
-  $('roseDial').style.transform = `rotate(${-azN}deg)`;
-  const w = $('compassWarn');
-  if (compassTiltEma < 4) { w.textContent = 'Inclinación casi nula: la orientación no está definida en paneles planos. Usa el valor del proyecto.'; w.classList.remove('hidden'); }
-  else w.classList.add('hidden');
-}
-async function startCompass() {
-  if (typeof DeviceOrientationEvent === 'undefined') { toast('Este dispositivo no tiene brújula.', 'err'); return; }
-  if ((await requestMotion(true)) === 'denied') { showHelp('sensor'); return; }
-  compassEma = null; compassTiltEma = null; compassSeen = false;
-  compassEvt = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
-  window.addEventListener(compassEvt, onCompass);
-  $('compassPanel').classList.remove('hidden');
-  setTimeout(() => { if (compassEvt && !compassSeen) { stopCompass(); sensorNoData('Brújula'); } }, 3000);
-}
-function stopCompass(mode = null) {
-  if (compassEvt) window.removeEventListener(compassEvt, onCompass);
-  compassEvt = null;
-  $('compassPanel').classList.add('hidden');
-  if (mode && compassEma != null) {
-    if (compassTiltEma != null && compassTiltEma < 4) { toast('Panel casi plano: orientación no fiable, no se ha cambiado.', 'warn'); return; }
-    setAzimuth(Math.round(compassEma));
-    if (mode === 'both' && compassTiltEma != null) setTilt(Math.round(compassTiltEma));
-    persistLast();
-    toast(`Orientación fijada: ${orientName(compassEma)} (${Math.round(compassEma)}°)${mode === 'both' ? ` · incl. ${Math.round(compassTiltEma)}°` : ''}`, 'ok');
-  }
-}
 
 async function startLevel() {
   if (typeof DeviceOrientationEvent === 'undefined') { toast('Este dispositivo no tiene sensor de orientación.', 'err'); return; }
@@ -2271,7 +2186,7 @@ const HELP = {
       </ol>
       <p class="text-slate-400 text-xs">Si no aparece el aviso: <em>Ajustes → Apps → Safari → Avanzado → Datos de sitios web</em>, busca <strong>github.io</strong> y bórralo. Luego repite los pasos.</p>`
       : `
-      <p>Chrome no está dejando que la web lea los <strong>sensores de movimiento</strong> del móvil (inclinómetro y brújula).</p>
+      <p>Chrome no está dejando que la web lea los <strong>sensores de movimiento</strong> del móvil (el nivel para medir la inclinación).</p>
       <p class="font-semibold text-cyan-200">Opción rápida:</p>
       <ol class="list-decimal pl-5 space-y-1">
         <li>Toca el icono <strong>⚙︎ / 🔒</strong> a la izquierda de la dirección web.</li>
@@ -2330,8 +2245,8 @@ async function permGeo() {
 async function permMotion() {
   if (typeof DeviceOrientationEvent === 'undefined') return setPerm('motion', 'err', 'No disponible');
   setPerm('motion', 'busy', 'Probando…');
-  if ((await requestMotion(true)) === 'denied') { setPerm('motion', 'err', '✕ Bloqueado'); showHelp('sensor'); return; }
-  const evt = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
+  if ((await requestMotion()) === 'denied') { setPerm('motion', 'err', '✕ Bloqueado'); showHelp('sensor'); return; }
+  const evt = 'deviceorientation';
   let got = false;
   const h = (e) => { if (e.beta != null) got = true; };
   window.addEventListener(evt, h);
@@ -2424,10 +2339,6 @@ function init() {
   $('btnLevel').addEventListener('click', startLevel);
   $('btnLevelFix').addEventListener('click', () => stopLevel(true));
   $('btnLevelCancel').addEventListener('click', () => stopLevel(false));
-  $('btnCompass').addEventListener('click', startCompass);
-  $('btnCompassFix').addEventListener('click', () => stopCompass('az'));
-  $('btnCompassFixBoth').addEventListener('click', () => stopCompass('both'));
-  $('btnCompassCancel').addEventListener('click', () => stopCompass(null));
   ['kwp', 'pac'].forEach((id) => $(id).addEventListener('input', updateDcAc));
   $('pac').addEventListener('change', persistLast);
   $('btnAnalyze').addEventListener('click', analyze);
