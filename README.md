@@ -6,9 +6,14 @@ Herramienta web gratuita (PWA) de **diagnóstico rápido para plantas fotovoltai
 - Potencia esperada con corrección por temperatura de célula y pérdidas de sistema.
 - Comparador con la lectura del inversor: rendimiento vs. esperado, PR (IEC), desviación y semáforo de estado.
 - GPS, inclinómetro con el acelerómetro del móvil y plantas guardadas en el propio dispositivo.
+- Comparador de strings/MPPT (corriente o potencia, normalizado por nº de módulos) para localizar strings abiertos o con pérdidas.
 - Modo degradado offline (modelo astronómico local) y alertas opcionales por Telegram.
 
 Sin registro, sin servidor, sin cookies: los datos se guardan solo en tu navegador.
 
 **Datos:** [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0) · [PVGIS © Unión Europea](https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis_en).
 Valores orientativos; no sustituyen una medición con piranómetro calibrado.
+
+## Licencia
+
+Copyright © 2026 Sergio Álvarez. Distribuido bajo la licencia **GNU GPL-3.0**: puedes usarlo, estudiarlo, modificarlo y compartirlo libremente, siempre que las versiones derivadas se publiquen también como código abierto bajo la misma licencia. Ver [LICENSE](LICENSE).

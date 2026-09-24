@@ -16,8 +16,14 @@
   <!-- Open Graph (vista previa al compartir en LinkedIn / WhatsApp) -->
   <meta property="og:title" content="SolarYield Pro · Diagnóstico FV rápido" />
   <meta property="og:description" content="Irradiancia en tiempo real, potencia teórica y Performance Ratio instantáneo para técnicos fotovoltaicos. Gratis y sin registro." />
-  <meta property="og:image" content="./icons/icon-512.png" />
+  <meta property="og:image" content="https://sergioalvarez-app.github.io/solaryield-pro/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://sergioalvarez-app.github.io/solaryield-pro/" />
   <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_ES" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://sergioalvarez-app.github.io/solaryield-pro/" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -168,6 +174,12 @@
     @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
     .hidden-force { display: none !important; }
+    .strUnit.active { background: rgba(8, 145, 178, 0.35); color: #ecfeff; box-shadow: 0 0 12px -4px var(--cyan) inset; }
+    .strUnit { color: #94a3b8; transition: all .2s; }
+    .str-bar { height: 6px; border-radius: 9999px; background: rgba(51, 65, 85, 0.5); position: relative; overflow: visible; }
+    .str-bar > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 9999px; transition: width .8s cubic-bezier(.2,.8,.2,1), background .3s; box-shadow: 0 0 10px currentColor; }
+    .str-bar > b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #a78bfa; opacity: .8; }
+    .field-sm { padding: 0.45rem 0.6rem; font-size: 0.9rem; }
     input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -421,6 +433,31 @@
           <!-- generadas por JS -->
         </div>
 
+        <!-- Comparador de strings / MPPT -->
+        <div class="glass p-5" id="stringsCard">
+          <span class="corner tl"></span><span class="corner br"></span>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 class="hud-title">Comparador de strings / MPPT</h2>
+            <span id="strSummary" class="inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase bg-slate-800/80 text-slate-300 border border-slate-600/60"><i class="led"></i><span>Sin datos</span></span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">Todos los strings comparten el mismo sol: compararlos entre sí detecta fallos aunque no sepas la irradiancia exacta. Mide todos en 2–3 minutos.</p>
+
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs font-mono" role="group" aria-label="Unidad">
+              <button class="strUnit px-3 py-2" data-unit="A">Corriente (A)</button>
+              <button class="strUnit px-3 py-2" data-unit="kW">Potencia (kW)</button>
+            </div>
+            <button id="btnStrAdd" class="btn-ghost !py-2 text-xs">＋ String</button>
+            <button id="btnStrDel" class="btn-ghost !py-2 text-xs">－ String</button>
+            <button id="btnStrClear" class="btn-danger !py-2 text-xs ml-auto">Limpiar</button>
+          </div>
+
+          <div id="strHead" class="grid gap-2 text-[0.6rem] uppercase tracking-widest text-slate-500 px-1 mb-1"></div>
+          <div id="strRows" class="space-y-2.5"></div>
+          <p id="strNote" class="text-[0.65rem] text-slate-500 mt-3"></p>
+          <div id="strDiag" class="mt-3 space-y-2"></div>
+        </div>
+
         <!-- Gráfico curva diaria -->
         <div class="glass p-5">
           <span class="corner tl"></span><span class="corner br"></span>
@@ -456,7 +493,8 @@
     </main>
 
     <footer class="mt-10 text-center text-[0.7rem] text-slate-500 font-mono tracking-wider">
-      SOLARYIELD PRO · <span id="authorLine"></span> · Datos guardados solo en este dispositivo
+      SOLARYIELD PRO · <span id="authorLine"></span> · Datos guardados solo en este dispositivo<br class="sm:hidden">
+      <span class="hidden sm:inline"> · </span><a class="underline hover:text-cyan-300" href="https://github.com/sergioalvarez-app/solaryield-pro" target="_blank" rel="noopener">Código abierto (GPL-3.0)</a>
     </footer>
   </div>
 
@@ -525,13 +563,18 @@
 'use strict';
 /* =====================================================================
  * SolarYield Pro — Diagnóstico FV rápido
+ * Copyright (C) 2026 Sergio Álvarez
+ * Este programa es software libre: puedes redistribuirlo y/o modificarlo
+ * bajo los términos de la GNU General Public License v3 publicada por la
+ * Free Software Foundation. Se distribuye SIN NINGUNA GARANTÍA.
+ * Ver LICENSE o <https://www.gnu.org/licenses/gpl-3.0.html>.
  * HTML + Tailwind (CDN) + JavaScript vanilla. Sin build, sin backend.
  * ===================================================================== */
 
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.1.0';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 
 /**
@@ -1199,6 +1242,7 @@ function loadSelectedPlant(run = true) {
   const p = getPlants().find((x) => x.id === $('plantSelect').value);
   if (!p) return;
   writeConfig(p);
+  applyStringsTemplate(p.strings);
   $('realKw').value = '';
   if (run) analyze();
 }
@@ -1210,8 +1254,8 @@ function savePlant() {
   if (!c.name) { $('plantName').focus(); toast('Ponle un nombre a la planta para guardarla.', 'warn'); return; }
   const plants = getPlants();
   const existing = plants.find((p) => p.name.toLowerCase() === c.name.toLowerCase());
-  if (existing) Object.assign(existing, c, { updated: Date.now() });
-  else plants.push({ id: 'p' + Date.now().toString(36), ...c, created: Date.now() });
+  if (existing) Object.assign(existing, c, { strings: stringsTemplate(), updated: Date.now() });
+  else plants.push({ id: 'p' + Date.now().toString(36), ...c, strings: stringsTemplate(), created: Date.now() });
   setPlants(plants);
   refreshPlantSelect((existing || plants[plants.length - 1]).id);
   toast(existing ? `Planta «${c.name}» actualizada.` : `Planta «${c.name}» guardada.`, 'ok');
@@ -1248,6 +1292,133 @@ function loadDemoPlant() {
 }
 
 /* ------------------------------------------------------------------
+ * 12b. COMPARADOR DE STRINGS / MPPT
+ * ------------------------------------------------------------------ */
+const STR_KEY = 'syp_strings';
+let strState = store.get(STR_KEY, null) || { unit: 'A', rows: [{}, {}, {}, {}] };
+let strResult = null;
+
+const median = (arr) => { const a = [...arr].sort((x, y) => x - y); const m = Math.floor(a.length / 2); return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
+
+function strSave() { store.set(STR_KEY, strState); }
+
+function renderStrings() {
+  const kw = strState.unit === 'kW';
+  document.querySelectorAll('.strUnit').forEach((b) => b.classList.toggle('active', b.dataset.unit === strState.unit));
+  const cols = kw ? 'grid-template-columns: 5.8rem 1fr 3.6rem 4.6rem' : 'grid-template-columns: 5.8rem 1fr 4.6rem';
+  $('strHead').style.cssText = cols;
+  $('strHead').innerHTML = `<span>String</span><span>${kw ? 'Potencia (kW)' : 'Corriente (A)'}</span>${kw ? '<span title="Módulos en serie">Nº mód.</span>' : ''}<span class="text-right">Desv.</span>`;
+  $('strRows').innerHTML = strState.rows.map((r, i) => `
+    <div data-i="${i}">
+      <div class="grid gap-2 items-center" style="${cols}">
+        <input class="field field-sm strLabel !text-[0.8rem] !px-2" maxlength="10" value="${escapeHtml(r.label || '')}" placeholder="S${i + 1}" aria-label="Nombre string ${i + 1}" />
+        <input class="field field-sm strVal" type="number" step="0.01" min="0" inputmode="decimal" value="${r.v ?? ''}" placeholder="0.00" aria-label="Valor string ${i + 1}" />
+        ${kw ? `<input class="field field-sm strMod" type="number" step="1" min="1" inputmode="numeric" value="${r.m ?? ''}" placeholder="—" aria-label="Módulos string ${i + 1}" />` : ''}
+        <span class="strDev font-mono text-sm text-right text-slate-500">--</span>
+      </div>
+      <div class="str-bar mt-1.5"><i style="width:0"></i><b class="hidden"></b></div>
+    </div>`).join('');
+  $('strRows').querySelectorAll('input').forEach((inp) => inp.addEventListener('input', onStrInput));
+  analyzeStrings();
+}
+
+function onStrInput(e) {
+  const i = Number(e.target.closest('[data-i]').dataset.i);
+  const row = strState.rows[i];
+  if (e.target.classList.contains('strLabel')) row.label = e.target.value.trim();
+  if (e.target.classList.contains('strVal')) row.v = num(e.target.value);
+  if (e.target.classList.contains('strMod')) row.m = num(e.target.value);
+  strSave();
+  analyzeStrings();
+}
+
+function analyzeStrings() {
+  const kw = strState.unit === 'kW';
+  const rows = strState.rows.map((r, i) => ({ ...r, i, name: r.label || `S${i + 1}` }));
+  const filled = rows.filter((r) => r.v != null && r.v >= 0);
+  const note = $('strNote');
+  const rowEls = [...$('strRows').children];
+  rowEls.forEach((el) => { el.querySelector('.strDev').textContent = '--'; el.querySelector('.strDev').className = 'strDev font-mono text-sm text-right text-slate-500'; el.querySelector('.str-bar > i').style.width = '0'; el.querySelector('.str-bar > b').classList.add('hidden'); });
+  $('strDiag').innerHTML = '';
+  strResult = null;
+
+  if (filled.length < 2) {
+    setStrSummary('Sin datos', null);
+    note.textContent = 'Introduce al menos 2 valores. Con 3 o más se usa la mediana como referencia, lo que identifica exactamente qué string falla.';
+    return;
+  }
+
+  // Normalización por módulo (solo potencia y si todas las filas con valor tienen nº de módulos)
+  const canNorm = kw && filled.every((r) => r.m > 0);
+  const mixed = kw && !canNorm && filled.some((r) => r.m > 0);
+  filled.forEach((r) => { r.n = canNorm ? r.v / r.m : r.v; });
+  const ref = filled.length >= 3 ? median(filled.map((r) => r.n)) : Math.max(...filled.map((r) => r.n));
+  const maxN = Math.max(...filled.map((r) => r.n), 1e-9);
+
+  const CLASS = {
+    ok: { c: '#34d399', t: 'text-emerald-300' },
+    warn: { c: '#fbbf24', t: 'text-amber-300' },
+    err: { c: '#f87171', t: 'text-red-300' },
+  };
+  const issues = [];
+  filled.forEach((r) => {
+    r.dev = ref > 0 ? r.n / ref - 1 : 0;
+    if (ref > 0 && r.n < 0.05 * ref) { r.st = 'err'; r.msg = 'Sin producción: string abierto, fusible fundido, seccionador abierto o conector MC4 suelto.'; }
+    else if (r.dev < -0.15) { r.st = 'err'; r.msg = 'Pérdida severa: posible diodo de bypass/módulo en corto, sombra fuerte o conector dañado. Mide Voc del string.'; }
+    else if (r.dev < -0.05) { r.st = 'warn'; r.msg = 'Desviación moderada: sombra parcial, suciedad localizada, mismatch o degradación de algún módulo.'; }
+    else if (r.dev > 0.10 && filled.length >= 3) { r.st = 'warn'; r.msg = 'Por encima de la mediana: revisa el nº de módulos, la lectura o si el resto está afectado.'; }
+    else { r.st = 'ok'; }
+    if (r.st !== 'ok') issues.push(r);
+
+    const el = rowEls[r.i];
+    const dev = el.querySelector('.strDev');
+    dev.textContent = (r.dev >= 0 ? '+' : '') + fmt(r.dev * 100, 1) + '%';
+    dev.className = `strDev font-mono text-sm text-right font-semibold ${CLASS[r.st].t}`;
+    const bar = el.querySelector('.str-bar > i');
+    bar.style.width = clamp((r.n / maxN) * 100, 1.5, 100) + '%';
+    bar.style.background = CLASS[r.st].c; bar.style.color = CLASS[r.st].c;
+    const mk = el.querySelector('.str-bar > b');
+    mk.style.left = clamp((ref / maxN) * 100, 0, 100) + '%'; mk.classList.remove('hidden');
+  });
+
+  const worst = issues.some((r) => r.st === 'err') ? 'err' : issues.length ? 'warn' : 'ok';
+  setStrSummary(worst === 'ok' ? 'Strings OK' : `${issues.length} a revisar`, worst);
+  const unitTxt = canNorm ? 'kW/módulo' : strState.unit;
+  note.textContent = `Referencia (${filled.length >= 3 ? 'mediana' : 'máximo'}): ${fmt(canNorm ? ref * 1000 : ref, canNorm ? 0 : 2)} ${canNorm ? 'W/módulo' : strState.unit}. Línea violeta = referencia.` +
+    (mixed ? ' ⚠️ Rellena el nº de módulos en todas las filas para normalizar strings de distinta longitud.' : '') +
+    (filled.length === 2 ? ' Con solo 2 strings se ve la diferencia, pero no cuál es el correcto.' : '');
+  $('strDiag').innerHTML = issues.map((r) => `
+    <div class="flex gap-2.5 items-start rounded-lg border px-3 py-2 text-xs ${r.st === 'err' ? 'border-red-400/40 bg-red-500/10 text-red-100' : 'border-amber-400/40 bg-amber-500/10 text-amber-100'}">
+      <i class="led ${r.st} mt-1 shrink-0"></i>
+      <span><strong>${escapeHtml(r.name)}</strong> (${(r.dev >= 0 ? '+' : '') + fmt(r.dev * 100, 1)}%): ${r.msg}</span>
+    </div>`).join('');
+  strResult = { unit: unitTxt, rawUnit: strState.unit, rows: filled, issues, worst };
+}
+
+function setStrSummary(text, led) {
+  const el = $('strSummary');
+  const styles = { ok: 'bg-emerald-500/15 text-emerald-200 border-emerald-400/50', warn: 'bg-amber-500/15 text-amber-200 border-amber-400/50', err: 'bg-red-500/15 text-red-200 border-red-400/50' };
+  el.className = `inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase border ${led ? styles[led] : 'bg-slate-800/80 text-slate-300 border-slate-600/60'}`;
+  el.innerHTML = `<i class="led ${led || ''}"></i><span>${text}</span>`;
+}
+
+function setupStrings() {
+  document.querySelectorAll('.strUnit').forEach((b) => b.addEventListener('click', () => { strState.unit = b.dataset.unit; strSave(); renderStrings(); }));
+  $('btnStrAdd').addEventListener('click', () => { if (strState.rows.length >= 24) return toast('Máximo 24 strings.', 'warn'); strState.rows.push({}); strSave(); renderStrings(); });
+  $('btnStrDel').addEventListener('click', () => { if (strState.rows.length <= 2) return; strState.rows.pop(); strSave(); renderStrings(); });
+  $('btnStrClear').addEventListener('click', () => { strState.rows = strState.rows.map((r) => ({ label: r.label, m: r.m })); strSave(); renderStrings(); });
+  renderStrings();
+}
+
+/** Configuración de strings de una planta (sin valores medidos). */
+const stringsTemplate = () => ({ unit: strState.unit, rows: strState.rows.map((r) => ({ label: r.label || '', m: r.m ?? null })) });
+function applyStringsTemplate(t) {
+  if (!t || !Array.isArray(t.rows) || !t.rows.length) return;
+  strState = { unit: t.unit === 'kW' ? 'kW' : 'A', rows: t.rows.map((r) => ({ label: r.label || '', m: r.m ?? null })) };
+  strSave(); renderStrings();
+}
+
+/* ------------------------------------------------------------------
  * 13. INFORME RÁPIDO (portapapeles / WhatsApp)
  * ------------------------------------------------------------------ */
 function buildReport() {
@@ -1272,6 +1443,12 @@ function buildReport() {
       '', `${emo[r.status]} *ESTADO: ${stTxt[r.status]}*`);
   } else {
     lines.push('', '📟 Sin lectura del inversor introducida.');
+  }
+  if (strResult) {
+    const sr = strResult;
+    lines.push('', `🔌 *Strings (${sr.rawUnit}):* ` + sr.rows.map((x) => `${x.name} ${fmt(x.v, 2)}`).join(' · '));
+    if (!sr.issues.length) lines.push('✅ Todos los strings dentro de ±5 % de la referencia.');
+    sr.issues.forEach((x) => lines.push(`${x.st === 'err' ? '🔴' : '🟡'} ${x.name}: ${(x.dev >= 0 ? '+' : '') + fmt(x.dev * 100, 1)} %`));
   }
   if (r.degraded.length) lines.push('', '⚠️ Calculado en modo degradado (API no disponible).');
   lines.push('', `Fuentes: ${r.poaReal != null ? 'Open-Meteo, ' : ''}${r.csSource}`,
@@ -1351,7 +1528,7 @@ function importPlants(file) {
       const arr = JSON.parse(reader.result);
       if (!Array.isArray(arr)) throw new Error();
       const clean = arr.filter((p) => p && p.name && isFinite(p.lat) && isFinite(p.lon) && isFinite(p.kwp))
-        .map((p) => ({ id: p.id || 'p' + Math.random().toString(36).slice(2, 9), name: String(p.name).slice(0, 60), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0 }));
+        .map((p) => ({ id: p.id || 'p' + Math.random().toString(36).slice(2, 9), name: String(p.name).slice(0, 60), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0, strings: p.strings }));
       const merged = [...getPlants()];
       clean.forEach((p) => { if (!merged.some((m) => m.name === p.name)) merged.push(p); });
       setPlants(merged); refreshPlantSelect();
@@ -1505,6 +1682,7 @@ function init() {
   $('btnHelpOk').addEventListener('click', closeHelp);
   $('helpModal').addEventListener('click', (e) => { if (e.target.id === 'helpModal') closeHelp(); });
   setupInstall();
+  setupStrings();
 
   // Service Worker (PWA) — solo en HTTPS o localhost
   if ('serviceWorker' in navigator && window.isSecureContext) {
