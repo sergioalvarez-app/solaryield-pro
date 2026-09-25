@@ -12,6 +12,7 @@ Se eligen desde el menú desplegable superior:
 - **🔌 Strings / MPPT** – compara hasta 100 strings por corriente o potencia (normalizando por nº de módulos) y localiza strings abiertos o con pérdidas. Admite pegar columnas de Excel.
 - **🔋 Multímetro Voc / Isc** – valores esperados según la ficha del módulo y diagnóstico automático de la medida (string abierto, polaridad invertida, módulos de menos, diodos de bypass).
 - **📅 Energía diaria y lluvia** – energía esperada de hoy o de ayer con la irradiancia real, días sin lluvia y previsión. **Importa el CSV/Excel del portal del inversor** (Huawei, SolarEdge, Fronius, SMA, GoodWe…) y compara día a día hasta 1 año con la meteorología histórica real: detecta paradas, suciedad progresiva y pérdidas.
+- **🌬️ Planificar visita** – previsión de 7 días de la planta en tu horario de trabajo (rachas de viento, lluvia, tormentas y calor) con semáforo por día y el mejor día para subir a la cubierta. Límites editables en Ajustes; funciona sin cobertura con la última previsión.
 - **✅ Checklist de mantenimiento** – 38 puntos inspirados en IEC 62446-1 y buenas prácticas de O&M, con notas y fotos de cada defecto.
 - **📷 Informe con fotos (PDF)** – fotos con fecha, hora y coordenadas estampadas; informe PDF profesional para descargar o compartir por WhatsApp o email.
 - **📈 Historial** – evolución del rendimiento por planta, detección de limpiezas y exportación a CSV.
