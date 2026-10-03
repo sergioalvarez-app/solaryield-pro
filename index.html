@@ -2,6 +2,7 @@
 <html lang="es" class="dark">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.goatcounter.com; font-src 'self' data:; connect-src 'self' data: blob: https://api.open-meteo.com https://archive-api.open-meteo.com https://docs.google.com https://*.goatcounter.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>SolarYield Pro · Diagnóstico FV rápido</title>
   <meta name="description" content="Herramienta gratuita de diagnóstico rápido para plantas fotovoltaicas: irradiancia en tiempo real, potencia teórica, Performance Ratio y semáforo de estado." />
@@ -1126,7 +1127,7 @@
 /* ------------------------------------------------------------------
  * 1. CONFIGURACIÓN GLOBAL
  * ------------------------------------------------------------------ */
-const APP_VERSION = '2.8.1';
+const APP_VERSION = '2.8.2';
 const AUTHOR = { name: 'Sergio', linkedin: '' }; // ← pon aquí la URL de tu perfil de LinkedIn si quieres
 const REPO = 'sergioalvarez-app/solaryield-pro';
 /** Formulario de Google para sugerencias sin cuenta. id = el código largo de la URL del formulario; entries = números entry.XXXX del enlace prellenado. */
@@ -1590,10 +1591,10 @@ function renderArrays() {
         <button class="arrDel text-slate-400 hover:text-red-300 text-lg leading-none px-1" aria-label="Quitar campo ${i + 2}">×</button>
       </div>
       <div class="grid grid-cols-2 gap-2">
-        <div><label class="label" for="arrK${i}">Potencia (kWp)</label><input id="arrK${i}" class="field field-sm arrK" type="number" step="0.01" min="0" inputmode="decimal" value="${a.kwp ?? ''}" placeholder="0.00" /></div>
-        <div><label class="label" for="arrT${i}">Inclinación (°)</label><input id="arrT${i}" class="field field-sm arrT" type="number" step="1" min="0" max="90" inputmode="numeric" value="${a.tilt ?? ''}" /></div>
-        <div><label class="label" for="arrO${i}">Orientación</label><select id="arrO${i}" class="field field-sm arrO">${opts.map(([v, n]) => `<option value="${v}" ${Number(a.azimuth) === v ? 'selected' : ''}>${n}</option>`).join('')}${opts.some(([v]) => v === Number(a.azimuth)) ? '' : `<option value="${a.azimuth}" selected>Personalizada</option>`}</select></div>
-        <div><label class="label" for="arrA${i}">Azimut (°)</label><input id="arrA${i}" class="field field-sm arrA" type="number" step="1" min="-180" max="180" inputmode="numeric" value="${a.azimuth ?? 0}" /></div>
+        <div><label class="label" for="arrK${i}">Potencia (kWp)</label><input id="arrK${i}" class="field field-sm arrK" type="number" step="0.01" min="0" inputmode="decimal" value="${escapeHtml(a.kwp ?? '')}" placeholder="0.00" /></div>
+        <div><label class="label" for="arrT${i}">Inclinación (°)</label><input id="arrT${i}" class="field field-sm arrT" type="number" step="1" min="0" max="90" inputmode="numeric" value="${escapeHtml(a.tilt ?? '')}" /></div>
+        <div><label class="label" for="arrO${i}">Orientación</label><select id="arrO${i}" class="field field-sm arrO">${opts.map(([v, n]) => `<option value="${v}" ${Number(a.azimuth) === v ? 'selected' : ''}>${n}</option>`).join('')}${opts.some(([v]) => v === Number(a.azimuth)) ? '' : `<option value="${escapeHtml(a.azimuth)}" selected>Personalizada</option>`}</select></div>
+        <div><label class="label" for="arrA${i}">Azimut (°)</label><input id="arrA${i}" class="field field-sm arrA" type="number" step="1" min="-180" max="180" inputmode="numeric" value="${escapeHtml(a.azimuth ?? 0)}" /></div>
       </div>
     </div>`).join('');
   const set = (el, key, v) => { const i = Number(el.closest('[data-i]').dataset.i); extraArrays[i][key] = v; persistLast(); updateArraysTotal(); };
@@ -2167,8 +2168,8 @@ function renderStrings() {
     <div data-i="${i}">
       <div class="grid gap-2 items-center" style="${cols}">
         <input class="field field-sm strLabel !text-[0.8rem] !px-2" maxlength="10" value="${escapeHtml(r.label || '')}" placeholder="S${i + 1}" aria-label="Nombre string ${i + 1}" />
-        <input class="field field-sm strVal" type="number" step="0.01" min="0" inputmode="decimal" value="${r.v ?? ''}" placeholder="0.00" aria-label="Valor string ${i + 1}" />
-        ${kw ? `<input class="field field-sm strMod" type="number" step="1" min="1" inputmode="numeric" value="${r.m ?? ''}" placeholder="—" aria-label="Módulos string ${i + 1}" />` : ''}
+        <input class="field field-sm strVal" type="number" step="0.01" min="0" inputmode="decimal" value="${escapeHtml(r.v ?? '')}" placeholder="0.00" aria-label="Valor string ${i + 1}" />
+        ${kw ? `<input class="field field-sm strMod" type="number" step="1" min="1" inputmode="numeric" value="${escapeHtml(r.m ?? '')}" placeholder="—" aria-label="Módulos string ${i + 1}" />` : ''}
         <span class="strDev font-mono text-sm text-right text-slate-500">--</span>
       </div>
       <div class="str-bar mt-1.5"><i style="width:0"></i><b class="hidden"></b></div>
@@ -2993,7 +2994,7 @@ function renderHistory() {
       <i class="led ${led(r.ePi ?? r.pi)} shrink-0"></i>
       <span class="text-slate-400 whitespace-nowrap shrink-0">${new Date(r.t).toLocaleString(LOC(), { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
       <span class="text-slate-200 truncate flex-1">${r.pi != null ? `Inst. ${fmt(r.pi * 100, 0)}%` : ''}${r.pi != null && r.ePi != null ? ' · ' : ''}${r.ePi != null ? `Día ${fmt(r.ePi * 100, 0)}%` : ''}${r.strIssues ? ` · ${r.strIssues} str.` : ''}${r.rainDays != null ? ` · ${r.rainDays} d sin lluvia` : ''}</span>
-      <button class="text-slate-500 hover:text-red-300 px-1" data-del="${r.t}" aria-label="Borrar registro">✕</button>
+      <button class="text-slate-500 hover:text-red-300 px-1" data-del="${escapeHtml(r.t)}" aria-label="Borrar registro">✕</button>
     </div>`).join('');
   list.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => {
     const all = getHist(); all[key] = (all[key] || []).filter((x) => String(x.t) !== b.dataset.del); store.set(HIST_KEY, all); renderHistory();
@@ -3155,13 +3156,30 @@ async function exportBackup() {
   toast(`✅ Copia creada (${(blob.size / 1048576).toFixed(1)} MB · ${data.photos.length} fotos).`, 'ok', 4500);
   backupInfo();
 }
+/** Copias de seguridad: neutraliza texto que pudiera colarse como HTML (copias manipuladas). */
+const SAFE_MAP = { '<': '‹', '>': '›', '"': '”', '`': "'" };
+function safeDeep(v, depth = 0) {
+  if (depth > 12) return null;
+  if (typeof v === 'string') return v.replace(/[<>"`]/g, (c) => SAFE_MAP[c]);
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
+  if (v === null || typeof v === 'boolean') return v;
+  if (Array.isArray(v)) return v.map((x) => safeDeep(x, depth + 1));
+  if (typeof v === 'object') { const o = {}; for (const [k, x] of Object.entries(v)) if (!/[<>"`]/.test(k)) o[k] = safeDeep(x, depth + 1); return o; }
+  return null;
+}
+const PHOTO_DATA_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
+function safePhoto(ph) {
+  if (!ph || typeof ph !== 'object' || !/^[\w-]{1,64}$/.test(String(ph.id)) || typeof ph.data !== 'string' || !PHOTO_DATA_RE.test(ph.data)) return null;
+  const { data, ...rest } = ph;
+  return { ...safeDeep(rest), id: String(ph.id), data };
+}
 async function importBackup(file) {
   let data;
   try { data = JSON.parse(await file.text()); } catch { return toast('Archivo no válido.', 'err'); }
   // Formato antiguo v1.x: array de plantas
   if (Array.isArray(data)) {
     const clean = data.filter((p) => p && p.name && isFinite(p.lat) && isFinite(p.lon) && isFinite(p.kwp))
-      .map((p) => ({ id: p.id || 'p' + Math.random().toString(36).slice(2, 9), name: String(p.name).slice(0, 60), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0, pac: +p.pac || null, year: +p.year || null, arrays: Array.isArray(p.arrays) ? p.arrays : null, strings: p.strings, module: p.module }));
+      .map((p) => ({ id: /^[\w-]{1,64}$/.test(String(p.id)) ? String(p.id) : 'p' + Math.random().toString(36).slice(2, 9), name: safeDeep(String(p.name).slice(0, 60)), lat: +p.lat, lon: +p.lon, kwp: +p.kwp, azimuth: +p.azimuth || 0, tilt: +p.tilt || 0, pac: +p.pac || null, year: +p.year || null, arrays: Array.isArray(p.arrays) ? safeDeep(p.arrays) : null, strings: safeDeep(p.strings ?? null), module: safeDeep(p.module ?? null) }));
     const merged = [...getPlants()];
     clean.forEach((p) => { if (!merged.some((m) => m.name === p.name)) merged.push(p); });
     setPlants(merged); refreshPlantSelect();
@@ -3172,9 +3190,15 @@ async function importBackup(file) {
   if (!confirmTwice(lbl, `Se sustituirán los datos actuales por la copia del ${new Date(data.created).toLocaleDateString(LOC())}. Pulsa Restaurar otra vez para confirmar.`)) { $('fileImport').value = ''; pendingRestore = file; return; }
   try {
     Object.keys(localStorage).filter((k) => k.startsWith('syp_')).forEach((k) => localStorage.removeItem(k));
-    Object.entries(data.storage).forEach(([k, v]) => { if (k.startsWith('syp_')) localStorage.setItem(k, v); });
+    let skipped = 0;
+    Object.entries(data.storage).forEach(([k, v]) => {
+      if (!/^syp_[a-z0-9_]{1,40}$/.test(k) || typeof v !== 'string') { skipped++; return; }
+      let parsed; try { parsed = JSON.parse(v); } catch { skipped++; return; }
+      localStorage.setItem(k, JSON.stringify(safeDeep(parsed)));
+    });
     await photoDB.clearAll();
-    for (const ph of data.photos || []) await photoDB.put(ph);
+    for (const raw of Array.isArray(data.photos) ? data.photos : []) { const ph = safePhoto(raw); if (ph) await photoDB.put(ph); else skipped++; }
+    if (skipped) console.warn(`Restauración: ${skipped} elementos no válidos descartados.`);
   } catch (e) { return toast('Error restaurando: ' + e.message, 'err'); }
   toast('✅ Copia restaurada. Recargando…', 'ok');
   setTimeout(() => location.reload(), 900);
@@ -3663,8 +3687,8 @@ async function renderPhotos() {
   const list = await photoDB.byPlant(curPlantKey()).catch(() => []);
   $('phCount').textContent = list.length ? `(${list.length})` : '';
   $('phGrid').innerHTML = list.length ? list.map((p) => `
-    <div class="ph-card" data-id="${p.id}">
-      <img src="${p.data}" alt="${escapeHtml(p.caption || 'Foto')}" loading="lazy" />
+    <div class="ph-card" data-id="${escapeHtml(p.id)}">
+      <img src="${escapeHtml(p.data)}" alt="${escapeHtml(p.caption || 'Foto')}" loading="lazy" />
       <button class="ph-del absolute top-1.5 right-1.5 w-8 h-8 rounded-full bg-black/60 text-white text-sm" aria-label="Borrar foto">✕</button>
       ${p.itemId ? '<span class="absolute top-1.5 left-1.5 text-[0.6rem] font-bold px-1.5 py-0.5 rounded bg-red-500/85 text-white">DEFECTO</span>' : ''}
       <input class="ph-cap w-full bg-transparent px-2 py-1.5 text-xs text-slate-200 outline-none border-t border-slate-800" maxlength="120" placeholder="Descripción…" value="${escapeHtml(p.caption || '')}" />
